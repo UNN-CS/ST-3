@@ -28,7 +28,6 @@ void TimedDoor::throwState() {
     }
 }
 
-// Конструктор адаптера
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
 
 void DoorTimerAdapter::Timeout() {

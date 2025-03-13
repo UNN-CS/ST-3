@@ -86,7 +86,7 @@ TEST(TimedDoorAdapterTest, AdapterCallsThrowState) {
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
 
-TEST_F(TimedDoorTest, NoExceptionIfDoorClosedBeforeTimeout) {
+TEST_F(TimedDoorTest, NoExceptionIfDoorClosedBeforeTimeout1) {
     door->unlock();
     door->lock();
     EXPECT_NO_THROW(adapter->Timeout());
