@@ -99,13 +99,13 @@ TEST_F(TimedDoorTest, ExceptionThrownIfDoorRemainsOpen) {
 
 TEST_F(TimedDoorTest, LockingDoorTwiceDoesNotAffectState) {
     door->lock();
-    door->lock();  // Дважды вызываем lock
+    door->lock();
     EXPECT_FALSE(door->isDoorOpened());
 }
 
 TEST_F(TimedDoorTest, UnlockingDoorTwiceKeepsItOpen) {
     door->unlock();
-    door->unlock();  // Дважды вызываем unlock
+    door->unlock();
     EXPECT_TRUE(door->isDoorOpened());
 }
 
@@ -114,7 +114,7 @@ TEST_F(TimedDoorTest, TimerAdapterHandlesMultipleTimeouts) {
     EXPECT_THROW(adapter->Timeout(), std::runtime_error);
 
     door->lock();
-    EXPECT_NO_THROW(adapter->Timeout());  // Дверь закрыта, исключение не должно возникнуть
+    EXPECT_NO_THROW(adapter->Timeout());
 }
 
 TEST_F(TimedDoorTest, TimeoutNotTriggeredIfDoorLockedBeforeTimerExpires) {

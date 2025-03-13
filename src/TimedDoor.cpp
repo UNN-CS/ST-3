@@ -3,7 +3,6 @@
 #include <thread>
 #include <chrono>
 
-// Конструктор умной двери
 TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {}
 
 bool TimedDoor::isDoorOpened() {
@@ -24,7 +23,7 @@ int TimedDoor::getTimeOut() const{
 
 void TimedDoor::throwState() {
     if (isOpened) {
-        throw std::runtime_error("Дверь осталась открытой!");
+        throw std::runtime_error("door is open!");
     }
 }
 
@@ -34,7 +33,6 @@ void DoorTimerAdapter::Timeout() {
     door.throwState();
 }
 
-// Таймерный механизм
 void Timer::tregister(int timeout, TimerClient* client) {
     std::this_thread::sleep_for(std::chrono::seconds(timeout));
     client->Timeout();
