@@ -1,8 +1,8 @@
 // Copyright 2021 GHA Test Team
 
-#include "../include/TimedDoor.h"
-#include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
+#include "../include/TimedDoor.h"
 
 using ::testing::_;
 using ::testing::Invoke;
