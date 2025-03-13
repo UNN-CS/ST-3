@@ -2,6 +2,7 @@
 #include "../include/TimedDoor.h"
 #include <thread>
 #include <chrono>
+#include <stdexcept>
 
 TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {}
 
