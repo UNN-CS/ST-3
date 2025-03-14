@@ -6,20 +6,20 @@
 #include "TimedDoor.h"
 
 class MockTimer : public Timer {
-public:
+ public:
     MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
     void sleep(int) override {} // Пустая реализация для тестов
 };
 
 class MockDoor : public Door {
-public:
+ public:
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
     TimedDoor* door;
     MockTimer* mockTimer;
     const int timeout = 5;
@@ -84,7 +84,7 @@ TEST(DoorTimerAdapterTest, NoTimeoutWhenLockedTest) {
 }
 
 class MockTimerClient : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
