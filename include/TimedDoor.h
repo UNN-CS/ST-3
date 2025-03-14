@@ -46,7 +46,8 @@ class Timer {
   TimerClient *client;
   void sleep(int);
  public:
-  void tregister(int, TimerClient*);
+  virtual void tregister(int, TimerClient*);
+  virtual ~Timer() = default;
 };
 
 #endif  // INCLUDE_TIMEDDOOR_H_
