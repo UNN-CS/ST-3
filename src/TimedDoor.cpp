@@ -10,8 +10,16 @@ void DoorTimerAdapter::Timeout() {
     door.throwState();
 }
 
-TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
+TimedDoor::TimedDoor(int timeout, Timer* t) : iTimeout(timeout), isOpened(false) {
     adapter = new DoorTimerAdapter(*this);
+    timer = t ? t : new Timer();
+}
+
+TimedDoor::~TimedDoor() {
+    delete adapter;
+    if (timer) {
+        delete timer;
+    }
 }
 
 bool TimedDoor::isDoorOpened() {
@@ -20,8 +28,7 @@ bool TimedDoor::isDoorOpened() {
 
 void TimedDoor::unlock() {
     isOpened = true;
-    Timer timer;
-    timer.tregister(iTimeout, adapter);
+    timer->tregister(iTimeout, adapter);
 }
 
 void TimedDoor::lock() {

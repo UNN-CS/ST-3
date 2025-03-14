@@ -8,8 +8,7 @@
 class MockTimer : public Timer {
 public:
     MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
-    // Переопределяем sleep, чтобы он ничего не делал в тестах
-    void sleep(int) override {}
+    void sleep(int) override {} // Пустая реализация для тестов
 };
 
 class MockDoor : public Door {
@@ -22,14 +21,16 @@ public:
 class TimedDoorTest : public ::testing::Test {
 protected:
     TimedDoor* door;
+    MockTimer* mockTimer;
     const int timeout = 5;
 
     void SetUp() override {
-        door = new TimedDoor(timeout);
+        mockTimer = new MockTimer();
+        door = new TimedDoor(timeout, mockTimer);
     }
 
     void TearDown() override {
-        delete door;
+        delete door; // mockTimer будет удален в деструкторе TimedDoor
     }
 };
 
@@ -39,6 +40,7 @@ TEST_F(TimedDoorTest, InitialStateTest) {
 }
 
 TEST_F(TimedDoorTest, LockTest) {
+    EXPECT_CALL(*mockTimer, tregister(timeout, testing::_)).Times(1);
     door->unlock();
     EXPECT_TRUE(door->isDoorOpened());
     door->lock();
@@ -46,6 +48,7 @@ TEST_F(TimedDoorTest, LockTest) {
 }
 
 TEST_F(TimedDoorTest, UnlockTest) {
+    EXPECT_CALL(*mockTimer, tregister(timeout, testing::_)).Times(1);
     door->unlock();
     EXPECT_TRUE(door->isDoorOpened());
 }
@@ -65,14 +68,16 @@ TEST_F(TimedDoorTest, NoExceptionWhenLockedTest) {
 }
 
 TEST(DoorTimerAdapterTest, TimeoutCallTest) {
-    TimedDoor door(5);
+    MockTimer* mockTimer = new MockTimer();
+    TimedDoor door(5, mockTimer);
     DoorTimerAdapter adapter(door);
     door.unlock();
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
 
 TEST(DoorTimerAdapterTest, NoTimeoutWhenLockedTest) {
-    TimedDoor door(5);
+    MockTimer* mockTimer = new MockTimer();
+    TimedDoor door(5, mockTimer);
     DoorTimerAdapter adapter(door);
     door.lock();
     EXPECT_NO_THROW(adapter.Timeout());
