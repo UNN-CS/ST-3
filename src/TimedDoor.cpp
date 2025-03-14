@@ -7,9 +7,7 @@
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
 
 void DoorTimerAdapter::Timeout() {
-    if (door.isDoorOpened()) {
-        door.throwState();
-    }
+    door.throwState();
 }
 
 TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
@@ -35,7 +33,9 @@ int TimedDoor::getTimeOut() const {
 }
 
 void TimedDoor::throwState() {
-    throw std::runtime_error("Door has been opened for too long!");
+    if (isOpened) {
+        throw std::runtime_error("Door has been opened for too long!");
+    }
 }
 
 void Timer::sleep(int seconds) {

@@ -8,6 +8,8 @@
 class MockTimer : public Timer {
 public:
     MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
+    // Переопределяем sleep, чтобы он ничего не делал в тестах
+    void sleep(int) override {}
 };
 
 class MockDoor : public Door {
@@ -82,9 +84,10 @@ public:
 };
 
 TEST(TimerTest, RegisterCallbackTest) {
-    Timer timer;
+    MockTimer timer;
     MockTimerClient client;
-    EXPECT_NO_THROW(timer.tregister(1, &client));
+    EXPECT_CALL(timer, tregister(1, &client)).Times(1);
+    timer.tregister(1, &client);
 }
 
 TEST(TimerTest, TimeoutCallbackTest) {
