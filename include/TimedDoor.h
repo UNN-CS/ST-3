@@ -26,11 +26,12 @@ class DoorTimerAdapter : public TimerClient {
  public:
   explicit DoorTimerAdapter(TimedDoor&);
   void Timeout();
+  friend class Timer;
 };
 
 class TimedDoor : public Door {
  private:
-  DoorTimerAdapter * adapter;
+  DoorTimerAdapter* adapter;
   int iTimeout;
   bool isOpened;
  public:
@@ -43,7 +44,7 @@ class TimedDoor : public Door {
 };
 
 class Timer {
-  TimerClient *client;
+  TimerClient* client;
   void sleep(int);
  public:
   void tregister(int, TimerClient*);
