@@ -71,7 +71,7 @@ TEST_F(TimedDoorTestFixture, NoThrowStateWhenClosed) {
 }
 
 TEST(TimerTest, RegisterTest) {
-    MockTimerClient mockClient;
+    TimerClient mockClient;
     EXPECT_CALL(mockClient, Timeout()).Times(1);
     Timer timer;
     timer.tregister(1, &mockClient);
