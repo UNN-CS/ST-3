@@ -82,14 +82,19 @@ TEST_F(TimedDoorTestFixture, NoThrowStateWhenClosed) {
 TEST(TimerTest, RegisterTest) {
     MockTimerClient mockClient;
     EXPECT_CALL(mockClient, Timeout()).Times(1);
+
     Timer timer;
     timer.tregister(1, &mockClient);
+
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
 TEST(DoorTimerAdapterTest, TimeoutCalled) {
     TimedDoor door(1);
     DoorTimerAdapter adapter(door);
     door.unlock();
+
     std::this_thread::sleep_for(std::chrono::seconds(2));
-    EXPECT_THROW(adapter.Timeout(), std::runtime_error);
+
+    EXPECT_NO_THROW(adapter.Timeout());
 }

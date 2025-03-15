@@ -42,7 +42,9 @@ int TimedDoor::getTimeOut() const {
 }
 
 void TimedDoor::throwState() {
-    throw std::runtime_error("Door is still opened after timeout!");
+    if (isOpened) {
+        throw std::runtime_error("Door is still opened after timeout!");
+    }
 }
 
 void Timer::tregister(int timeout, TimerClient* client) {
