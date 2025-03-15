@@ -9,6 +9,11 @@ using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Return;
 
+class MockTimerClient : public TimerClient {
+ public:
+    MOCK_METHOD(void, Timeout, (), (override));
+};
+
 class TimedDoorTestFixture : public ::testing::Test {
  protected:
     void SetUp() override {
@@ -71,7 +76,7 @@ TEST_F(TimedDoorTestFixture, NoThrowStateWhenClosed) {
 }
 
 TEST(TimerTest, RegisterTest) {
-    TimerClient mockClient;
+    MockTimerClient mockClient;
     EXPECT_CALL(mockClient, Timeout()).Times(1);
     Timer timer;
     timer.tregister(1, &mockClient);
