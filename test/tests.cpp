@@ -9,15 +9,8 @@ using ::testing::_;
 using ::testing::AtLeast;
 using ::testing::Return;
 
-class MockDoor : public Door {
-public:
-    MOCK_METHOD(void, lock, (), (override));
-    MOCK_METHOD(void, unlock, (), (override));
-    MOCK_METHOD(bool, isDoorOpened, (), (override));
-};
-
 class MockTimerClient : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
@@ -44,10 +37,9 @@ TEST(TimedDoorTest, NoTimeoutWhenLocked) {
 }
 
 TEST(DoorTimerAdapterTest, TimeoutCalled) {
-    MockDoor mockDoor;
-    EXPECT_CALL(mockDoor, isDoorOpened()).WillOnce(Return(true));
-    TimedDoor timedDoor(1);
-    DoorTimerAdapter adapter(timedDoor);
+    TimedDoor door(1);
+    DoorTimerAdapter adapter(door);
+    door.unlock();
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
 
