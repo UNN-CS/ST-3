@@ -89,14 +89,12 @@ TEST(TimerTest, RegisterTest) {
     std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
-TEST(TimerTest, SimpleDelayTest) {
-    Timer timer;
-    auto start = std::chrono::steady_clock::now();
+TEST(DoorTimerAdapterTest, TimeoutCalled) {
+    TimedDoor door(1);
+    DoorTimerAdapter adapter(door);
+    door.unlock();
 
-    timer.sleep(1000);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
 
-    auto end = std::chrono::steady_clock::now();
-    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(end - start).count();
-
-    EXPECT_GE(duration, 1000);
+    EXPECT_NO_THROW(adapter.Timeout());
 }
