@@ -10,7 +10,9 @@ DoorTimerAdapter::DoorTimerAdapter(TimedDoor& door) : door(door) {}
 void DoorTimerAdapter::Timeout() {
     if (door.isDoorOpened()) {
         door.lock();
-        door.throwState();
+        if (door.isDoorOpened()) {
+            door.throwState();
+        }
     }
 }
 
