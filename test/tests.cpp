@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <chrono>
+#include <memory>
 #include <cstdint>
 #include <thread>
 #include "../include/TimedDoor.h"
@@ -77,6 +78,19 @@ TEST_F(TimedDoorTestFixture, NoThrowStateWhenClosed) {
     door->unlock();
     door->lock();
     EXPECT_NO_THROW(door->throwState());
+}
+
+TEST(TimerTest, SimpleDelayTest) {
+    Timer timer;
+    auto start = std::chrono::steady_clock::now();
+
+    timer.sleep(1000);
+
+    auto end = std::chrono::steady_clock::now();
+    auto duration = std::chrono::duration_cast<std::chrono::milliseconds>
+        (end - start).count();
+
+    EXPECT_GE(duration, 1000);
 }
 
 TEST(TimerTest, RegisterTest) {
