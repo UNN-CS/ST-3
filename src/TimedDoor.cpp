@@ -12,7 +12,6 @@ void DoorTimerAdapter::Timeout() {
     }
 }
 
-// Реализация методов класса TimedDoor
 TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
     adapter = new DoorTimerAdapter(*this);
 }
@@ -39,7 +38,6 @@ void TimedDoor::throwState() {
     throw std::runtime_error("Door is still opened after timeout!");
 }
 
-// Реализация методов класса Timer
 void Timer::tregister(int timeout, TimerClient* client) {
     this->client = client;
     sleep(timeout);
@@ -47,7 +45,5 @@ void Timer::tregister(int timeout, TimerClient* client) {
 }
 
 void Timer::sleep(int timeout) {
-    // Здесь должна быть реализация задержки, например, с использованием std::this_thread::sleep_for
-    // Для простоты, мы просто симулируем задержку
     std::this_thread::sleep_for(std::chrono::seconds(timeout));
 }
