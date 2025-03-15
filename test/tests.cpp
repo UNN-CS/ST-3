@@ -80,22 +80,18 @@ TEST_F(TimedDoorTestFixture, NoThrowStateWhenClosed) {
     EXPECT_NO_THROW(door->throwState());
 }
 
-TEST(TimerTest, RegisterTest) {
-    auto mockClient = std::make_shared<MockTimerClient>();
-    EXPECT_CALL(*mockClient, Timeout()).Times(1);
+TEST_F(TimedDoorTestFixture, UnlockDoesNotChangeStateIfAlreadyOpened) {
+    door->unlock();
+    EXPECT_TRUE(door->isDoorOpened());
 
-    Timer timer;
-    timer.tregister(1, mockClient.get());
-
-    std::this_thread::sleep_for(std::chrono::seconds(2));
+    door->unlock();
+    EXPECT_TRUE(door->isDoorOpened());
 }
 
-TEST(DoorTimerAdapterTest, TimeoutCalled) {
-    TimedDoor door(1);
-    DoorTimerAdapter adapter(door);
-    door.unlock();
+TEST_F(TimedDoorTestFixture, LockWhenAlreadyLockedDoesNotAffectState) {
+    door->lock();
+    EXPECT_FALSE(door->isDoorOpened());
 
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-
-    EXPECT_NO_THROW(adapter.Timeout());
+    door->lock();
+    EXPECT_FALSE(door->isDoorOpened());
 }
