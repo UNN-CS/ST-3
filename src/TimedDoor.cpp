@@ -4,23 +4,17 @@
 #include <chrono>
 #include <stdexcept>
 
-DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
+DoorTimerAdapter::DoorTimerAdapter(TimedDoor& door) : door(door) {}
 
 void DoorTimerAdapter::Timeout() {
-    door.throwState();
-}
-
-TimedDoor::TimedDoor(int timeout, Timer* t)
-: iTimeout(timeout), isOpened(false) {
-    adapter = new DoorTimerAdapter(*this);
-    timer = t ? t : new Timer();
-}
-
-TimedDoor::~TimedDoor() {
-    delete adapter;
-    if (timer) {
-        delete timer;
+    if (door.isDoorOpened()) {
+        door.throwState();
     }
+}
+
+// Реализация методов класса TimedDoor
+TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
+    adapter = new DoorTimerAdapter(*this);
 }
 
 bool TimedDoor::isDoorOpened() {
@@ -29,7 +23,8 @@ bool TimedDoor::isDoorOpened() {
 
 void TimedDoor::unlock() {
     isOpened = true;
-    timer->tregister(iTimeout, adapter);
+    Timer timer;
+    timer.tregister(iTimeout, adapter);
 }
 
 void TimedDoor::lock() {
@@ -41,17 +36,18 @@ int TimedDoor::getTimeOut() const {
 }
 
 void TimedDoor::throwState() {
-    if (isOpened) {
-        throw std::runtime_error("Door has been opened for too long!");
-    }
+    throw std::runtime_error("Door is still opened after timeout!");
 }
 
-void Timer::sleep(int seconds) {
-    std::this_thread::sleep_for(std::chrono::seconds(seconds));
-}
-
-void Timer::tregister(int timeout, TimerClient* timerClient) {
-    client = timerClient;
+// Реализация методов класса Timer
+void Timer::tregister(int timeout, TimerClient* client) {
+    this->client = client;
     sleep(timeout);
     client->Timeout();
+}
+
+void Timer::sleep(int timeout) {
+    // Здесь должна быть реализация задержки, например, с использованием std::this_thread::sleep_for
+    // Для простоты, мы просто симулируем задержку
+    std::this_thread::sleep_for(std::chrono::seconds(timeout));
 }
