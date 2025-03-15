@@ -2,10 +2,10 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <chrono> 
+#include <chrono>
 #include <cstdint>
 #include <thread>
-#include "TimedDoor.h"
+#include "../include/TimedDoor.h"
 
 using ::testing::_;
 using ::testing::AtLeast;
