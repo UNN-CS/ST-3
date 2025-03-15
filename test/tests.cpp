@@ -2,7 +2,9 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <chrono> 
 #include <cstdint>
+#include <thread>
 #include "TimedDoor.h"
 
 using ::testing::_;
