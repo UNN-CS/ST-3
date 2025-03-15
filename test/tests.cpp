@@ -40,6 +40,7 @@ TEST_F(TimedDoorTestFixture, DoorLockUnlockTest) {
 
 TEST_F(TimedDoorTestFixture, TimeoutTest) {
     door->unlock();
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     EXPECT_THROW(door->throwState(), std::runtime_error);
 }
 
@@ -51,6 +52,7 @@ TEST_F(TimedDoorTestFixture, NoTimeoutWhenLocked) {
 
 TEST_F(TimedDoorTestFixture, AdapterTimeout) {
     door->unlock();
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     EXPECT_THROW(adapter->Timeout(), std::runtime_error);
 }
 
@@ -86,5 +88,6 @@ TEST(DoorTimerAdapterTest, TimeoutCalled) {
     TimedDoor door(1);
     DoorTimerAdapter adapter(door);
     door.unlock();
+    std::this_thread::sleep_for(std::chrono::seconds(2));
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
