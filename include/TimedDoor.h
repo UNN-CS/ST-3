@@ -30,7 +30,7 @@ class DoorTimerAdapter : public TimerClient {
 
 class TimedDoor : public Door {
  private:
-  DoorTimerAdapter * adapter;
+  DoorTimerAdapter* adapter;
   int iTimeout;
   bool isOpened;
  public:
