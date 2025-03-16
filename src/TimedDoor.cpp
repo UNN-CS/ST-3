@@ -3,10 +3,12 @@
 #include "TimedDoor.h"
 #include <thread>
 #include <chrono>
+#include <string>
 #include <stdexcept>
 #include <memory>
 
-DoorTimerAdapter::DoorTimerAdapter(TimedDoor& door) : door(door) {}
+DoorTimerAdapter::DoorTimerAdapter(TimedDoor& door) 
+    : door(door) {}
 
 void DoorTimerAdapter::Timeout() {
     if (door.isDoorOpened()) {
