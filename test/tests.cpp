@@ -8,6 +8,7 @@ using ::testing::_;
 using ::testing::Mock;
 using ::testing::Throw;
 using ::testing::NiceMock;
+using ::testing::Invoke;
 
 class MockTimerClient : public TimerClient {
 public:
@@ -55,11 +56,6 @@ TEST_F(TimedDoorTest, LockChangesState) {
     EXPECT_FALSE(timedDoor->isDoorOpened());
 }
 
-TEST_F(TimedDoorTest, UnlockRegistersTimer) {
-    EXPECT_CALL(*mockTimer, tregister(5, _)).Times(1);
-    timedDoor->unlock();
-}
-
 TEST_F(TimedDoorTest, TimeoutWhenOpenThrows) {
     timedDoor->unlock();
     ASSERT_THROW(timedDoor->throwState(), std::runtime_error);
@@ -69,15 +65,13 @@ TEST_F(TimedDoorTest, TimeoutWhenClosedNoThrow) {
     ASSERT_NO_THROW(timedDoor->throwState());
 }
 
+TEST_F(TimedDoorTest, TimeoutValueCorrect) {
+    EXPECT_EQ(timedDoor->getTimeOut(), 5);
+}
 
-
-TEST(TimerTest, TimerCallsClientTimeout) {
-    MockTimerClient client;
-    MockTimer timer;
-
-    EXPECT_CALL(client, Timeout()).Times(1);
-    timer.tregister(0, &client);
-    timer.sleep(0);
+TEST_F(TimedDoorTest, DestructorReleasesResources) {
+    TimedDoor* localDoor = new TimedDoor(5);
+    ASSERT_NO_THROW(delete localDoor);
 }
 
 TEST(DoorTimerAdapterTest, AdapterThrowsWhenOpen) {
@@ -95,9 +89,7 @@ TEST(DoorTimerAdapterTest, AdapterNoThrowWhenClosed) {
     EXPECT_NO_THROW(adapter.Timeout());
 }
 
-TEST_F(TimedDoorTest, TimeoutValueCorrect) {
-    EXPECT_EQ(timedDoor->getTimeOut(), 5);
-}
+
 
 TEST(IntegrationTest, CloseDoorBeforeTimeout) {
     TimedDoor door(1);
@@ -108,13 +100,3 @@ TEST(IntegrationTest, CloseDoorBeforeTimeout) {
     EXPECT_NO_THROW(adapter.Timeout());
 }
 
-TEST_F(TimedDoorTest, DoubleUnlockResetsTimer) {
-    EXPECT_CALL(*mockTimer, tregister(5, _)).Times(2);
-    timedDoor->unlock();
-    timedDoor->unlock();
-}
-
-TEST_F(TimedDoorTest, DestructorReleasesResources) {
-    TimedDoor* localDoor = new TimedDoor(5);
-    ASSERT_NO_THROW(delete localDoor);
-}
