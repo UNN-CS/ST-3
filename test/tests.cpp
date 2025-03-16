@@ -21,8 +21,8 @@ public:
 };
 class MockTimer : public Timer {
 public:
-    MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
-    MOCK_METHOD(void, sleep, (int), (override));
+    MOCK_METHOD(void, tregister, (int, TimerClient*), ());
+    MOCK_METHOD(void, sleep, (int), ());
 };
 class TimedDoorTest : public ::testing::Test {
 protected:
