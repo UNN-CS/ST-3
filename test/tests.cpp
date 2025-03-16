@@ -106,7 +106,7 @@ using ::testing::Expectation;
 
 TEST(MockDoorTest, DoorOpenCloseCalls) {
   MockDoor door;
-  
+
   Expectation exp1 = EXPECT_CALL(door, unlock());
   Expectation exp2 = EXPECT_CALL(door, lock());
   EXPECT_CALL(door, isDoorOpened()).After(exp1, exp2);
