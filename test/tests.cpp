@@ -22,7 +22,7 @@ public:
 class MockTimer : public Timer {
 public:
     MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
-    MOCK_METHOD(void, sleep, (int), ());
+    MOCK_METHOD(void, sleep, (int), (override));
 };
 class TimedDoorTest : public ::testing::Test {
 protected:
