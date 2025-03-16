@@ -10,8 +10,7 @@ void DoorTimerAdapter::Timeout() {
   door.throwState();
 }
 
-TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false),
-     adapter(new DoorTimerAdapter(*this)) {}
+TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {}
 
 bool TimedDoor::isDoorOpened() {
   return isOpened;
@@ -36,10 +35,6 @@ void TimedDoor::throwState() {
 }
 
 void Timer::tregister(int timeout, TimerClient* client) {
-  std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
+  std::this_thread::sleep_for(std::chrono::seconds(timeout));
   client->Timeout();
-}
-
-TimedDoor::~TimedDoor() {
-  delete adapter;
 }
