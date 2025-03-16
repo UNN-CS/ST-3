@@ -11,22 +11,22 @@ using ::testing::NiceMock;
 using ::testing::Invoke;
 
 class MockTimerClient : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 class MockDoor : public Door {
-public:
+ public:
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 class MockTimer : public Timer {
-public:
+ public:
     MOCK_METHOD(void, tregister, (int, TimerClient*), ());
     MOCK_METHOD(void, sleep, (int), ());
 };
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
     void SetUp() override {
         timedDoor = new TimedDoor(5);
         mockTimer = new NiceMock<MockTimer>();
@@ -99,4 +99,3 @@ TEST(IntegrationTest, CloseDoorBeforeTimeout) {
     DoorTimerAdapter adapter(door);
     EXPECT_NO_THROW(adapter.Timeout());
 }
-
