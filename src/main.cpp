@@ -3,9 +3,16 @@
 #include <iostream>
 
 int main() {
-  TimedDoor tDoor(5);
-  tDoor.lock();
-  tDoor.unlock();
+  try {
+    TimedDoor tDoor(5000);
+    Timer timer;
+
+    tDoor.unlock();
+    timer.tregister(tDoor.getTimeOut(),
+                    tDoor.getAdapter());
+  } catch (const std::runtime_error &e) {
+    std::cerr << "Exception: " << e.what() << std::endl;
+  }
 
   return 0;
 }
