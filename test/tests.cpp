@@ -20,19 +20,17 @@ class MockDoor : public Door {
     MOCK_METHOD(void, unlock, (), (override));
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
-   
+
 class TimedDoorTest : public ::testing::Test {
  protected:
     TimedDoor* door;
     DoorTimerAdapter* adapter;
     Timer* timer;
-   
     void SetUp() override {
         door = new TimedDoor(5);
         adapter = new DoorTimerAdapter(*door);
         timer = new Timer();
     }
-   
     void TearDown() override {
         delete door;
         delete adapter;
@@ -69,7 +67,7 @@ TEST_F(TimedDoorTest, TimerRegistersTimeoutCorrectly) {
     MockTimerClient mockClient;
     Timer timer;
     EXPECT_CALL(mockClient, Timeout()).Times(1);
-    timer->tregister(1, &mockClient);
+    timer.tregister(1, &mockClient);
 }
 
 TEST_F(TimedDoorTest, DoorTimeoutValueIsCorrect) {
