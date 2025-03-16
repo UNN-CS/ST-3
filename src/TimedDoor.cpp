@@ -12,7 +12,7 @@ DoorTimerAdapter::DoorTimerAdapter(TimedDoor& door)
 
 void DoorTimerAdapter::Timeout() {
     if (door.isDoorOpened()) {
-        throw std::runtime_error("Security alert: Door has been open too long!");
+        throw std::runtime_error("Door has been open too long!");
     }
 }
 
