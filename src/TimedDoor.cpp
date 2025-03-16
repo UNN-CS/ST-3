@@ -3,7 +3,6 @@
 #include <stdexcept>
 #include <thread>
 
-// DoorTimerAdapter implementation
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& door) : door(door) {}
 
 void DoorTimerAdapter::Timeout() {
@@ -12,10 +11,7 @@ void DoorTimerAdapter::Timeout() {
     }
 }
 
-// TimedDoor implementation
-TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
-    adapter = new DoorTimerAdapter(*this);
-}
+TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {}
 
 bool TimedDoor::isDoorOpened() {
     return isOpened;
@@ -23,8 +19,6 @@ bool TimedDoor::isDoorOpened() {
 
 void TimedDoor::unlock() {
     isOpened = true;
-    Timer timer;
-    timer.tregister(iTimeout, adapter);
 }
 
 void TimedDoor::lock() {
@@ -41,13 +35,10 @@ void TimedDoor::throwState() {
     }
 }
 
-// Timer implementation
 void Timer::tregister(int timeout, TimerClient* client) {
     this->client = client;
     sleep(timeout);
-    if (client) {
-        client->Timeout();
-    }
+    client->Timeout();
 }
 
 void Timer::sleep(int timeout) {
