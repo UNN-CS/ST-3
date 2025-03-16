@@ -88,7 +88,7 @@ TEST_F(korablev_v_timed_door_test, Test_Door_ThrowStateAfterTimeout) {
     EXPECT_ANY_THROW(door.throwState());
 }
 
-TEST_F(korablev_v_timed_door_test, Test_Door_LockBeforeTimeout) {
+TEST_F(korablev_v_timed_door_test, Test_Door_LockBeforeTimeout_T) {
     door.unlock();
     timer.tregister(door.getTimeOut(), timerClient);
     std::this_thread::sleep_for(std::chrono::seconds(3));
