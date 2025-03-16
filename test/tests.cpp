@@ -38,9 +38,7 @@ class TimedDoorTest : public ::testing::Test {
   }
 };
 
-TEST_F(TimedDoorTest, DoorClosedInit) {
-  EXPECT_FALSE(door->isDoorOpened());
-}
+TEST_F(TimedDoorTest, DoorClosedInit) { EXPECT_FALSE(door->isDoorOpened()); }
 
 TEST_F(TimedDoorTest, DoorCloseAfterInit) {
   door->lock();
@@ -56,9 +54,7 @@ TEST_F(TimedDoorTest, DoorOpenCloseCycle) {
   }
 }
 
-TEST_F(TimedDoorTest, GetTimeout) {
-  EXPECT_EQ(door->getTimeOut(), 1000);
-}
+TEST_F(TimedDoorTest, GetTimeout) { EXPECT_EQ(door->getTimeOut(), 1000); }
 
 TEST_F(TimedDoorTest, DirectThrow) {
   EXPECT_THROW(door->throwState(), std::runtime_error);
@@ -71,7 +67,8 @@ TEST_F(TimedDoorTest, TimeoutThrow) {
 
 TEST_F(TimedDoorTest, TimeoutThrowFR) {
   door->unlock();
-  EXPECT_THROW(timer->tregister(door->getTimeOut(), adapter), std::runtime_error);
+  EXPECT_THROW(timer->tregister(door->getTimeOut(), adapter),
+               std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, CloseBeforeTimer) {
@@ -84,7 +81,7 @@ TEST(MockTimerTest, TimeoutCalls) {
   MockTimerClient timerClient;
   Timer timer;
 
-  EXPECT_CALL(timerClient, Timeout()).Times(1);
+  EXPECT_CALL(timerClient, Timeout());
   timer.tregister(200, &timerClient);
 }
 
@@ -103,4 +100,18 @@ TEST(MockDoorTest, DoorOpenCloseCycleCalls) {
     door.unlock();
     door.lock();
   }
+}
+
+using ::testing::Expectation;
+
+TEST(MockDoorTest, DoorOpenCloseCalls) {
+  MockDoor door;
+  
+  Expectation exp1 = EXPECT_CALL(door, unlock());
+  Expectation exp2 = EXPECT_CALL(door, lock());
+  EXPECT_CALL(door, isDoorOpened()).After(exp1, exp2);
+
+  door.unlock();
+  door.lock();
+  door.isDoorOpened();
 }
