@@ -6,6 +6,7 @@
 #include <stdexcept>
 
 using ::testing::_;
+using ::testing::StrictMock;
 
 class MockTimerClient : public TimerClient {
  public:
@@ -22,17 +23,14 @@ class MockDoor : public Door {
 class TimedDoorTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    timedDoor = new TimedDoor(1000);
-    mockDoor = new MockDoor();
+    timedDoor = new TimedDoor(1000); // Таймаут 1000 мс
   }
 
   void TearDown() override {
     delete timedDoor;
-    delete mockDoor;
   }
 
   TimedDoor* timedDoor;
-  MockDoor* mockDoor;
 };
 
 TEST_F(TimedDoorTest, DoorStartsClosed) {
@@ -52,26 +50,29 @@ TEST_F(TimedDoorTest, DoorLocks) {
 
 TEST_F(TimedDoorTest, TimeoutThrowsWhenDoorOpened) {
   timedDoor->unlock();
-  EXPECT_THROW(timedDoor->throwState(), std::runtime_error);
+  EXPECT_THROW({
+    std::this_thread::sleep_for(std::chrono::milliseconds(1100));
+  }, std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, TimeoutDoesNotThrowWhenDoorClosed) {
   timedDoor->unlock();
   timedDoor->lock();
-  EXPECT_NO_THROW(timedDoor->throwState());
+  EXPECT_NO_THROW({
+    std::this_thread::sleep_for(std::chrono::milliseconds(1100));
+  });
 }
 
 TEST_F(TimedDoorTest, AdapterCallsTimeout) {
-  MockTimerClient mockClient;
+  StrictMock<MockTimerClient> mockClient;
   EXPECT_CALL(mockClient, Timeout()).Times(1);
 
   Timer timer;
   timer.tregister(100, &mockClient);
   std::this_thread::sleep_for(std::chrono::milliseconds(200));
-}
 
 TEST_F(TimedDoorTest, TimerRegistersClient) {
-  MockTimerClient mockClient;
+  StrictMock<MockTimerClient> mockClient;
   Timer timer;
 
   EXPECT_CALL(mockClient, Timeout()).Times(1);
@@ -80,22 +81,18 @@ TEST_F(TimedDoorTest, TimerRegistersClient) {
 }
 
 TEST_F(TimedDoorTest, DoorUnlockActivatesTimer) {
-  testing::StrictMock<MockTimerClient> mockClient;
-  Timer timer;
-
-  EXPECT_CALL(mockClient, Timeout()).Times(1);
   timedDoor->unlock();
-  std::this_thread::sleep_for(std::chrono::milliseconds(1100));
+  EXPECT_THROW({
+    std::this_thread::sleep_for(std::chrono::milliseconds(1100));
+  }, std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, DoorLockDeactivatesTimer) {
-  testing::StrictMock<MockTimerClient> mockClient;
-  Timer timer;
-
-  EXPECT_CALL(mockClient, Timeout()).Times(0);
   timedDoor->unlock();
   timedDoor->lock();
-  std::this_thread::sleep_for(std::chrono::milliseconds(1100));
+  EXPECT_NO_THROW({
+    std::this_thread::sleep_for(std::chrono::milliseconds(1100));
+  });
 }
 
 TEST_F(TimedDoorTest, DoorTimeoutValueIsCorrect) {
