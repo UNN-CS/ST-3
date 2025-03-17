@@ -7,24 +7,24 @@
 #include "TimedDoor.h"
 
 class MockTimer : public Timer {
-public:
+ public:
     MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
 };
 
 class MockDoorTimerAdapter : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class MockDoor : public Door {
-public:
+ public:
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
     void SetUp() override {
         timedDoor = new TimedDoor(5);
     }
@@ -83,7 +83,7 @@ TEST_F(TimedDoorTest, MinimumTimeoutTest) {
 }
 
 class DoorTimerAdapterTest : public ::testing::Test {
-protected:
+ protected:
     void SetUp() override {
         mockTimer = new MockTimer();
     }
@@ -101,7 +101,7 @@ TEST_F(DoorTimerAdapterTest, TimerRegisterTest) {
 }
 
 class TimerClientTest : public ::testing::Test {
-protected:
+ protected:
     void SetUp() override {
         door = new TimedDoor(5);
         adapter = new DoorTimerAdapter(*door);
@@ -127,7 +127,7 @@ TEST_F(TimerClientTest, TimeoutWithClosedDoorTest) {
 }
 
 class TimerAdapterInteractionTest : public ::testing::Test {
-protected:
+ protected:
     void SetUp() override {
         mockTimerClient = new MockDoorTimerAdapter();
     }
@@ -141,7 +141,7 @@ protected:
 
 TEST_F(TimerAdapterInteractionTest, TimerCallsTimeoutTest) {
     class TestTimer : public Timer {
-    public:
+     public:
         void tregister(int /*seconds*/, TimerClient* timerClient) {
             if (timerClient) {
                 timerClient->Timeout();

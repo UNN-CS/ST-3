@@ -5,7 +5,7 @@
 #include <thread>
 #include <iostream>
 
-DoorTimerAdapter::DoorTimerAdapter(TimedDoor &timedDoor) : door(timedDoor) {}
+DoorTimerAdapter::DoorTimerAdapter(const TimedDoor &timedDoor) : door(timedDoor) {}
 
 void DoorTimerAdapter::Timeout() {
     if (door.isDoorOpened()) {
@@ -35,13 +35,13 @@ TimedDoor::~TimedDoor() {
     delete adapter;
 }
 
-void TimedDoor::throwState() {
+void TimedDoor::throwState() const {
     if (isOpened) {
         throw std::runtime_error("Door has been open for too long!");
     }
 }
 
-bool TimedDoor::isDoorOpened() {
+bool TimedDoor::isDoorOpened() const {
     return isOpened;
 }
 
