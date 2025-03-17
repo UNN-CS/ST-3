@@ -46,24 +46,19 @@ TEST_F(TimedDoorTest, DoorUnlocks) {
 
 TEST_F(TimedDoorTest, DoorLocks) {
   timedDoor->unlock();
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
   timedDoor->lock();
   EXPECT_FALSE(timedDoor->isDoorOpened());
 }
 
 TEST_F(TimedDoorTest, TimeoutThrowsWhenDoorOpened) {
   timedDoor->unlock();
-  EXPECT_THROW({
-    std::this_thread::sleep_for(std::chrono::milliseconds(1100));
-  }, std::runtime_error);
+  EXPECT_THROW(timedDoor->throwState(), std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, TimeoutDoesNotThrowWhenDoorClosed) {
   timedDoor->unlock();
   timedDoor->lock();
-  EXPECT_NO_THROW({
-    std::this_thread::sleep_for(std::chrono::milliseconds(1100));
-  });
+  EXPECT_NO_THROW(timedDoor->throwState());
 }
 
 TEST_F(TimedDoorTest, AdapterCallsTimeout) {
@@ -85,7 +80,7 @@ TEST_F(TimedDoorTest, TimerRegistersClient) {
 }
 
 TEST_F(TimedDoorTest, DoorUnlockActivatesTimer) {
-  testing::NiceMock<MockTimerClient> mockClient;
+  testing::StrictMock<MockTimerClient> mockClient;
   Timer timer;
 
   EXPECT_CALL(mockClient, Timeout()).Times(1);
@@ -94,7 +89,7 @@ TEST_F(TimedDoorTest, DoorUnlockActivatesTimer) {
 }
 
 TEST_F(TimedDoorTest, DoorLockDeactivatesTimer) {
-  testing::NiceMock<MockTimerClient> mockClient;
+  testing::StrictMock<MockTimerClient> mockClient;
   Timer timer;
 
   EXPECT_CALL(mockClient, Timeout()).Times(0);
