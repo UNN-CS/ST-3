@@ -1,5 +1,4 @@
 // Copyright 2021 GHA Test Team
-
 #ifndef INCLUDE_TIMEDDOOR_H_
 #define INCLUDE_TIMEDDOOR_H_
 
