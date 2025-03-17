@@ -103,7 +103,6 @@ class DoorTimerAdapterTest : public ::testing::Test {
 
 TEST_F(DoorTimerAdapterTest, TimerRegisterTest) {
   EXPECT_CALL(*mockTimer, tregister(10, testing::_)).Times(1);
-  
   if (mockTimer) {
     mockTimer->tregister(10, nullptr);
   }

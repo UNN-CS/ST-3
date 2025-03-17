@@ -10,7 +10,9 @@
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor &timedDoor) : door(timedDoor) {}
 
 void DoorTimerAdapter::Timeout() {
-  if (door.isDoorOpened()) {door.throwState();}
+  if (door.isDoorOpened()) {
+    door.throwState();
+  }
 }
 
 TimedDoor::TimedDoor(int timeout) : isOpened(false) {
@@ -23,7 +25,7 @@ TimedDoor::TimedDoor(int timeout) : isOpened(false) {
 
 void TimedDoor::unlock() {
   if (iTimeout <= 0) {
-    throw std::invalid_argument("Timeout must be greater than 0 to unlock the door");
+    throw std::invalid_argument("Timeout must be greater than 0");
   }
   isOpened = true;
   auto timer = std::make_shared<Timer>();
