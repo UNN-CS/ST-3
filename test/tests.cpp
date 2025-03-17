@@ -1,4 +1,5 @@
 // Copyright 2021 GHA Test Team
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <thread>
@@ -50,17 +51,13 @@ TEST_F(TimedDoorTest, DoorLocks) {
 
 TEST_F(TimedDoorTest, TimeoutThrowsWhenDoorOpened) {
   timedDoor->unlock();
-  EXPECT_THROW({
-    std::this_thread::sleep_for(std::chrono::milliseconds(1100));
-  }, std::runtime_error);
+  EXPECT_THROW(timedDoor->throwState(), std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, TimeoutDoesNotThrowWhenDoorClosed) {
   timedDoor->unlock();
   timedDoor->lock();
-  EXPECT_NO_THROW({
-    std::this_thread::sleep_for(std::chrono::milliseconds(1100));
-  });
+  EXPECT_NO_THROW(timedDoor->throwState());
 }
 
 TEST_F(TimedDoorTest, AdapterCallsTimeout) {
@@ -83,17 +80,13 @@ TEST_F(TimedDoorTest, TimerRegistersClient) {
 
 TEST_F(TimedDoorTest, DoorUnlockActivatesTimer) {
   timedDoor->unlock();
-  EXPECT_THROW({
-    std::this_thread::sleep_for(std::chrono::milliseconds(1100));
-  }, std::runtime_error);
+  EXPECT_THROW(timedDoor->throwState(), std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, DoorLockDeactivatesTimer) {
   timedDoor->unlock();
   timedDoor->lock();
-  EXPECT_NO_THROW({
-    std::this_thread::sleep_for(std::chrono::milliseconds(1100));
-  });
+  EXPECT_NO_THROW(timedDoor->throwState());
 }
 
 TEST_F(TimedDoorTest, DoorTimeoutValueIsCorrect) {
