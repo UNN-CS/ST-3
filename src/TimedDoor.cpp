@@ -1,79 +1,75 @@
 // Copyright 2021 GHA Test Team
-
 #include "TimedDoor.h"
 #include <chrono>
 #include <stdexcept>
 #include <thread>
-#include <memory>
 #include <iostream>
 
-DoorTimerAdapter::DoorTimerAdapter(const TimedDoor& door) : door(door) {}
+DoorTimerAdapter::DoorTimerAdapter(TimedDoor &timedDoor) : door(timedDoor) {}
 
 void DoorTimerAdapter::Timeout() {
-  if (door.isDoorOpened()) {
-    const_cast<TimedDoor&>(door).throwState();
-  }
+    if (door.isDoorOpened()) {
+        door.throwState();
+    }
 }
 
 TimedDoor::TimedDoor(int timeout) : isOpened(false) {
-  if (timeout <= 0) {
-    throw std::invalid_argument("Timeout must be greater than 0");
-  }
-  iTimeout = timeout;
-  adapter = new DoorTimerAdapter(*this);
+    if (timeout <= 0) {
+        throw std::invalid_argument("Timeout must be greater than 0");
+    }
+    iTimeout = timeout;
+    adapter = new DoorTimerAdapter(*this);
 }
 
 void TimedDoor::unlock() {
-  if (iTimeout <= 0) {
-    throw std::invalid_argument("Timeout must be greater than 0");
-  }
-  isOpened = true;
-  timer.tregister(iTimeout, adapter);
+    isOpened = true;
+    Timer timer;
+    timer.tregister(iTimeout, adapter);
 }
 
 void TimedDoor::lock() {
-  isOpened = false;
+    isOpened = false;
 }
 
 TimedDoor::~TimedDoor() {
-  delete adapter;
+    delete adapter;
 }
 
 void TimedDoor::throwState() {
-  if (isOpened) {
-    throw std::runtime_error("Door is still opened after timeout!");
-  }
+    if (isOpened) {
+        throw std::runtime_error("Door has been open for too long!");
+    }
 }
 
-bool TimedDoor::isDoorOpened() const {
-  return isOpened;
+bool TimedDoor::isDoorOpened() {
+    return isOpened;
 }
 
 int TimedDoor::getTimeOut() const {
-  return iTimeout;
+    return iTimeout;
 }
 
-void Timer::sleep(int milliseconds) {
-  if (milliseconds > 0) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
-  }
+void Timer::tregister(int seconds, TimerClient *timerClient) {
+    client = timerClient;
+    std::thread timer_thread([seconds, timerClient]() {
+        if (seconds > 0) {
+            std::this_thread::sleep_for(std::chrono::seconds(seconds));
+        }
+
+        try {
+            if (timerClient) {
+                timerClient->Timeout();
+            }
+        } catch (const std::exception& e) {
+            std::cerr << "Exception in Timer thread: " << e.what() << std::endl;
+        }
+    });
+
+    timer_thread.detach();
 }
 
-void Timer::tregister(int milliseconds, TimerClient* client) {
-  this->client = client;
-  std::thread timer_thread([milliseconds, client]() {
-    if (milliseconds > 0) {
-      std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
+void Timer::sleep(int seconds) {
+    if (seconds > 0) {
+        std::this_thread::sleep_for(std::chrono::seconds(seconds));
     }
-
-    try {
-      if (client) {
-        client->Timeout();
-      }
-    } catch (const std::exception& e) {
-      std::cerr << "Exception in Timer thread: " << e.what() << std::endl;
-    }
-  });
-
-  timer_thread.detach();
 }
