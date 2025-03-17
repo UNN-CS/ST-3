@@ -21,6 +21,10 @@ TimedDoor::TimedDoor(int timeout) : isOpened(false) {
     adapter = new DoorTimerAdapter(*this);
 }
 
+TimedDoor::~TimedDoor() {
+    delete adapter;
+}
+
 void TimedDoor::unlock() {
     isOpened = true;
     Timer timer;
@@ -29,10 +33,6 @@ void TimedDoor::unlock() {
 
 void TimedDoor::lock() {
     isOpened = false;
-}
-
-TimedDoor::~TimedDoor() {
-    delete adapter;
 }
 
 void TimedDoor::throwState() const {

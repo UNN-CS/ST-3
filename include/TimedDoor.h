@@ -49,11 +49,12 @@ class TimedDoor : public Door {
 
  public:
   explicit TimedDoor(int timeout);
+  ~TimedDoor();
   bool isDoorOpened() const override;
   void unlock() override;
   void lock() override;
   int getTimeOut() const;
-  void throwState();
+  void throwState() const;
 };
 
 #endif  // INCLUDE_TIMEDDOOR_H_
