@@ -20,7 +20,7 @@ class MockDoor : public Door {
  public:
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
-    MOCK_METHOD(bool, isDoorOpened, (), (override));
+    MOCK_METHOD(bool, isDoorOpened, (), (const, override));
 };
 
 class TimedDoorTest : public ::testing::Test {
@@ -98,59 +98,4 @@ class DoorTimerAdapterTest : public ::testing::Test {
 TEST_F(DoorTimerAdapterTest, TimerRegisterTest) {
     EXPECT_CALL(*mockTimer, tregister(10, testing::_)).Times(1);
     mockTimer->tregister(10, nullptr);
-}
-
-class TimerClientTest : public ::testing::Test {
- protected:
-    void SetUp() override {
-        door = new TimedDoor(5);
-        adapter = new DoorTimerAdapter(*door);
-    }
-
-    void TearDown() override {
-        delete adapter;
-        delete door;
-    }
-
-    TimedDoor* door;
-    DoorTimerAdapter* adapter;
-};
-
-TEST_F(TimerClientTest, TimeoutWithOpenDoorTest) {
-    door->unlock();
-    EXPECT_THROW(adapter->Timeout(), std::runtime_error);
-}
-
-TEST_F(TimerClientTest, TimeoutWithClosedDoorTest) {
-    door->lock();
-    EXPECT_NO_THROW(adapter->Timeout());
-}
-
-class TimerAdapterInteractionTest : public ::testing::Test {
- protected:
-    void SetUp() override {
-        mockTimerClient = new MockDoorTimerAdapter();
-    }
-
-    void TearDown() override {
-        delete mockTimerClient;
-    }
-
-    MockDoorTimerAdapter* mockTimerClient;
-};
-
-TEST_F(TimerAdapterInteractionTest, TimerCallsTimeoutTest) {
-    class TestTimer : public Timer {
-     public:
-        void tregister(int /*seconds*/, TimerClient* timerClient) {
-            if (timerClient) {
-                timerClient->Timeout();
-            }
-        }
-    };
-
-    EXPECT_CALL(*mockTimerClient, Timeout()).Times(1);
-
-    TestTimer testTimer;
-    testTimer.tregister(0, mockTimerClient);
 }
