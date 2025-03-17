@@ -11,12 +11,12 @@ static bool exceptionThrown = false;
 
 class TestDoorTimerAdapter : public DoorTimerAdapter {
  private:
-    TimedDoor& door;
+    TimedDoor* door;
  public:
-    explicit TestDoorTimerAdapter(TimedDoor& d)
-    : DoorTimerAdapter(d), door(d) {}
+    explicit TestDoorTimerAdapter(TimedDoor* d)
+    : DoorTimerAdapter(*d), door(d) {}
     void Timeout() override {
-        if (door.isDoorOpened()) {
+        if (door->isDoorOpened()) {
             exceptionThrown = true;
             throw std::runtime_error("Door is still open!");
         }
@@ -35,7 +35,7 @@ class TimedDoorTest : public ::testing::Test {
     void SetUp() override {
         exceptionThrown = false;
         door = new TimedDoor(1);
-        door->setAdapter(new TestDoorTimerAdapter(*door));  // Заменяем адаптер
+        door->setAdapter(new TestDoorTimerAdapter(door));
     }
 
     void TearDown() override {
