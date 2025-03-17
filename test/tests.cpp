@@ -23,7 +23,7 @@ class MockDoor : public Door {
 class TimedDoorTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    timedDoor = new TimedDoor(1000); // Таймаут 1000 мс
+    timedDoor = new TimedDoor(1000);
   }
 
   void TearDown() override {
@@ -70,6 +70,7 @@ TEST_F(TimedDoorTest, AdapterCallsTimeout) {
   Timer timer;
   timer.tregister(100, &mockClient);
   std::this_thread::sleep_for(std::chrono::milliseconds(200));
+}
 
 TEST_F(TimedDoorTest, TimerRegistersClient) {
   StrictMock<MockTimerClient> mockClient;
