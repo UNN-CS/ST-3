@@ -16,7 +16,7 @@ class MockDoor : public Door {
  public:
   MOCK_METHOD0(lock, void());
   MOCK_METHOD0(unlock, void());
-  MOCK_METHOD0(isDoorOpened, bool());
+  MOCK_CONST_METHOD0(isDoorOpened, bool());
 };
 
 class TimedDoorTest : public ::testing::Test {
