@@ -4,11 +4,11 @@
 #include <thread>
 #include <stdexcept>
 
-DoorTimerAdapter::DoorTimerAdapter(TimedDoor& door) : door(door) {}
+DoorTimerAdapter::DoorTimerAdapter(const TimedDoor& door) : door(door) {}
 
 void DoorTimerAdapter::Timeout() {
   if (door.isDoorOpened()) {
-    door.throwState();
+    const_cast<TimedDoor&>(door).throwState();
   }
 }
 
