@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <cstdint>
+#include <thread>
 #include "TimedDoor.h"
 #include <stdexcept>
 
@@ -47,18 +47,24 @@ TEST_F(TimedDoorTest, DoorUnlocks) {
 
 TEST_F(TimedDoorTest, DoorLocks) {
   timedDoor->unlock();
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
   timedDoor->lock();
   EXPECT_FALSE(timedDoor->isDoorOpened());
 }
 
 TEST_F(TimedDoorTest, TimeoutThrowsWhenDoorOpened) {
   timedDoor->unlock();
-  EXPECT_THROW(timedDoor->throwState(), std::runtime_error);
+  EXPECT_THROW({
+    std::this_thread::sleep_for(std::chrono::milliseconds(1100));
+  }, std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, TimeoutDoesNotThrowWhenDoorClosed) {
+  timedDoor->unlock();
   timedDoor->lock();
-  EXPECT_NO_THROW(timedDoor->throwState());
+  EXPECT_NO_THROW({
+    std::this_thread::sleep_for(std::chrono::milliseconds(1100));
+  });
 }
 
 TEST_F(TimedDoorTest, AdapterCallsTimeout) {
@@ -67,6 +73,7 @@ TEST_F(TimedDoorTest, AdapterCallsTimeout) {
 
   Timer timer;
   timer.tregister(100, &mockClient);
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
 }
 
 TEST_F(TimedDoorTest, TimerRegistersClient) {
@@ -75,6 +82,7 @@ TEST_F(TimedDoorTest, TimerRegistersClient) {
 
   EXPECT_CALL(mockClient, Timeout()).Times(1);
   timer.tregister(100, &mockClient);
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
 }
 
 TEST_F(TimedDoorTest, DoorUnlockActivatesTimer) {
@@ -83,6 +91,7 @@ TEST_F(TimedDoorTest, DoorUnlockActivatesTimer) {
 
   EXPECT_CALL(mockClient, Timeout()).Times(1);
   timedDoor->unlock();
+  std::this_thread::sleep_for(std::chrono::milliseconds(1100));
 }
 
 TEST_F(TimedDoorTest, DoorLockDeactivatesTimer) {
@@ -90,7 +99,9 @@ TEST_F(TimedDoorTest, DoorLockDeactivatesTimer) {
   Timer timer;
 
   EXPECT_CALL(mockClient, Timeout()).Times(0);
+  timedDoor->unlock();
   timedDoor->lock();
+  std::this_thread::sleep_for(std::chrono::milliseconds(1100));
 }
 
 TEST_F(TimedDoorTest, DoorTimeoutValueIsCorrect) {

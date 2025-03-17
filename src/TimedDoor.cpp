@@ -15,13 +15,12 @@ TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
   adapter = new DoorTimerAdapter(*this);
 }
 
-bool TimedDoor::isDoorOpened() {
+bool TimedDoor::isDoorOpened() const {
   return isOpened;
 }
 
 void TimedDoor::unlock() {
   isOpened = true;
-  Timer timer;
   timer.tregister(iTimeout, adapter);
 }
 
