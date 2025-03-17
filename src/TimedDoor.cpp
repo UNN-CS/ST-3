@@ -13,7 +13,11 @@ void Timer::tregister(int time, TimerClient* client) {
     this->client = client;
     std::thread([time, client]() {
         std::this_thread::sleep_for(std::chrono::seconds(time));
-        client->Timeout();
+        try {
+            client->Timeout();
+        } catch (const std::runtime_error&) {
+            // ignore
+        }
     }).detach();
 }
 

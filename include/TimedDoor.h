@@ -45,8 +45,8 @@ class TimedDoor : public Door {
   [[nodiscard]] int getTimeOut() const;
   static void throwState();
   void setAdapter(DoorTimerAdapter* newAdapter) {
-   delete adapter;
-   adapter = newAdapter;
+    delete adapter;
+    adapter = newAdapter;
   }
 };
 

@@ -1,19 +1,20 @@
 // Copyright 2025 Mikhail Burykin
 
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
-#include "TimedDoor.h"
 #include <thread>
 #include <chrono>
 #include <stdexcept>
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
+#include "TimedDoor.h"
 
 static bool exceptionThrown = false;
 
 class TestDoorTimerAdapter : public DoorTimerAdapter {
-private:
+ private:
     TimedDoor& door;
-public:
-    explicit TestDoorTimerAdapter(TimedDoor& d) : DoorTimerAdapter(d), door(d) {}
+ public:
+    explicit TestDoorTimerAdapter(TimedDoor& d)
+    : DoorTimerAdapter(d), door(d) {}
     void Timeout() override {
         if (door.isDoorOpened()) {
             exceptionThrown = true;
@@ -23,12 +24,12 @@ public:
 };
 
 class MockTimerClient : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
     TimedDoor* door{};
 
     void SetUp() override {
