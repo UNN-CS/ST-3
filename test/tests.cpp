@@ -47,8 +47,7 @@ TEST_F(TimeDoorTests, test_num_3) {
 }
 
 TEST_F(TimeDoorTests, test_num_4) {
-  m_door->lock();
-  EXPECT_THROW(m_door->isDoorOpened(), std::runtime_error);
+  EXPECT_THROW(m_door->lock(), std::runtime_error);
 }
 
 TEST_F(TimeDoorTests, test_num_5) {
@@ -57,6 +56,7 @@ TEST_F(TimeDoorTests, test_num_5) {
 }
 
 TEST_F(TimeDoorTests, test_num_6) {
+  m_door->unlock();
   EXPECT_THROW(m_door->throwState(), std::runtime_error);
 }
 
@@ -67,19 +67,18 @@ TEST_F(TimeDoorTests, test_num_7) {
 TEST_F(TimeDoorTests, test_num_8) {
   m_door->unlock();
   m_door->throwState();
-  EXPECT_TRUE(m_door->isDoorOpened());
+  m_door->lock();
+  EXPECT_FALSE(m_door->isDoorOpened());
 }
 
 TEST_F(TimeDoorTests, test_num_9) {
-  m_door->unlock();
   m_door->throwState();
-  std::this_thread::sleep_for(std::chrono::seconds(2));
-  EXPECT_THROW(m_door->throwState(), std::runtime_error);
+  m_door->unlock();
+  EXPECT_TRUE(m_door->isDoorOpened());
 }
 
 TEST_F(TimeDoorTests, test_num_10) {
   m_door->unlock();
-  m_door->throwState();
   std::this_thread::sleep_for(std::chrono::seconds(3));
   EXPECT_THROW(m_door->throwState(), std::runtime_error);
 }
