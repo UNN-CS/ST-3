@@ -26,7 +26,6 @@ bool TimedDoor::isDoorOpened() {
 
 void TimedDoor::unlock() {
     isOpened = true;
-    adapter->Timeout();
 }
 
 void TimedDoor::lock() {
@@ -47,6 +46,8 @@ void Timer::sleep(int timeout) {
 
 void Timer::tregister(int timeout, TimerClient* client) {
     this->client = client;
-    sleep(timeout);
-    client->Timeout();
+    std::thread([this, timeout]() {
+        sleep(timeout);
+        client->Timeout();
+    }).detach();
 }
