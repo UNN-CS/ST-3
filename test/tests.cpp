@@ -1,37 +1,37 @@
 // Copyright 2021 GHA Test Team
-#include "TimedDoor.h"
-#include <chrono>
-#include <cstdint>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+#include <chrono>
+#include <cstdint>
 #include <stdexcept>
 #include <thread>
+#include "TimedDoor.h"
 
 class MockableTimer {
-public:
+ public:
   virtual ~MockableTimer() = default;
   virtual void tregister(int, TimerClient *) = 0;
 };
 
 class MockTimer : public MockableTimer {
-public:
+ public:
   MOCK_METHOD(void, tregister, (int, TimerClient *), (override));
 };
 
 class MockDoorTimerAdapter : public TimerClient {
-public:
+ public:
   MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class MockDoor : public Door {
-public:
+ public:
   MOCK_METHOD(void, lock, (), (override));
   MOCK_METHOD(void, unlock, (), (override));
   MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
   void SetUp() override { door = new TimedDoor(5); }
   void TearDown() override { delete door; }
   TimedDoor *door;
@@ -94,7 +94,7 @@ TEST_F(TimedDoorTest, ThrowStateMultipleTimes_test) {
 }
 
 class DoorTimerAdapterTest : public ::testing::Test {
-protected:
+ protected:
   void SetUp() override { timer = new MockTimer(); }
   void TearDown() override { delete timer; }
   MockTimer *timer;
@@ -106,7 +106,7 @@ TEST_F(DoorTimerAdapterTest, TimerRegister_test) {
 }
 
 class TimerClientTest : public ::testing::Test {
-protected:
+ protected:
   void SetUp() override {
     door = new TimedDoor(5);
     adapter = new DoorTimerAdapter(*door);
@@ -130,7 +130,7 @@ TEST_F(TimerClientTest, TimerAdapterTimeout_closedDoor_test) {
 }
 
 class MockDoorTest : public ::testing::Test {
-protected:
+ protected:
   void SetUp() override { mockDoor = new MockDoor(); }
   void TearDown() override { delete mockDoor; }
   MockDoor *mockDoor;
@@ -148,7 +148,7 @@ TEST_F(MockDoorTest, DoorMethodSequence_test) {
 }
 
 class TimerAdapterInteractionTest : public ::testing::Test {
-protected:
+ protected:
   void SetUp() override { mockTimerClient = new MockDoorTimerAdapter(); }
   void TearDown() override { delete mockTimerClient; }
   MockDoorTimerAdapter *mockTimerClient;
@@ -156,7 +156,7 @@ protected:
 
 TEST_F(TimerAdapterInteractionTest, TimerCallsTimeout_test) {
   class TestTimer : public Timer {
-  public:
+   public:
     void tregister(int, TimerClient *client) {
       if (client) {
         client->Timeout();
@@ -169,7 +169,7 @@ TEST_F(TimerAdapterInteractionTest, TimerCallsTimeout_test) {
 }
 
 class IntegrationTest : public ::testing::Test {
-protected:
+ protected:
   void SetUp() override { door = new TimedDoor(1); }
   void TearDown() override { delete door; }
   TimedDoor *door;
