@@ -2,6 +2,7 @@
 #include "TimedDoor.h"
 #include <chrono>
 #include <stdexcept>
+#include <string>
 #include <thread>
 
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor &timedDoor) : door(timedDoor) {}
@@ -12,8 +13,8 @@ void DoorTimerAdapter::Timeout() {
   }
 }
 
-TimedDoor::TimedDoor(int timeout)
-    : iTimeout(timeout), isOpened(false), adapter(new DoorTimerAdapter(*this)) {
+TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
+  adapter = new DoorTimerAdapter(*this);
 }
 
 bool TimedDoor::isDoorOpened() { return isOpened; }

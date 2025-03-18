@@ -62,9 +62,9 @@ TEST_F(TimedDoorTest, RepeatedUnlock_lock_switch_test) {
   door->lock();
   for (int i = 0; i < 3; ++i) {
     door->unlock();
-    EXPECT_TRUE(door->isDoorOpened()) << "Door should be opened on iter " << i;
+    EXPECT_TRUE(door->isDoorOpened());
     door->lock();
-    EXPECT_FALSE(door->isDoorOpened()) << "Door should be locked on iter " << i;
+    EXPECT_FALSE(door->isDoorOpened());
   }
 }
 
