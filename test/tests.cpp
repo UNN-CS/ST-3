@@ -63,7 +63,6 @@ TEST(TimedDoorTest, DoorLockPreventsTimeout) {
     MockTimedDoor door(1);
     EXPECT_CALL(door, throwState()).Times(0);
     door.lock();
-    door.throwState();
 }
 
 TEST(TimedDoorTest, DoorTimeoutValue) {
