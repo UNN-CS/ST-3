@@ -25,7 +25,7 @@ TEST(TimedDoorTest, DoorLockUnlock) {
     EXPECT_TRUE(door.isDoorOpened());
 }
 
-TEST(TimedDoorTest, DoorTimeoutException) {
+TEST(TimedDoorTest, DoorTimeoutExcep) {
     TimedDoor door(1);
     door.unlock();
     EXPECT_THROW(door.throwState(), std::runtime_error);
