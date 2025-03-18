@@ -32,7 +32,8 @@ class Timer {
   void tregister(int time, std::weak_ptr<TimerClient> client);
 };
 
-class DoorTimerAdapter : public TimerClient, public std::enable_shared_from_this<DoorTimerAdapter> {
+class DoorTimerAdapter : public TimerClient,
+public std::enable_shared_from_this<DoorTimerAdapter> {
   std::weak_ptr<TimedDoor> m_door;
   Timer m_timer;
   int m_baseSleepTime = 0;
@@ -50,9 +51,9 @@ class TimedDoor : public Door, public std::enable_shared_from_this<TimedDoor> {
 
  public:
   explicit TimedDoor(int time);
-  virtual bool isDoorOpened() const override;
-  virtual void lock() override;
-  virtual void unlock() override;
+  bool isDoorOpened() const override;
+  void lock() override;
+  void unlock() override;
   void throwState();
   int getTimeOut() const;
 };
