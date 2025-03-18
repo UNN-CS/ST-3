@@ -67,17 +67,16 @@ TEST_F(TimeDoorTests, test_num_7) {
 
 TEST_F(TimeDoorTests, test_num_8) {
   m_door->unlock();
-  std::this_thread::sleep_for(std::chrono::seconds(1));
   m_door->lock();
   m_door->throwState();
   EXPECT_FALSE(m_door->isDoorOpened());
 }
 
 TEST_F(TimeDoorTests, test_num_9) {
-  m_door->throwState();
   m_door->unlock();
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+  std::this_thread::sleep_for(std::chrono::microseconds(1000));
   m_door->lock();
+  m_door->throwState();
   EXPECT_FALSE(m_door->isDoorOpened());
 }
 
@@ -85,6 +84,6 @@ TEST_F(TimeDoorTests, test_num_10) {
   m_door->throwState();
   m_door->unlock();
   std::this_thread::sleep_for(std::chrono::microseconds(1500));
-  m_door->unlock();
+  m_door->lock();
   EXPECT_FALSE(m_door->isDoorOpened());
 }
