@@ -19,12 +19,12 @@ class TimedDoorTest : public ::testing::Test {
  protected:
     TimedDoor* door;
     MockTimerClient* mockClient;
-    
+   // 
     void SetUp() override {
         door = new TimedDoor(5);
         mockClient = new MockTimerClient();
     }
-    
+    //
     void TearDown() override {
         delete door;
         delete mockClient;
@@ -33,63 +33,50 @@ class TimedDoorTest : public ::testing::Test {
 
 TEST_F(TimedDoorTest, TestTimeoutAfterOpening) {
     door->unlock();
-    
+    //
     EXPECT_CALL(*mockClient, Timeout())
         .Times(1);
-    
+    //
     Timer timer;
     timer.tregister(5, mockClient);
 }
-
 TEST_F(TimedDoorTest, TestThrowExceptionIfDoorNotOpened) {
     EXPECT_THROW(door->throwState(), std::runtime_error);
 }
 TEST_F(TimedDoorTest, TestDoorInitialState) {
-    EXPECT_FALSE(door->isDoorOpened());  // Дверь должна быть закрыта по умолчанию
+    EXPECT_FALSE(door->isDoorOpened());  
   }
-  
   TEST_F(TimedDoorTest, TestUnlockDoor) {
     door->unlock();
-    EXPECT_TRUE(door->isDoorOpened());  // Дверь должна быть открыта после вызова unlock
+    EXPECT_TRUE(door->isDoorOpened());  
   }
-  
   TEST_F(TimedDoorTest, TestLockDoor) {
-    door->unlock();  // Сначала откроем дверь
-    door->lock();    // Затем закроем её
-    EXPECT_FALSE(door->isDoorOpened());  // Дверь должна быть закрыта после вызова lock
+    door->unlock();  
+    door->lock();    
+    EXPECT_FALSE(door->isDoorOpened());  
   }
-  
   TEST_F(TimedDoorTest, TestTimerStartAfterUnlock) {
-    door->unlock();  // Открытие двери вызывает запуск таймера
-  
-    // Используй EXPECT_CALL до выполнения таймера
+    door->unlock(); 
     EXPECT_CALL(*mockClient, Timeout()).Times(1);
-  
     Timer timer;
     timer.tregister(5, mockClient);
-  
-    // Явно ждем, чтобы убедиться, что таймер успевает сработать
-    std::this_thread::sleep_for(std::chrono::seconds(6));  // Ждем больше времени, чтобы таймер успел сработать
+    std::this_thread::sleep_for(std::chrono::seconds(6));  
   }
-  
   TEST_F(TimedDoorTest, TestTimerRegistration) {
     EXPECT_CALL(*mockClient, Timeout()).Times(1);
     Timer timer;
     timer.tregister(5, mockClient);
   }
-  
   TEST_F(TimedDoorTest, TestLockDoorAfterTimeout) {
     door->unlock();
-    std::this_thread::sleep_for(std::chrono::seconds(6));  // Даем время для таймера
-    door->lock();  // Дверь должна быть закрыта
+    std::this_thread::sleep_for(std::chrono::seconds(6)); 
+    door->lock(); 
     EXPECT_FALSE(door->isDoorOpened());
   }
-  
   TEST_F(TimedDoorTest, TestCorrectTimeout) {
     door->unlock();
-    EXPECT_EQ(door->getTimeOut(), 5);  // Проверяем, что время таймера установлено верно
+    EXPECT_EQ(door->getTimeOut(), 5); 
   }
-  
   TEST_F(TimedDoorTest, TestMultipleLockUnlock) {
     door->unlock();
     EXPECT_TRUE(door->isDoorOpened());
