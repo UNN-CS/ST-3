@@ -27,10 +27,9 @@ void TimedDoor::lock() {
 
 int TimedDoor::getTimeOut() const { return m_timeout; }
 
-void TimedDoor::throwState(){
- m_adapter.Timeout();
-  if (!m_isOpened)
-  {
+void TimedDoor::throwState() {
+m_adapter.Timeout();
+  if (!m_isOpened){
     throw std::runtime_error("Time is out");
   }
 }
