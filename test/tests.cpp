@@ -40,23 +40,23 @@ TEST_F(TimedDoorTest, TestThrowExceptionIfDoorNotOpened) {
     EXPECT_THROW(door->throwState(), std::runtime_error);
 }
 TEST_F(TimedDoorTest, TestDoorInitialState) {
-    EXPECT_FALSE(door->isDoorOpened());  
+    EXPECT_FALSE(door->isDoorOpened());
 }
 TEST_F(TimedDoorTest, TestUnlockDoor) {
     door->unlock();
-    EXPECT_TRUE(door->isDoorOpened());  
+    EXPECT_TRUE(door->isDoorOpened());
 }
 TEST_F(TimedDoorTest, TestLockDoor) {
-    door->unlock();  
-    door->lock();    
-    EXPECT_FALSE(door->isDoorOpened());  
+    door->unlock();
+    door->lock();
+    EXPECT_FALSE(door->isDoorOpened());
 }
 TEST_F(TimedDoorTest, TestTimerStartAfterUnlock) {
-    door->unlock(); 
+    door->unlock();
     EXPECT_CALL(*mockClient, Timeout()).Times(1);
     Timer timer;
     timer.tregister(5, mockClient);
-    std::this_thread::sleep_for(std::chrono::seconds(6));  
+    std::this_thread::sleep_for(std::chrono::seconds(6));
 }
 TEST_F(TimedDoorTest, TestTimerRegistration) {
     EXPECT_CALL(*mockClient, Timeout()).Times(1);
@@ -65,13 +65,13 @@ TEST_F(TimedDoorTest, TestTimerRegistration) {
 }
 TEST_F(TimedDoorTest, TestLockDoorAfterTimeout) {
     door->unlock();
-    std::this_thread::sleep_for(std::chrono::seconds(6)); 
-    door->lock(); 
+    std::this_thread::sleep_for(std::chrono::seconds(6));
+    door->lock();
     EXPECT_FALSE(door->isDoorOpened());
 }
 TEST_F(TimedDoorTest, TestCorrectTimeout) {
     door->unlock();
-    EXPECT_EQ(door->getTimeOut(), 5); 
+    EXPECT_EQ(door->getTimeOut(), 5);
 }
 TEST_F(TimedDoorTest, TestMultipleLockUnlock) {
     door->unlock();
