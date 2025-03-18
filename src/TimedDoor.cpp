@@ -46,8 +46,9 @@ void Timer::sleep(int timeout) {
 
 void Timer::tregister(int timeout, TimerClient* client) {
     this->client = client;
-    std::thread([this, timeout]() {
+    std::thread([this, timeout, client]() {
         sleep(timeout);
         client->Timeout();
     }).detach();
 }
+
