@@ -23,13 +23,13 @@ class Door {
 };
 
 class Timer {
- private:
-  TimerClient* client;
-  void sleep(int milliseconds);
-
- public:
-  void tregister(int milliseconds, TimerClient* client);
-};
+  public:
+      virtual void tregister(int seconds, TimerClient* timerClient);
+      virtual ~Timer() = default;
+  private:
+      TimerClient* client;
+      void sleep(int seconds);
+  };
 
 class DoorTimerAdapter : public TimerClient {
  private:

@@ -7,9 +7,9 @@
 #include "TimedDoor.h"
 
 class MockTimer : public Timer {
- public:
-    MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
-};
+    public:
+        MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
+    };
 
 class MockDoorTimerAdapter : public TimerClient {
  public:
