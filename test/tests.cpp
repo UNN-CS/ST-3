@@ -6,6 +6,7 @@
 #include <cstdint>
 
 #include "TimedDoor.h"
+
 TEST(timed_door_tests, test_num_1) {
   TimedDoor door(5);
   door.unlock();

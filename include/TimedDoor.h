@@ -40,7 +40,7 @@ class DoorTimerAdapter : public TimerClient, public std::enable_shared_from_this
  public:
   DoorTimerAdapter() = default;
   void SetTimedDoorData(int baseSleepTime, std::weak_ptr<TimedDoor> door);
-  MOCK_METHOD(void, Timeout, (), (override));
+  void Timeout() override;
 };
 
 class TimedDoor : public Door, public std::enable_shared_from_this<TimedDoor> {
@@ -50,11 +50,11 @@ class TimedDoor : public Door, public std::enable_shared_from_this<TimedDoor> {
 
  public:
   explicit TimedDoor(int time);
-  MOCK_METHOD(bool, isDoorOpened, (), (const override));
-  MOCK_METHOD(void, unlock, (), (override));
-  MOCK_METHOD(void, lock, (), (override));
-  MOCK_METHOD(int, getTimeOut, (), (const override));
-  MOCK_METHOD(void, throwState, (), (override));
+  virtual bool isDoorOpened() const override;
+  virtual void lock() override;
+  virtual void unlock() override;
+  void throwState();
+  int getTimeOut() const;
 };
 
 #endif  // INCLUDE_TIMEDDOOR_H_
