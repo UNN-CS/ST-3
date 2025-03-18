@@ -39,21 +39,18 @@ TEST_F(TimeDoorTests, test_num_2) {
   EXPECT_TRUE(m_door->isDoorOpened());
 }
 
-TEST_F(TimeDoorTests, test_num_3)
-{
+TEST_F(TimeDoorTests, test_num_3){
   m_door->unlock();
   m_door->lock();
   EXPECT_FALSE(m_door->isDoorOpened());
 }
 
-TEST_F(TimeDoorTests, test_num_4)
-{
+TEST_F(TimeDoorTests, test_num_4){
   m_door->lock();
   EXPECT_THROW(m_door->isDoorOpened(), std::runtime_error);
 }
 
-TEST_F(TimeDoorTests, test_num_5)
-{
+TEST_F(TimeDoorTests, test_num_5){
   EXPECT_THROW(m_door->throwState(), std::runtime_error);
 }
 
