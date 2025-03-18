@@ -57,8 +57,7 @@ TEST_F(TimeDoorTests, test_num_5) {
 
 TEST_F(TimeDoorTests, test_num_6) {
   m_door->unlock();
-  m_door->throwState();
-  EXPECT_THROW(m_door->unlock(), std::runtime_error);
+  EXPECT_THROW(m_door->throwState(), std::runtime_error);
 }
 
 TEST_F(TimeDoorTests, test_num_7) {
