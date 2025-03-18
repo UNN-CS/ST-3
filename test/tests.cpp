@@ -9,7 +9,7 @@ using ::testing::_;
 class MockTimedDoor : public TimedDoor {
 public:
     MockTimedDoor(int timeout) : TimedDoor(timeout) {}
-    MOCK_METHOD(void, throwState, (), ());
+    MOCK_METHOD(void, throwState, (), (override));
 };
 
 class MockTimerClient : public TimerClient {
