@@ -9,21 +9,21 @@ using ::testing::Mock;
 using ::testing::Throw;
 
 class MockTimerClient : public TimerClient {
-public:
-    MOCK_METHOD(void, Timeout, (), (override));
+ public:
+  MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
-    void SetUp() override {
-        door = new TimedDoor(5);
-    }
+ protected:
+  void SetUp() override {
+    door = new TimedDoor(5);
+  }
 
-    void TearDown() override {
-        delete door;
-    }
+  void TearDown() override {
+    delete door;
+  }
 
-    TimedDoor* door;
+  TimedDoor* door;
 };
 
 TEST_F(TimedDoorTest, InitialStateIsClosed) {
@@ -79,9 +79,8 @@ TEST(DoorTimerAdapterTest, TimeoutNoThrowIfDoorClosed) {
 TEST(TimedDoorTest, UnlockRegistersTimer) {
     TimedDoor door(1);
     door.unlock();
-    // This test verifies that unlock triggers the timer, leading to an exception
     EXPECT_THROW(door.throwState(), std::runtime_error);
-}
+  }
 
 int main(int argc, char **argv) {
     ::testing::InitGoogleTest(&argc, argv);
