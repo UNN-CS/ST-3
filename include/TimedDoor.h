@@ -33,13 +33,13 @@ class DoorTimerAdapter : public TimerClient {
 };
 
 class TimedDoor : public Door {
- private:
-  std::unique_ptr<DoorTimerAdapter> adapter;
-  Timer& timer;
-  int iTimeout;
-  bool isOpened;
- public:
-  explicit TimedDoor(int timeout, Timer& timer);
+  private:
+   std::unique_ptr<DoorTimerAdapter> adapter;
+   Timer* timer;
+   int iTimeout;
+   bool isOpened;
+  public:
+   explicit TimedDoor(int timeout, Timer* timer);
   bool isDoorOpened() override;
   void unlock() override;
   void lock() override;
