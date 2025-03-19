@@ -17,7 +17,7 @@ class TimedDoorTest : public ::testing::Test {
  protected:
   MockTimer mockTimer;
   std::unique_ptr<TimedDoor> door;
-  
+
   void SetUp() override {
     door = std::make_unique<TimedDoor>(5, mockTimer);
   }

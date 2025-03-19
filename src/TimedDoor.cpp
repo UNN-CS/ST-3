@@ -11,7 +11,7 @@ void DoorTimerAdapter::Timeout() {
     }
 }
 
-TimedDoor::TimedDoor(int timeout, Timer& timer) 
+TimedDoor::TimedDoor(int timeout, Timer& timer)
     : timer(timer), iTimeout(timeout), isOpened(false) {
     adapter = std::make_unique<DoorTimerAdapter>(*this);
 }
