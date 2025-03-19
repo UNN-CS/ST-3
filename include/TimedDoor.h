@@ -3,6 +3,8 @@
 #ifndef INCLUDE_TIMEDDOOR_H_
 #define INCLUDE_TIMEDDOOR_H_
 
+#include <memory>
+
 class DoorTimerAdapter;
 class Timer;
 class Door;
@@ -11,6 +13,7 @@ class TimedDoor;
 class TimerClient {
  public:
   virtual void Timeout() = 0;
+  virtual ~TimerClient() = default;
 };
 
 class Door {
@@ -18,6 +21,7 @@ class Door {
   virtual void lock() = 0;
   virtual void unlock() = 0;
   virtual bool isDoorOpened() = 0;
+  virtual ~Door() = default;
 };
 
 class DoorTimerAdapter : public TimerClient {
@@ -25,28 +29,28 @@ class DoorTimerAdapter : public TimerClient {
   TimedDoor& door;
  public:
   explicit DoorTimerAdapter(TimedDoor&);
-  void Timeout();
+  void Timeout() override;
 };
 
 class TimedDoor : public Door {
  private:
-  DoorTimerAdapter * adapter;
+  std::unique_ptr<DoorTimerAdapter> adapter;
+  Timer& timer;
   int iTimeout;
   bool isOpened;
  public:
-  explicit TimedDoor(int);
-  bool isDoorOpened();
-  void unlock();
-  void lock();
+  explicit TimedDoor(int timeout, Timer& timer);
+  bool isDoorOpened() override;
+  void unlock() override;
+  void lock() override;
   int  getTimeOut() const;
   void throwState();
 };
 
 class Timer {
-  TimerClient *client;
-  void sleep(int);
  public:
-  virtual void tregister(int, TimerClient*);
+  virtual void tregister(int, TimerClient*) = 0;
+  virtual ~Timer() = default;
 };
 
 #endif  // INCLUDE_TIMEDDOOR_H_
