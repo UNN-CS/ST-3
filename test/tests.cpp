@@ -13,6 +13,11 @@ class MockTimerClient : public TimerClient {
   MOCK_METHOD(void, Timeout, (), (override));
 };
 
+class MockTimer : public Timer {
+ public:
+  MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
+};
+
 class TimedDoorTest : public ::testing::Test {
  protected:
   void SetUp() override {
@@ -31,6 +36,8 @@ TEST_F(TimedDoorTest, InitialStateIsClosed) {
 }
 
 TEST_F(TimedDoorTest, UnlockOpensDoor) {
+    MockTimer mockTimer;
+    EXPECT_CALL(mockTimer, tregister(_, _)).Times(1);
     door->unlock();
     EXPECT_TRUE(door->isDoorOpened());
 }
@@ -76,8 +83,8 @@ TEST(DoorTimerAdapterTest, TimeoutNoThrowIfDoorClosed) {
     EXPECT_NO_THROW(adapter.Timeout());
 }
 
-TEST(TimedDoorTest, UnlockRegistersTimer) {
+TEST_F(TimedDoorTest, UnlockRegistersTimer) {
     TimedDoor door(1);
     door.unlock();
     EXPECT_THROW(door.throwState(), std::runtime_error);
-  }
+}
