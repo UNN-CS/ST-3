@@ -2,7 +2,7 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <memory>
+#include <memory>  // Добавлен include
 #include "TimedDoor.h"
 
 using ::testing::_;

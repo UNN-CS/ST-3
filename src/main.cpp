@@ -9,7 +9,7 @@ class RealTimer : public Timer {
 
 int main() {
   RealTimer timer;
-  TimedDoor tDoor(5, &timer);
+  TimedDoor tDoor(5, timer);
   tDoor.lock();
   tDoor.unlock();
   return 0;
