@@ -1,6 +1,7 @@
 // Copyright 2021 GHA Test Team
 #include "TimedDoor.h"
 #include <stdexcept>
+#include <memory>  // Добавлен include
 
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor &door) : door(door) {}
 

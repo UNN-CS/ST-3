@@ -2,10 +2,15 @@
 #include "TimedDoor.h"
 #include <iostream>
 
+class RealTimer : public Timer {
+ public:
+  void tregister(int, TimerClient*) override {}
+};
+
 int main() {
-  TimedDoor tDoor(5);
+  RealTimer timer;
+  TimedDoor tDoor(5, timer);
   tDoor.lock();
   tDoor.unlock();
-
   return 0;
 }

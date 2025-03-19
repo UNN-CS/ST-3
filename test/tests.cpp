@@ -2,16 +2,11 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+#include <memory>
 #include "TimedDoor.h"
 
 using ::testing::_;
 using ::testing::Mock;
-using ::testing::Throw;
-
-class MockTimerClient : public TimerClient {
- public:
-  MOCK_METHOD(void, Timeout, (), (override));
-};
 
 class MockTimer : public Timer {
  public:
