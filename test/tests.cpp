@@ -6,19 +6,26 @@
 
 #include "TimedDoor.h"
 
-using namespace testing;
+using testing::Test;
+using testing::Mock;
+using testing::EXPECT_CALL;
+using testing::Times;
+using testing::EXPECT_NO_THROW;
+using testing::EXPECT_THROW;
 
 class MockTimerClient : public TimerClient {
-public:
+ public:
   MOCK_METHOD(void, Timeout, (), (override));
 };
 
-class TimedDoorTest : public ::testing::Test {
-protected:
-  TimedDoor *door;
+class TimedDoorTest : public Test {
+ protected:
+  TimedDoor* door;
+
   void SetUp() override {
     door = new TimedDoor(1);
   }
+
   void TearDown() override {
     delete door;
   }
@@ -52,6 +59,7 @@ TEST_F(TimedDoorTest, ThrowStateDoesNotThrowWhenDoorClosed) {
 TEST(TimerTest, TimerCallsTimeout) {
   Timer timer;
   MockTimerClient mockClient;
+
   EXPECT_CALL(mockClient, Timeout()).Times(1);
   timer.tregister(1, &mockClient);
 }
