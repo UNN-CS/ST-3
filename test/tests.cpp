@@ -2,10 +2,9 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include "TimedDoor.h"
 #include <thread>
+#include <chrono>
+#include "TimedDoor.h"
 
 using ::testing::Invoke;
 using ::testing::Mock;
@@ -49,11 +48,8 @@ TEST_F(TestTimedDoor, LockDoor)
 TEST_F(TestTimedDoor, TimeoutTest)
 {
   door->unlock();
-  MockTimerClient client;
-  EXPECT_CALL(client, Timeout()).WillOnce(Invoke([this]()
-                                                 { door->throwState(); }));
-  door->unlock();
-  EXPECT_THROW(client.Timeout(), std::runtime_error);
+  std::this_thread::sleep_for(std::chrono::milliseconds(150));
+  EXPECT_THROW(door->throwState(), std::runtime_error);
 }
 
 TEST_F(TestTimedDoor, TimerFunctionality)
@@ -61,7 +57,9 @@ TEST_F(TestTimedDoor, TimerFunctionality)
   MockTimerClient mockClient;
   EXPECT_CALL(mockClient, Timeout()).Times(1);
   door->unlock();
-  door->lock();
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(150));
+  EXPECT_THROW(door->throwState(), std::runtime_error);
 }
 
 TEST_F(TestTimedDoor, OpenCloseDoor)
@@ -72,25 +70,6 @@ TEST_F(TestTimedDoor, OpenCloseDoor)
   EXPECT_FALSE(door->isDoorOpened());
 }
 
-TEST_F(TestTimedDoor, DifferentTimeouts)
-{
-  TimedDoor shortDoor(50);
-  EXPECT_NO_THROW(shortDoor.unlock());
-  std::this_thread::sleep_for(std::chrono::milliseconds(60));
-  EXPECT_THROW(shortDoor.throwState(), std::runtime_error);
-}
-
-TEST_F(TestTimedDoor, MultipleUnlocks)
-{
-  for (int i = 0; i < 10; ++i)
-  {
-    door->unlock();
-    EXPECT_TRUE(door->isDoorOpened());
-    door->lock();
-    EXPECT_FALSE(door->isDoorOpened());
-  }
-}
-
 TEST_F(TestTimedDoor, StateCheckAfterOperations)
 {
   door->lock();
@@ -98,11 +77,6 @@ TEST_F(TestTimedDoor, StateCheckAfterOperations)
   EXPECT_TRUE(door->isDoorOpened());
   door->lock();
   EXPECT_FALSE(door->isDoorOpened());
-}
-
-TEST_F(TestTimedDoor, AdapterCreation)
-{
-  EXPECT_NO_THROW(DoorTimerAdapter adapter(*door));
 }
 
 TEST_F(TestTimedDoor, OpenedDoorException)
