@@ -49,12 +49,15 @@ TEST_F(TimedDoorTest, ThrowStateDoesNotThrowWhenDoorClosed) {
   EXPECT_NO_THROW(door->throwState());
 }
 
-TEST_F(TimerTest, TimerCallsTimeout) {
-  Timer timer;
-  MockTimerClient mockClient;
+TEST_F(TimedDoorTest, CannotUnlockAfterLock) {
+  door->unlock();
+  EXPECT_TRUE(door->isDoorOpened());
 
-  EXPECT_CALL(mockClient, Timeout()).Times(1);
-  timer.tregister(1, &mockClient);
+  door->lock();
+  EXPECT_FALSE(door->isDoorOpened());
+
+  door->unlock();
+  EXPECT_FALSE(door->isDoorOpened());
 }
 
 TEST_F(TimedDoorTest, RepeatedUnlockDoesNotThrowUntilTimeout) {
