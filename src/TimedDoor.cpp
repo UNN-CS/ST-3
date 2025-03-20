@@ -34,8 +34,7 @@ int TimedDoor::getTimeOut() const {
 }
 
 void TimedDoor::throwState() {
-  if (isOpened)
-  {
+  if (isOpened) {
     throw std::runtime_error("Door left open");
   }
 }
@@ -46,6 +45,9 @@ void Timer::sleep(int seconds) {
 
 void Timer::tregister(int seconds, TimerClient *client) {
   this->client = client;
-  sleep(seconds);
-  client->Timeout();
+    sleep(seconds);
+    try {
+        client->Timeout();
+    } catch (...) {
+    }
 }

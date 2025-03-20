@@ -27,20 +27,12 @@ TEST_F(TimedDoorTest, DoorInitiallyClosed) {
 }
 
 TEST_F(TimedDoorTest, UnlockOpensDoor) {
-  try {
-    door->unlock();
-  }
-  catch (const std::runtime_error &) {
-  }
+  door->unlock();
   EXPECT_TRUE(door->isDoorOpened());
 }
 
 TEST_F(TimedDoorTest, LockClosesDoor) {
-  try {
-    door->unlock();
-  }
-  catch (...) {
-  }
+  door->unlock();
   door->lock();
   EXPECT_FALSE(door->isDoorOpened());
 }
@@ -69,11 +61,7 @@ TEST(TimerClientTest, AdapterTimeoutDelegatesToDoorThrowState) {
 
 TEST_F(TimedDoorTest, MultipleLockUnlockCycles) {
   for (int i = 0; i < 3; ++i) {
-    try {
-      door->unlock();
-    }
-    catch (...) {
-    }
+    door->unlock();
     EXPECT_TRUE(door->isDoorOpened());
     door->lock();
     EXPECT_FALSE(door->isDoorOpened());
@@ -81,11 +69,11 @@ TEST_F(TimedDoorTest, MultipleLockUnlockCycles) {
 }
 
 TEST_F(TimedDoorTest, TimeoutDoesNotThrowAfterLockingWithinTime) {
-  try {
-    door->unlock();
-  }
-  catch (...) {
-  }
+  door->unlock();
   door->lock();
   EXPECT_NO_THROW(door->throwState());
+}
+
+TEST_F(TimedDoorTest, GetTimeoutReturnsCorrectValue) {
+  EXPECT_EQ(door->getTimeOut(), 1);
 }
