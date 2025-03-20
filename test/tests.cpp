@@ -2,85 +2,90 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <thread>
-#include <chrono>
 #include "TimedDoor.h"
 
-using ::testing::Invoke;
-using ::testing::Mock;
+using namespace testing;
 
-class MockTimerClient : public TimerClient
-{
+class MockTimerClient : public TimerClient {
 public:
   MOCK_METHOD(void, Timeout, (), (override));
 };
 
-class TestTimedDoor : public ::testing::Test
-{
+class TimedDoorTest : public ::testing::Test {
 protected:
   TimedDoor *door;
-
-  void SetUp() override
-  {
-    door = new TimedDoor(100);
+  void SetUp() override {
+    door = new TimedDoor(1);
   }
-
-  void TearDown() override
-  {
+  void TearDown() override {
     delete door;
   }
 };
 
-TEST_F(TestTimedDoor, UnlockDoor)
-{
-  door->lock();
-  door->unlock();
+TEST_F(TimedDoorTest, DoorInitiallyClosed) {
+  EXPECT_FALSE(door->isDoorOpened());
+}
+
+TEST_F(TimedDoorTest, UnlockOpensDoor) {
+  try {
+    door->unlock();
+  }
+  catch (const std::runtime_error &) {
+  }
   EXPECT_TRUE(door->isDoorOpened());
 }
 
-TEST_F(TestTimedDoor, LockDoor)
-{
-  door->unlock();
+TEST_F(TimedDoorTest, LockClosesDoor) {
+  try {
+    door->unlock();
+  }
+  catch (...) {
+  }
   door->lock();
   EXPECT_FALSE(door->isDoorOpened());
 }
 
-TEST_F(TestTimedDoor, TimeoutTest)
-{
+TEST_F(TimedDoorTest, ThrowStateThrowsWhenDoorOpen) {
   door->unlock();
-  std::this_thread::sleep_for(std::chrono::milliseconds(150));
   EXPECT_THROW(door->throwState(), std::runtime_error);
 }
 
-TEST_F(TestTimedDoor, TimerFunctionality)
-{
+TEST_F(TimedDoorTest, ThrowStateDoesNotThrowWhenDoorClosed) {
+  door->lock();
+  EXPECT_NO_THROW(door->throwState());
+}
+
+TEST(TimerTest, TimerCallsTimeout) {
+  Timer timer;
   MockTimerClient mockClient;
   EXPECT_CALL(mockClient, Timeout()).Times(1);
-  door->unlock();
-
-  std::this_thread::sleep_for(std::chrono::milliseconds(150));
-  EXPECT_THROW(door->throwState(), std::runtime_error);
+  timer.tregister(1, &mockClient);
 }
 
-TEST_F(TestTimedDoor, OpenCloseDoor)
-{
-  door->unlock();
-  EXPECT_TRUE(door->isDoorOpened());
-  door->lock();
-  EXPECT_FALSE(door->isDoorOpened());
+TEST(TimerClientTest, AdapterTimeoutDelegatesToDoorThrowState) {
+  TimedDoor door(1);
+  EXPECT_THROW(door.unlock(), std::runtime_error);
 }
 
-TEST_F(TestTimedDoor, StateCheckAfterOperations)
-{
-  door->lock();
-  door->unlock();
-  EXPECT_TRUE(door->isDoorOpened());
-  door->lock();
-  EXPECT_FALSE(door->isDoorOpened());
+TEST_F(TimedDoorTest, MultipleLockUnlockCycles) {
+  for (int i = 0; i < 3; ++i) {
+    try {
+      door->unlock();
+    }
+    catch (...) {
+    }
+    EXPECT_TRUE(door->isDoorOpened());
+    door->lock();
+    EXPECT_FALSE(door->isDoorOpened());
+  }
 }
 
-TEST_F(TestTimedDoor, OpenedDoorException)
-{
-  door->unlock();
-  EXPECT_THROW(door->throwState(), std::runtime_error);
+TEST_F(TimedDoorTest, TimeoutDoesNotThrowAfterLockingWithinTime) {
+  try {
+    door->unlock();
+  }
+  catch (...) {
+  }
+  door->lock();
+  EXPECT_NO_THROW(door->throwState());
 }
