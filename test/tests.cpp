@@ -54,9 +54,13 @@ TEST(TimerTest, TimerCallsTimeout) {
   timer.tregister(1, &mockClient);
 }
 
-TEST(TimerClientTest, AdapterTimeoutDelegatesToDoorThrowState) {
-  TimedDoor door(1);
-  EXPECT_THROW(door.unlock(), std::runtime_error);
+TEST_F(TimedDoorTest, RepeatedUnlockDoesNotThrowUntilTimeout) {
+  door->unlock();
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  door->unlock();
+  
+  std::this_thread::sleep_for(std::chrono::seconds(2));
+  EXPECT_THROW(door->checkException(), std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, MultipleLockUnlockCycles) {
