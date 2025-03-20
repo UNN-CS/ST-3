@@ -49,7 +49,7 @@ TEST_F(TimedDoorTest, ThrowStateDoesNotThrowWhenDoorClosed) {
   EXPECT_NO_THROW(door->throwState());
 }
 
-TEST(TimerTest, TimerCallsTimeout) {
+TEST_F(TimerTest, TimerCallsTimeout) {
   Timer timer;
   MockTimerClient mockClient;
 
