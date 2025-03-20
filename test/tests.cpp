@@ -6,11 +6,6 @@
 
 #include "TimedDoor.h"
 
-class MockTimerClient : public TimerClient {
- public:
-  MOCK_METHOD(void, Timeout, (), (override));
-};
-
 class TimedDoorTest : public ::testing::Test {
  protected:
   TimedDoor *door;
