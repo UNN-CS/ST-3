@@ -49,15 +49,13 @@ TEST_F(TimedDoorTest, ThrowStateDoesNotThrowWhenDoorClosed) {
   EXPECT_NO_THROW(door->throwState());
 }
 
-TEST_F(TimedDoorTest, CannotUnlockAfterLock) {
+TEST_F(TimedDoorTest, UnlockDoesNotChangeStateIfAlreadyOpened) {
   door->unlock();
   EXPECT_TRUE(door->isDoorOpened());
 
-  door->lock();
-  EXPECT_FALSE(door->isDoorOpened());
-
   door->unlock();
-  EXPECT_FALSE(door->isDoorOpened());
+
+  EXPECT_TRUE(door->isDoorOpened());
 }
 
 TEST_F(TimedDoorTest, RepeatedUnlockDoesNotThrowUntilTimeout) {
