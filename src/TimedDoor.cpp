@@ -68,7 +68,6 @@ void Timer::tregister(int timeoutSeconds, TimerClient* client) {
             "Error: Timeout duration must be positive.");
     }
     this->client = client;
-    
     try {
         sleep(timeoutSeconds);
         client->Timeout();
