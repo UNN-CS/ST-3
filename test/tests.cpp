@@ -1,10 +1,14 @@
 // Copyright 2025 shvedovav
 
-#include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <cstdint>
+#include <gtest/gtest.h>
+
+#include <algorithm>
 #include <chrono>
+#include <cstdint>
+#include <memory>
 #include <thread>
+
 #include "TimedDoor.h"
 
 class MockTimerClient : public TimerClient {
