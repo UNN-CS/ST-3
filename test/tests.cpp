@@ -58,11 +58,11 @@ TEST(TimerTest, TimerCallsTimeout) {
 
 TEST_F(TimedDoorTest, RepeatedUnlockDoesNotThrowUntilTimeout) {
   door->unlock();
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  std::this_thread::sleep_for(std::chrono::milliseconds(200));
   door->unlock();
 
   std::this_thread::sleep_for(std::chrono::seconds(2));
-  EXPECT_THROW(door->checkException(), std::runtime_error);
+  EXPECT_THROW(door->throwState(), std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, MultipleLockUnlockCycles) {
