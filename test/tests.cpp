@@ -6,13 +6,6 @@
 
 #include "TimedDoor.h"
 
-using testing::Test;
-using testing::Mock;
-using testing::EXPECT_CALL;
-using testing::Times;
-using testing::EXPECT_NO_THROW;
-using testing::EXPECT_THROW;
-
 class MockTimerClient : public TimerClient {
  public:
   MOCK_METHOD(void, Timeout, (), (override));
