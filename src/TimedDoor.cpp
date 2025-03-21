@@ -6,12 +6,12 @@ DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
 
 void DoorTimerAdapter::Timeout() {
     if (door.isDoorOpened()) {
-        throw std::runtime_error("Door has been open too long!");
+        throw std::runtime_error("Дверь открыта слишком долго!");
     }
 }
 
-TimedDoor::TimedDoor(int timeout) : 
-    iTimeout(timeout), 
+TimedDoor::TimedDoor(int timeout) :
+    iTimeout(timeout),
     isOpened(false) {
     adapter = new DoorTimerAdapter(*this);
 }
@@ -33,13 +33,13 @@ void TimedDoor::lock() {
     isOpened = false;
 }
 
-int TimedDoor::getTimeOut() {
+int TimedDoor::getTimeOut() const {
     return iTimeout;
 }
 
 void TimedDoor::throwState() {
     if (isOpened) {
-        throw std::runtime_error("Door is open!");
+        throw std::runtime_error("Дверь открыта!");
     }
 }
 
