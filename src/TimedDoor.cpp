@@ -1,36 +1,38 @@
 // Copyright 2021 GHA Test Team
 #include "TimedDoor.h"
 #include <stdexcept>
-#include <memory>  // Добавлен include
+#include <memory>
 
-DoorTimerAdapter::DoorTimerAdapter(TimedDoor &door) : door(door) {}
+DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
 
 void DoorTimerAdapter::Timeout() {
     if (door.isDoorOpened()) {
-        throw std::runtime_error("Door Timeout");
+        door.throwState();
     }
 }
 
-TimedDoor::TimedDoor(int timeout, Timer& timer)
+TimedDoor::TimedDoor(int timeout, Timer* timer) 
     : timer(timer), iTimeout(timeout), isOpened(false) {
     adapter = std::make_unique<DoorTimerAdapter>(*this);
 }
 
-bool TimedDoor::isDoorOpened() { return isOpened; }
+bool TimedDoor::isDoorOpened() {
+    return isOpened;
+}
 
 void TimedDoor::unlock() {
     isOpened = true;
-    timer.tregister(iTimeout, adapter.get());
+    timer->tregister(iTimeout, adapter.get());
 }
 
-void TimedDoor::lock() { isOpened = false; }
+void TimedDoor::lock() {
+    isOpened = false;
+}
 
 int TimedDoor::getTimeOut() const {
     return iTimeout;
 }
 
 void TimedDoor::throwState() {
-    if (isOpened) {
-        throw std::runtime_error("Door Timeout");
-    }
+    throw std::runtime_error("Door is still open after timeout!");
 }
