@@ -33,6 +33,7 @@ TEST_F(TimedDoorTest, UnlockOpensDoor) {
 }
 
 TEST_F(TimedDoorTest, LockClosesDoor) {
+    EXPECT_CALL(mockTimer, tregister(5, _));
     door->unlock();
     door->lock();
     EXPECT_FALSE(door->isDoorOpened());
