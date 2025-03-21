@@ -1,8 +1,7 @@
 // Copyright 2021 GHA Test Team
-
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <memory>  // Добавлен include
+#include <memory>
 #include "TimedDoor.h"
 
 using ::testing::_;
@@ -19,7 +18,7 @@ class TimedDoorTest : public ::testing::Test {
   std::unique_ptr<TimedDoor> door;
 
   void SetUp() override {
-    door = std::make_unique<TimedDoor>(5, mockTimer);
+    door = std::make_unique<TimedDoor>(5, &mockTimer);
   }
 };
 
@@ -56,17 +55,17 @@ TEST_F(TimedDoorTest, GetTimeoutReturnsCorrectValue) {
 
 TEST(DoorTimerAdapterTest, TimeoutThrowsIfDoorOpen) {
     MockTimer timer;
-    TimedDoor door(5, timer);
+    TimedDoor door(5, &timer);
     door.unlock();
-    DoorTimerAdapter adapter(door);
+    DoorTimerAdapter adapter(&door);
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
 
 TEST(DoorTimerAdapterTest, TimeoutNoThrowIfDoorClosed) {
     MockTimer timer;
-    TimedDoor door(5, timer);
+    TimedDoor door(5, &timer);
     door.lock();
-    DoorTimerAdapter adapter(door);
+    DoorTimerAdapter adapter(&door);
     EXPECT_NO_THROW(adapter.Timeout());
 }
 

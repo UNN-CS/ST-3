@@ -3,17 +3,17 @@
 #include <stdexcept>
 #include <memory>
 
-DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
+DoorTimerAdapter::DoorTimerAdapter(TimedDoor* d) : door(d) {}
 
 void DoorTimerAdapter::Timeout() {
-    if (door.isDoorOpened()) {
-        door.throwState();
+    if (door->isDoorOpened()) {
+        door->throwState();
     }
 }
 
 TimedDoor::TimedDoor(int timeout, Timer* timer) 
     : timer(timer), iTimeout(timeout), isOpened(false) {
-    adapter = std::make_unique<DoorTimerAdapter>(*this);
+    adapter = std::make_unique<DoorTimerAdapter>(this);
 }
 
 bool TimedDoor::isDoorOpened() {
