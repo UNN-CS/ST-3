@@ -1,52 +1,60 @@
 // Copyright 2021 GHA Test Team
-
 #ifndef INCLUDE_TIMEDDOOR_H_
 #define INCLUDE_TIMEDDOOR_H_
 
-class DoorTimerAdapter;
-class Timer;
+#include <stdexcept>
+#include <thread>
+
+class TimerClient;
 class Door;
 class TimedDoor;
+class Timer;
 
 class TimerClient {
  public:
-  virtual void Timeout() = 0;
+    virtual void Timeout() = 0;
 };
 
 class Door {
  public:
-  virtual void lock() = 0;
-  virtual void unlock() = 0;
-  virtual bool isDoorOpened() = 0;
+    virtual void lock() = 0;
+    virtual void unlock() = 0;
+    virtual bool isDoorOpened() const = 0;
+};
+
+class Timer {
+ public:
+    virtual void tregister(int seconds, TimerClient* timerClient);
+    virtual ~Timer() = default;
+ private:
+    TimerClient* client;
+    void sleep(int seconds);
 };
 
 class DoorTimerAdapter : public TimerClient {
  private:
-  TimedDoor& door;
+    const TimedDoor& door;
+
  public:
-  explicit DoorTimerAdapter(TimedDoor&);
-  void Timeout();
+    explicit DoorTimerAdapter(const TimedDoor& door);
+    void Timeout() override;
 };
 
 class TimedDoor : public Door {
  private:
-  DoorTimerAdapter * adapter;
-  int iTimeout;
-  bool isOpened;
- public:
-  explicit TimedDoor(int);
-  bool isDoorOpened();
-  void unlock();
-  void lock();
-  int  getTimeOut() const;
-  void throwState();
-};
+    DoorTimerAdapter* adapter;
+    Timer timer;
+    int iTimeout;
+    bool isOpened;
 
-class Timer {
-  TimerClient *client;
-  void sleep(int);
  public:
-  void tregister(int, TimerClient*);
+    explicit TimedDoor(int timeout);
+    ~TimedDoor();
+    bool isDoorOpened() const override;
+    void unlock() override;
+    void lock() override;
+    int getTimeOut() const;
+    void throwState() const;
 };
 
 #endif  // INCLUDE_TIMEDDOOR_H_
