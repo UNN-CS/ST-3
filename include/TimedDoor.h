@@ -40,13 +40,15 @@ class TimedDoor : public Door {
   void lock();
   int  getTimeOut() const;
   void throwState();
+  void setAdapter(DoorTimerAdapter* a) { adapter = a; }
+  DoorTimerAdapter* getAdapter() const { return adapter; }
 };
 
 class Timer {
   TimerClient *client;
-  void sleep(int);
+  void sleep(int seconds);
  public:
-  void tregister(int, TimerClient*);
+  void tregister(int timeout, TimerClient* c);
 };
 
 #endif  // INCLUDE_TIMEDDOOR_H_
