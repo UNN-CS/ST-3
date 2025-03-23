@@ -67,8 +67,7 @@ class TimedDoorTest : public ::testing::Test {
 
     TEST_F(TimedDoorTest, ExceptionAfterTimeoutWhenDoorOpen) {
         door->unlock();
-        adapter->Timeout();
-        EXPECT_ANY_THROW(door->throwState());
+        EXPECT_ANY_THROW(adapter->Timeout());
     }
 
     TEST_F(TimedDoorTest, TimerFiresAfterTimeout) {
