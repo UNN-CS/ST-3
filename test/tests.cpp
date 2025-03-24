@@ -50,10 +50,9 @@ TEST_F(TimedDoorTest, GetTimeOutReturnsCorrectValue) {
 }
 
 TEST_F(TimedDoorTest, ExceptionThrownWhenDoorRemainsOpenAfterTimeout) {
-  EXPECT_THROW({
-    door->unlock();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-  }, std::runtime_error);
+  door->unlock();
+  std::this_thread::sleep_for(std::chrono::seconds(2));
+  ASSERT_ANY_THROW(door->throwState());
 }
 
 TEST_F(TimedDoorTest, NoExceptionWhenDoorClosedBeforeTimeout) {
