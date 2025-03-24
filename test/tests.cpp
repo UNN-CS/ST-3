@@ -57,6 +57,7 @@ TEST_F(TimedDoorTest, door_close) {
 }
 
 TEST_F(TimedDoorTest, throw_state_throws_exception) {
+    door->unlock();
     EXPECT_THROW(door->throwState(), std::runtime_error);
 }
 
