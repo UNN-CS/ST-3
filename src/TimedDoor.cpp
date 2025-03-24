@@ -16,7 +16,6 @@ void DoorTimerAdapter::Timeout() {
 }
 
 TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
-
   adapter = new DoorTimerAdapter(*this);
 }
 
@@ -27,7 +26,6 @@ bool TimedDoor::isDoorOpened() {
 void TimedDoor::unlock() {
   std::cout << "Дверь открыта" << std::endl;
   isOpened = true;
-
   Timer timer;
   timer.tregister(iTimeout, adapter);
 }
