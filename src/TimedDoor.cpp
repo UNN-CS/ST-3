@@ -40,8 +40,7 @@ int TimedDoor::getTimeOut() const {
 void TimedDoor::throwState() {
   if (isOpened) {
     throw std::runtime_error("Door is currently opened!");
-  }
-  else {
+  } else {
     throw std::runtime_error("Door is currently closed!");
   }
 }
