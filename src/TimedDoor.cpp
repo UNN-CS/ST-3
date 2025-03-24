@@ -47,14 +47,14 @@ void Timer::sleep(int seconds) {
 }
 
 void Timer::tregister(int time, TimerClient* c) {
-    client = c;
+    std::shared_ptr<TimerClient> clientPtr(c, [](TimerClient*) {});
 
-    std::thread this_thread([time, c]() {
+    std::thread this_thread([time, clientPtr]() {
         if (time > 0) {
             std::this_thread::sleep_for(std::chrono::seconds(time));
         }
-        if (c) {
-            c->Timeout();
+        if (clientPtr) {
+            clientPtr->Timeout();
         }
         });
     this_thread.detach();
