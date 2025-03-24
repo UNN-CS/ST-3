@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <chrono>
 #include <thread>
+#include <memory>
 
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& door) : door(door) {}
 
@@ -47,7 +48,7 @@ void Timer::sleep(int seconds) {
 }
 
 void Timer::tregister(int time, TimerClient* c) {
-    std::shared_ptr<TimerClient> clientPtr(c, [](TimerClient*) {});
+    auto clientPtr = std::shared_ptr<TimerClient>(c, [](TimerClient*) {}); 
 
     std::thread this_thread([time, clientPtr]() {
         if (time > 0) {
