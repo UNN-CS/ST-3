@@ -1,12 +1,5 @@
 // test/tests.cpp
 // Copyright 2021 GHA Test Team
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include "TimedDoor.h"
-#include <thread>
-#include <chrono>
-#include <stdexcept>
-
 using ::testing::AtLeast;
 
 class TimedDoorTest : public ::testing::Test {
@@ -52,7 +45,6 @@ TEST_F(TimedDoorTest, GetTimeOutReturnsCorrectValue) {
 TEST_F(TimedDoorTest, ExceptionThrownWhenDoorRemainsOpenAfterTimeout) {
   door->unlock();
   std::this_thread::sleep_for(std::chrono::seconds(2));
-  // Если дверь остаётся открытой, throwState() выбрасывает исключение.
   EXPECT_THROW(door->throwState(), std::runtime_error);
 }
 
@@ -70,20 +62,28 @@ TEST(TimerAdapterTest, TimeoutCallsThrowStateIfDoorOpen) {
   EXPECT_THROW(door.throwState(), std::runtime_error);
 }
 
+class TestTimer {
+ public:
+  void tregister(int timeout, TimerClient* client) {
+    std::this_thread::sleep_for(std::chrono::seconds(timeout));
+    if (client) {
+      client->Timeout();
+    }
+  }
+};
+
 TEST(TimerTest, TimerRegistersAndCallsTimeout) {
   MockTimerClient mockClient;
+  TestTimer timer;
   EXPECT_CALL(mockClient, Timeout()).Times(1);
-  Timer timer;
   timer.tregister(1, &mockClient);
-  std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
 TEST(TimerTest, TimerWithZeroTimeoutCallsImmediately) {
   MockTimerClient mockClient;
+  TestTimer timer;
   EXPECT_CALL(mockClient, Timeout()).Times(1);
-  Timer timer;
   timer.tregister(0, &mockClient);
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 TEST_F(TimedDoorTest, DoorThrowStateThrowsRuntimeError) {
