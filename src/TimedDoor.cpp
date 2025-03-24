@@ -1,6 +1,5 @@
 // src/TimedDoor.cpp
 // Copyright 2021 GHA Test Team
-
 #include "TimedDoor.h"
 #include <iostream>
 #include <stdexcept>
@@ -49,3 +48,4 @@ void Timer::tregister(int timeout, TimerClient* client) {
     client->Timeout();
   }).detach();
 }
+
