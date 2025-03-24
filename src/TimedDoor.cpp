@@ -50,7 +50,7 @@ void Timer::sleep(int seconds) {
 void Timer::tregister(int time, TimerClient* c) {
     auto clientPtr = std::shared_ptr<TimerClient>(c, [](TimerClient*) {}); 
 
-    std::thread this_thread([time, clientPtr]() {
+    std::thread this_thread([time, clientPtr]() mutable {
         if (time > 0) {
             std::this_thread::sleep_for(std::chrono::seconds(time));
         }
