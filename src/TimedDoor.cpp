@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <thread>
 #include <chrono>
+#include <future>
 
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
 
