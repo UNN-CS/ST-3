@@ -57,5 +57,5 @@ void Timer::tregister(int time, TimerClient* c) {
             c->Timeout();
         }
         });
-    timer.detach();
+    this_thread.detach();
 }
