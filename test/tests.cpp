@@ -34,7 +34,7 @@ TEST_F(TimedDoorTest, UnlockSetsDoorToOpen) {
   EXPECT_TRUE(door->isDoorOpened());
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
   door->lock();
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+  std::this_thread::sleep_for(std::chrono::milliseconds(600));
   EXPECT_FALSE(door->isDoorOpened());
 }
 
@@ -42,7 +42,7 @@ TEST_F(TimedDoorTest, LockSetsDoorToClosed) {
   door->unlock();
   door->lock();
   EXPECT_FALSE(door->isDoorOpened());
-  std::this_thread::sleep_for(std::chrono::seconds(2));
+  std::this_thread::sleep_for(std::chrono::seconds(1));
 }
 
 TEST_F(TimedDoorTest, GetTimeOutReturnsCorrectValue) {
@@ -52,24 +52,22 @@ TEST_F(TimedDoorTest, GetTimeOutReturnsCorrectValue) {
 TEST_F(TimedDoorTest, ExceptionThrownWhenDoorRemainsOpenAfterTimeout) {
   door->unlock();
   std::this_thread::sleep_for(std::chrono::seconds(2));
-  ASSERT_ANY_THROW(door->throwState());
+  // Если дверь остаётся открытой, throwState() выбрасывает исключение.
+  EXPECT_THROW(door->throwState(), std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, NoExceptionWhenDoorClosedBeforeTimeout) {
-  EXPECT_NO_THROW({
-    door->unlock();
-    std::this_thread::sleep_for(std::chrono::milliseconds(500));
-    door->lock();
-    std::this_thread::sleep_for(std::chrono::seconds(1));
-  });
+  door->unlock();
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  door->lock();
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+  EXPECT_NO_THROW(door->throwState());
 }
 
 TEST(TimerAdapterTest, TimeoutCallsThrowStateIfDoorOpen) {
   TimedDoor door(0);
   door.unlock();
-  EXPECT_THROW({
-    door.throwState();
-  }, std::runtime_error);
+  EXPECT_THROW(door.throwState(), std::runtime_error);
 }
 
 TEST(TimerTest, TimerRegistersAndCallsTimeout) {
