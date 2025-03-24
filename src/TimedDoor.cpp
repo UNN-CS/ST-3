@@ -49,7 +49,8 @@ void TimedDoor::throwState() {
 void Timer::tregister(int timeout, TimerClient* client) {
   std::thread([timeout, client]() {
     std::this_thread::sleep_for(std::chrono::seconds(timeout));
-    client->Timeout();
+    if (client) {
+      client->Timeout();
+    }
   }).detach();
 }
-
