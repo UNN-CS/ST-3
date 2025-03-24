@@ -46,7 +46,7 @@ void Timer::sleep(int seconds) {
 }
 
 void Timer::tregister(int timeout, TimerClient* client) {
-    std::async(std::launch::async, [timeout, client]() {
+    [[maybe_unused]] auto res = std::async(std::launch::async, [timeout, client]() {
         std::this_thread::sleep_for(std::chrono::seconds(timeout));
         client->Timeout();
         });
