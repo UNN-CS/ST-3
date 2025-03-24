@@ -3,6 +3,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <cstdint>
+#include <thread>
+#include <chrono>
 #include "TimedDoor.h"
 
 using ::testing::Return;
