@@ -4,6 +4,7 @@
 #include <gmock/gmock.h>
 #include <cstdint>
 #include <thread>
+#include <memory>
 #include "TimedDoor.h"
 
 using ::testing::AtLeast;
@@ -74,8 +75,7 @@ TEST_F(TimedDoorTest, time_out_no_throws_exception_when_door_closed) {
 
 TEST_F(TimedDoorTest, adapter_timeout) {
  MockTimerClient mockClient;
-
-    timer->tregister(5, std::make_shared<MockTimerClient>(mockClient));
+    timer->tregister(5, &mockClient);
     door->unlock();
     EXPECT_CALL(mockClient, Timeout()).Times(1);
     std::this_thread::sleep_for(std::chrono::seconds(6));
