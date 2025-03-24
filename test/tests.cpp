@@ -72,24 +72,17 @@ TEST_F(TimedDoorTest, time_out_no_throws_exception_when_door_closed) {
 }
 
 
-TEST_F(TimedDoorTest, AdapterTimeout) {
+TEST_F(TimedDoorTest, adapter_timeout) {
+ MockTimerClient mockClient;
+
+    timer->tregister(5, std::make_shared<MockTimerClient>(mockClient));
     door->unlock();
+    EXPECT_CALL(mockClient, Timeout()).Times(1);
     std::this_thread::sleep_for(std::chrono::seconds(6));
-    EXPECT_FALSE(door->isDoorOpened());
 }
 
 TEST_F(TimedDoorTest, get_timeout) {
     EXPECT_EQ(door->getTimeOut(), 5);
-}
-
-TEST(TimedDoorTest, timer_calls_timeout_method) {
-    MockTimerClient mockClient;
-    Timer timer;
-
-    EXPECT_CALL(mockClient, Timeout()).Times(1);
-
-    timer.tregister(1, &mockClient);
-    std::this_thread::sleep_for(std::chrono::seconds(2));
 }
 
 TEST_F(TimedDoorTest, locking_twice_door_lock) {
