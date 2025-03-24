@@ -32,7 +32,10 @@ TEST_F(TimedDoorTest, DoorInitialStateIsClosed) {
 TEST_F(TimedDoorTest, UnlockSetsDoorToOpen) {
   door->unlock();
   EXPECT_TRUE(door->isDoorOpened());
-  std::this_thread::sleep_for(std::chrono::seconds(2));
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
+  door->lock();
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+  EXPECT_FALSE(door->isDoorOpened());
 }
 
 TEST_F(TimedDoorTest, LockSetsDoorToClosed) {
