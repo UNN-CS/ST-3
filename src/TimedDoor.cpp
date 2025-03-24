@@ -10,7 +10,11 @@ DoorTimerAdapter::DoorTimerAdapter(TimedDoor &d) : door(d) {}
 
 void DoorTimerAdapter::Timeout() {
   if (door.isDoorOpened()) {
-    door.throwState();
+    try {
+      door.throwState();
+    } catch (const std::runtime_error& e) {
+      std::cerr << "Ошибка: " << e.what() << std::endl;
+    }
   }
 }
 
