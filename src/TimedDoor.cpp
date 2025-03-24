@@ -48,15 +48,15 @@ void Timer::sleep(int seconds) {
 }
 
 void Timer::tregister(int time, TimerClient* c) {
-    auto clientPtr = std::shared_ptr<TimerClient>(c, [](TimerClient*) {}); 
+    client = c;
 
-    std::thread this_thread([time, clientPtr]() mutable {
+ std::thread this_thread([time, c]() {
         if (time > 0) {
             std::this_thread::sleep_for(std::chrono::seconds(time));
         }
-        if (clientPtr) {
-            clientPtr->Timeout();
+        if (c) {
+            c->Timeout();
         }
         });
-    this_thread.detach();
+ this_thread.detach();
 }
