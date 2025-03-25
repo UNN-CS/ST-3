@@ -1,7 +1,7 @@
 cmake_minimum_required (VERSION 3.10.2)
 project (ST-3)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -g")
 
 
