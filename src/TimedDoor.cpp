@@ -55,6 +55,3 @@ void Timer::tregister(int timeout, TimerClient* clientArg) {
   std::this_thread::sleep_for(std::chrono::seconds(timeout));
   client->Timeout();
 }
-
-
-}
