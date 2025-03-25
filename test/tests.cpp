@@ -111,6 +111,6 @@ TEST_F(TimedDoorTest, FullCycle) {
   door->unlock();
   std::this_thread::sleep_for(std::chrono::milliseconds(500));
   EXPECT_NO_THROW(door->throwState());
-  std::this_thread::sleep_for(std::chrono::seconds(2));
+  std::this_thread::sleep_for(std::chrono::milliseconds(2000));
   EXPECT_THROW(door->lock(), std::runtime_error);
 }
