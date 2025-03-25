@@ -7,7 +7,8 @@
 #include <chrono>
 #include <stdexcept>
 
-using namespace std::chrono_literals;
+using std::chrono::milliseconds;
+using std::chrono::seconds;
 
 class TimedDoorTest : public ::testing::Test {
  protected:
@@ -32,9 +33,9 @@ TEST_F(TimedDoorTest, DoorInitialStateIsClosed) {
 TEST_F(TimedDoorTest, UnlockSetsDoorToOpen) {
   door->unlock();
   EXPECT_TRUE(door->isDoorOpened());
-  std::this_thread::sleep_for(500ms);
+  std::this_thread::sleep_for(milliseconds(500));
   door->lock();
-  std::this_thread::sleep_for(600ms);
+  std::this_thread::sleep_for(milliseconds(600));
   EXPECT_FALSE(door->isDoorOpened());
 }
 
@@ -42,7 +43,7 @@ TEST_F(TimedDoorTest, LockSetsDoorToClosed) {
   door->unlock();
   door->lock();
   EXPECT_FALSE(door->isDoorOpened());
-  std::this_thread::sleep_for(1s);
+  std::this_thread::sleep_for(seconds(1));
 }
 
 TEST_F(TimedDoorTest, GetTimeOutReturnsCorrectValue) {
@@ -51,15 +52,15 @@ TEST_F(TimedDoorTest, GetTimeOutReturnsCorrectValue) {
 
 TEST_F(TimedDoorTest, ExceptionThrownWhenDoorRemainsOpenAfterTimeout) {
   door->unlock();
-  std::this_thread::sleep_for(2s);
+  std::this_thread::sleep_for(seconds(2));
   EXPECT_THROW(door->throwState(), std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, NoExceptionWhenDoorClosedBeforeTimeout) {
   door->unlock();
-  std::this_thread::sleep_for(500ms);
+  std::this_thread::sleep_for(milliseconds(500));
   door->lock();
-  std::this_thread::sleep_for(1s);
+  std::this_thread::sleep_for(seconds(1));
   EXPECT_NO_THROW(door->throwState());
 }
 
@@ -74,7 +75,7 @@ TEST(TimerTest, TimerRegistersAndCallsTimeout) {
   Timer timer;
   EXPECT_CALL(*mockClient, Timeout()).Times(1);
   timer.tregister(1, mockClient);
-  std::this_thread::sleep_for(2s);
+  std::this_thread::sleep_for(seconds(2));
   delete mockClient;
 }
 
@@ -83,7 +84,7 @@ TEST(TimerTest, TimerWithZeroTimeoutCallsImmediately) {
   Timer timer;
   EXPECT_CALL(*mockClient, Timeout()).Times(1);
   timer.tregister(0, mockClient);
-  std::this_thread::sleep_for(100ms);
+  std::this_thread::sleep_for(milliseconds(100));
   delete mockClient;
 }
 
