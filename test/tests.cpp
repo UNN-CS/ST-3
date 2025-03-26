@@ -1,3 +1,5 @@
+// Copyright 2025 Konkov Ivan
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "TimedDoor.h"
@@ -7,7 +9,7 @@ using ::testing::Throw;
 using ::testing::Return;
 
 class MockTimerClient : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
@@ -15,6 +17,12 @@ class MockDoor : public Door {
 public:
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
+    MOCK_METHOD(bool, isDoorOpened, (), (override));
+};
+
+class MockTimedDoor : public TimedDoor {
+ public:
+    MockTimedDoor(int timeout) : TimedDoor(timeout) {}
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
@@ -60,9 +68,9 @@ TEST(DoorTimerAdapterTest, TimeoutOnClosedDoorNoThrow) {
 }
 
 TEST(DoorTimerAdapterTest, AdapterCallsIsDoorOpened) {
-    MockDoor mockDoor;
+    MockTimedDoor mockDoor(5);
     EXPECT_CALL(mockDoor, isDoorOpened()).WillOnce(Return(true));
-    DoorTimerAdapter adapter(static_cast<TimedDoor&>(mockDoor));
+    DoorTimerAdapter adapter(mockDoor);  // Теперь корректное приведение
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
 
