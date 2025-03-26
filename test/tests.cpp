@@ -14,7 +14,7 @@ class MockTimerClient : public TimerClient {
 };
 
 class MockDoor : public Door {
-public:
+ public:
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
     MOCK_METHOD(bool, isDoorOpened, (), (override));
@@ -22,7 +22,7 @@ public:
 
 class MockTimedDoor : public TimedDoor {
  public:
-    MockTimedDoor(int timeout) : TimedDoor(timeout) {}
+    explicit MockTimedDoor(int timeout) : TimedDoor(timeout) {}
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
@@ -70,7 +70,7 @@ TEST(DoorTimerAdapterTest, TimeoutOnClosedDoorNoThrow) {
 TEST(DoorTimerAdapterTest, AdapterCallsIsDoorOpened) {
     MockTimedDoor mockDoor(5);
     EXPECT_CALL(mockDoor, isDoorOpened()).WillOnce(Return(true));
-    DoorTimerAdapter adapter(mockDoor);  // Теперь корректное приведение
+    DoorTimerAdapter adapter(mockDoor);
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
 
