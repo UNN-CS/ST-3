@@ -1,7 +1,8 @@
-// Copyright 2021 GHA Test Team
+// Copyright 2025 Konkov Ivan
 
 #pragma once
 #include <exception>
+#include <memory>
 
 class TimerClient {
 public:
@@ -34,12 +35,15 @@ private:
     bool isOpened;
 public:
     explicit TimedDoor(int timeout);
+    ~TimedDoor();
+    
     bool isDoorOpened() override;
     void unlock() override;
     void lock() override;
+    
     int getTimeOut();
     void throwState();
-    DoorTimerAdapter* getAdapter(); // Добавлен новый метод
+    DoorTimerAdapter* getAdapter();
 };
 
 class Timer {
