@@ -27,10 +27,18 @@ TEST(TimedDoorTest, DoorLockUnlock) {
 
 // Тестирование регистрации таймера
 TEST(TimerTest, TimerTriggersTimeout) {
+    using ::testing::NiceMock;
+    using ::testing::Expectation;
+    
     NiceMock<MockTimerClient> mockClient;
     Timer timer;
-    EXPECT_CALL(mockClient, Timeout()).Times(1);
+    
+    Expectation timeoutCall = EXPECT_CALL(mockClient, Timeout()).Times(1);
+    
     timer.tregister(1, &mockClient);
+    
+    // Ожидание завершения асинхронного вызова
+    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
 }
 
 // Тестирование выброса исключения при открытой двери
