@@ -3,9 +3,9 @@
 #include <iostream>
 
 int main() {
-  TimedDoor tDoor(5);
-  tDoor.lock();
-  tDoor.unlock();
+	TimedDoor tDoor(5);
+	tDoor.lock();
+	tDoor.unlock();
 
-  return 0;
+	return 0;
 }
