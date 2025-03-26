@@ -2,8 +2,9 @@
 
 #include "TimedDoor.h"
 #include <stdexcept>
+#include <thread>
 
-DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
+DoorTimerAdapter::DoorTimerAdapter(TimedDoor& door) : door(door) {}
 
 void DoorTimerAdapter::Timeout() {
     if (door.isDoorOpened()) {
@@ -11,43 +12,34 @@ void DoorTimerAdapter::Timeout() {
     }
 }
 
-TimedDoor::TimedDoor(int timeout, Timer& t) 
-    : timer(t), iTimeout(timeout), isOpened(false) {
+TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
     adapter = new DoorTimerAdapter(*this);
 }
 
-TimedDoor::~TimedDoor() {
-    delete adapter;
+bool TimedDoor::isDoorOpened() { 
+    return isOpened; 
 }
 
-bool TimedDoor::isDoorOpened() {
-    return isOpened;
+void TimedDoor::unlock() { 
+    isOpened = true; 
+    adapter->Timeout();
 }
 
-void TimedDoor::unlock() {
-    isOpened = true;
-    timer.tregister(iTimeout, adapter);
+void TimedDoor::lock() { 
+    isOpened = false; 
 }
 
-void TimedDoor::lock() {
-    isOpened = false;
+int TimedDoor::getTimeOut() { 
+    return iTimeout; 
 }
 
-int TimedDoor::getTimeOut() const {
-    return iTimeout;
-}
-
-void TimedDoor::throwState() {
-    throw std::runtime_error("Door is still open");
+void TimedDoor::throwState() { 
+    throw std::runtime_error("Door opened too long!");
 }
 
 void Timer::tregister(int timeout, TimerClient* client) {
-    this->client = client;
-    sleep(timeout);
-    if (client) {
+    std::thread([client, timeout]() {
+        std::this_thread::sleep_for(std::chrono::seconds(timeout));
         client->Timeout();
-    }
-}
-
-void Timer::sleep(int) {
+    }).detach();
 }
