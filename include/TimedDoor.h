@@ -34,8 +34,9 @@ class TimedDoor : public Door {
   int iTimeout;
   bool isOpened;
   bool timeoutTriggered;
+  Timer& timer;
  public:
-  explicit TimedDoor(int);
+  explicit TimedDoor(int timeout, Timer& t) : timer(t) {}
   ~TimedDoor();
   bool isDoorOpened();
   void unlock();
@@ -43,13 +44,19 @@ class TimedDoor : public Door {
   int  getTimeOut() const;
   void throwState();
   void setTimeoutTriggered(bool);
+  void unlock() {
+      isOpened = true;
+      timer.tregister(iTimeout, adapter);
+    }
 };
 
 class Timer {
   TimerClient *client;
   void sleep(int);
  public:
-  void tregister(int, TimerClient*);
+    virtual ~Timer() = default;
+    virtual void tregister(int, TimerClient*) = 0;
+    virtual void sleep(int) {}
 };
 
 #endif  // INCLUDE_TIMEDDOOR_H_
