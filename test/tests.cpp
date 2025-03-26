@@ -28,7 +28,8 @@ class MockTimedDoor : public TimedDoor {
 
 class MockTimer : public Timer {
  public:
-    MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
+  MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
+  MOCK_METHOD(void, sleep, (int), (override));
 };
 
 TEST(TimedDoorTest, DoorIsInitiallyClosed) {
@@ -38,11 +39,11 @@ TEST(TimedDoorTest, DoorIsInitiallyClosed) {
 
 TEST(TimedDoorTest, UnlockOpensDoor) {
     MockTimer mockTimer;
-    TimedDoor door(5);
+    TimedDoor door(5, mockTimer);
     
     EXPECT_CALL(mockTimer, tregister(5, _));
-    
     door.unlock();
+    
     EXPECT_TRUE(door.isDoorOpened());
 }
 
