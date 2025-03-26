@@ -4,20 +4,16 @@
 #include <thread>
 #include <chrono>
 
-// Реализация конструктора адаптера
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
 
-// Метод Timeout вызывается по истечении таймера
 void DoorTimerAdapter::Timeout() {
     door.throwState();
 }
 
-// Конструктор TimedDoor
 TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
     adapter = new DoorTimerAdapter(*this);
 }
 
-// Деструктор TimedDoor
 TimedDoor::~TimedDoor() {
     delete adapter;
 }
@@ -47,7 +43,8 @@ void TimedDoor::throwState() {
 }
 
 void Timer::tregister(int timeout, TimerClient* client) {
-    client = client;
-    std::this_thread::sleep_for(std::chrono::seconds(timeout));
-    client->Timeout();
+    std::thread([timeout, client]() {
+        std::this_thread::sleep_for(std::chrono::seconds(timeout));
+        client->Timeout();
+    }).detach();
 }
