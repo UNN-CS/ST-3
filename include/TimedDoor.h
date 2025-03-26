@@ -13,12 +13,12 @@ class Door;
 class TimedDoor;
 
 class TimerClient {
-public:
+ public:
     virtual void Timeout() = 0;
 };
 
 class Door {
-public:
+ public:
     virtual void lock() = 0;
     virtual void unlock() = 0;
     virtual bool isDoorOpened() = 0;
@@ -27,7 +27,7 @@ public:
 class DoorTimerAdapter : public TimerClient {
     // private:
     TimedDoor& door;
-public:
+ public:
     explicit DoorTimerAdapter(TimedDoor&);
     void Timeout();
 };
@@ -39,7 +39,7 @@ class TimedDoor : public Door {
     bool isOpened;
     std::thread timerThread;
     std::exception_ptr timerException;
-public:
+ public:
     explicit TimedDoor(int);
     ~TimedDoor();
     bool isDoorOpened();
@@ -53,7 +53,7 @@ public:
 class Timer {
     TimerClient* client;
     void sleep(int);
-public:
+ public:
     void tregister(int, TimerClient*);
 };
 
