@@ -3,18 +3,13 @@
 #include <chrono>
 #include <thread>
 
-// Реализация DoorTimerAdapter
-
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& doorRef) : door(doorRef) {}
 
 void DoorTimerAdapter::Timeout() {
-    // Если дверь до сих пор открыта, вызываем выброс исключения
     if (door.isDoorOpened()) {
         door.throwState();
     }
 }
-
-// Реализация TimedDoor
 
 TimedDoor::TimedDoor(int timeout)
     : iTimeout(timeout), isOpened(false), timerException(nullptr) {
@@ -34,7 +29,6 @@ bool TimedDoor::isDoorOpened() {
 
 void TimedDoor::unlock() {
     isOpened = true;
-    // Запускаем асинхронно таймер
     timerThread = std::thread([this]() {
         Timer timer;
         try {
@@ -48,7 +42,6 @@ void TimedDoor::unlock() {
 
 void TimedDoor::lock() {
     isOpened = false;
-    // Если таймер запущен, дожидаемся его завершения
     if (timerThread.joinable()) {
         timerThread.join();
     }
@@ -67,14 +60,11 @@ void TimedDoor::joinTimerThread() {
         timerThread.join();
     }
     if (timerException) {
-        // Сохраняем исключение и сбрасываем флаг, чтобы повторные вызовы не выбрасывали его
         auto ex = timerException;
         timerException = nullptr;
         std::rethrow_exception(ex);
     }
 }
-
-// Реализация Timer
 
 void Timer::sleep(int seconds) {
     std::this_thread::sleep_for(std::chrono::seconds(seconds));

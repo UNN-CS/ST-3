@@ -47,7 +47,6 @@ public:
     void lock();
     int getTimeOut() const;
     void throwState();
-    // Метод для ожидания завершения потока таймера, который при необходимости повторно выбрасывает исключение
     void joinTimerThread();
 };
 
