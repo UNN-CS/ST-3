@@ -1,4 +1,5 @@
 // Copyright 2025 Konkov Ivan
+
 #include "TimedDoor.h"
 #include <stdexcept>
 
@@ -10,7 +11,8 @@ void DoorTimerAdapter::Timeout() {
     }
 }
 
-TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
+TimedDoor::TimedDoor(int timeout, Timer& t) 
+    : timer(t), iTimeout(timeout), isOpened(false) {
     adapter = new DoorTimerAdapter(*this);
 }
 
@@ -24,7 +26,6 @@ bool TimedDoor::isDoorOpened() {
 
 void TimedDoor::unlock() {
     isOpened = true;
-    Timer timer;
     timer.tregister(iTimeout, adapter);
 }
 
