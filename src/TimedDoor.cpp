@@ -43,3 +43,7 @@ void Timer::tregister(int timeout, TimerClient* client) {
         client->Timeout();
     }).detach();
 }
+
+DoorTimerAdapter* TimedDoor::getAdapter() { 
+  return adapter; 
+}
