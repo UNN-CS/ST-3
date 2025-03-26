@@ -10,7 +10,7 @@ using ::testing::_;
 
 // Мок-класс для тестирования таймера
 class MockTimerClient : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
