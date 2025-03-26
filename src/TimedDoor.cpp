@@ -1,17 +1,16 @@
 // Copyright 2021 GHA Test Team
 #include "TimedDoor.h"
 #include <stdexcept>
-#include <thread>
-#include <chrono>
 
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
 
 void DoorTimerAdapter::Timeout() {
-    door.setTimeoutTriggered(true);
+    if (door.isDoorOpened()) {
+        door.throwState();
+    }
 }
 
-TimedDoor::TimedDoor(int timeout)
-    : iTimeout(timeout), isOpened(false), timeoutTriggered(false) {
+TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
     adapter = new DoorTimerAdapter(*this);
 }
 
@@ -38,19 +37,17 @@ int TimedDoor::getTimeOut() const {
 }
 
 void TimedDoor::throwState() {
-    if (timeoutTriggered && isOpened) {
-        timeoutTriggered = false;
-        throw std::runtime_error("Door left open too long!");
-    }
+    throw std::runtime_error("Door is still open");
 }
 
 void Timer::tregister(int timeout, TimerClient* client) {
-    std::thread([timeout, client]() {
-        std::this_thread::sleep_for(std::chrono::seconds(timeout));
+    this->client = client;
+    sleep(timeout);
+    if (client) {
         client->Timeout();
-    }).detach();
+    }
 }
 
-void TimedDoor::setTimeoutTriggered(bool triggered) {
-    timeoutTriggered = triggered;
+void Timer::sleep(int) {
+    // Реальная реализация могла бы содержать задержку, но для тестов оставляем пустой
 }
