@@ -49,5 +49,4 @@ void Timer::tregister(int timeout, TimerClient* client) {
 }
 
 void Timer::sleep(int) {
-    // Реальная реализация могла бы содержать задержку, но для тестов оставляем пустой
 }
