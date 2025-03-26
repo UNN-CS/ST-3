@@ -33,6 +33,7 @@ class TimedDoor : public Door {
   DoorTimerAdapter * adapter;
   int iTimeout;
   bool isOpened;
+  bool timeoutTriggered;
  public:
   explicit TimedDoor(int);
   ~TimedDoor();
@@ -41,6 +42,7 @@ class TimedDoor : public Door {
   void lock();
   int  getTimeOut() const;
   void throwState();
+  void setTimeoutTriggered(bool);
 };
 
 class Timer {
