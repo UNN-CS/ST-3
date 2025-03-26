@@ -1,3 +1,4 @@
+// Copyright 2025 Konkov Ivan
 #include "TimedDoor.h"
 #include <stdexcept>
 
