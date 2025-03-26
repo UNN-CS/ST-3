@@ -26,20 +26,33 @@ class MockTimedDoor : public TimedDoor {
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
+class MockTimer : public Timer {
+ public:
+    MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
+};
+
 TEST(TimedDoorTest, DoorIsInitiallyClosed) {
     TimedDoor door(5);
     EXPECT_FALSE(door.isDoorOpened());
 }
 
 TEST(TimedDoorTest, UnlockOpensDoor) {
+    MockTimer mockTimer;
     TimedDoor door(5);
+    
+    EXPECT_CALL(mockTimer, tregister(5, _));
+    
     door.unlock();
     EXPECT_TRUE(door.isDoorOpened());
 }
 
 TEST(TimedDoorTest, LockClosesDoor) {
+    MockTimer mockTimer;
     TimedDoor door(5);
+    
+    EXPECT_CALL(mockTimer, tregister(5, _));
     door.unlock();
+    
     door.lock();
     EXPECT_FALSE(door.isDoorOpened());
 }
@@ -55,8 +68,12 @@ TEST(TimedDoorTest, ThrowStateThrowsException) {
 }
 
 TEST(DoorTimerAdapterTest, TimeoutOnOpenDoorThrows) {
+    MockTimer mockTimer;
     TimedDoor door(5);
+    
+    EXPECT_CALL(mockTimer, tregister(5, _));
     door.unlock();
+    
     DoorTimerAdapter adapter(door);
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
@@ -82,9 +99,14 @@ TEST(TimerTest, TregisterCallsTimeout) {
 }
 
 TEST(TimedDoorIntegrationTest, UnlockThenLockPreventsException) {
+    MockTimer mockTimer;
     TimedDoor door(5);
+    
+    EXPECT_CALL(mockTimer, tregister(5, _));
     door.unlock();
+    
     door.lock();
+    
     DoorTimerAdapter adapter(door);
     EXPECT_NO_THROW(adapter.Timeout());
 }
