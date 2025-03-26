@@ -74,3 +74,29 @@ TEST_F(TimedDoorTest, UnlockRegistersTimer) {
     EXPECT_CALL(mockTimer, tregister(5, _));
     door->unlock();
 }
+
+TEST_F(TimedDoorTest, TimerClientCallsTimeoutImmediatelyThrows) {
+  EXPECT_CALL(mockTimer, tregister(5, _))
+      .WillOnce([](int, TimerClient* client) {
+        client->Timeout();
+      });
+  EXPECT_THROW(door->unlock(), std::runtime_error);
+}
+
+TEST_F(TimedDoorTest, TimeoutAfterLockDoesNotThrow) {
+  TimerClient* savedClient = nullptr;
+  EXPECT_CALL(mockTimer, tregister(5, _))
+      .WillOnce([&](int, TimerClient* client) {
+        savedClient = client;
+      });
+  door->unlock();
+  door->lock();
+  EXPECT_NO_THROW(savedClient->Timeout());
+}
+
+TEST_F(TimedDoorTest, UnlockAfterLockRegistersTimerAgain) {
+  EXPECT_CALL(mockTimer, tregister(5, _)).Times(2);
+  door->unlock();
+  door->lock();
+  door->unlock();
+}
