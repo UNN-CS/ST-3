@@ -25,7 +25,7 @@ class DoorTimerAdapter : public TimerClient {
  private:
   TimedDoor& door;
  public:
-  explicit DoorTimerAdapter(TimedDoor& door) :door(door){};
+  explicit DoorTimerAdapter(TimedDoor& door) :door(door){}
   void Timeout();
 };
 

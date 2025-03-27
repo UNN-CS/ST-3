@@ -43,7 +43,7 @@ void TimedDoor::lock() {
     }
 }
 
-int TimedDoor::getTimeOut() const{
+int TimedDoor::getTimeOut() const {
     return iTimeout;
 }
 
