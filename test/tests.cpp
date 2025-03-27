@@ -11,13 +11,13 @@ using ::testing::_;
 
 // Mock-класс для таймера
 class MockTimerClient : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
 // Mock-класс для двери
 class MockDoor : public Door {
-public:
+ public:
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
     MOCK_METHOD(bool, isDoorOpened, (), (override));
