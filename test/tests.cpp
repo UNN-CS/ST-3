@@ -1,9 +1,11 @@
 // Copyright 2025 Konkov Ivan
 
-#include "gtest/gtest.h"
-#include "gmock/gmock.h"
-#include <thread>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include "TimedDoor.h"
+#include <chrono>
+#include <thread>
 
 using ::testing::AtLeast;
 using ::testing::Return;
