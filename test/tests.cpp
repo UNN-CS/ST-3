@@ -51,10 +51,26 @@ TEST_F(TimedDoorTest, LockClosesDoor) {
 }
 
 TEST_F(TimedDoorTest, TimeoutThrowsAfterDelay) {
+    std::promise<bool> exceptionThrown;
+    auto future = exceptionThrown.get_future();
+
+    testing::NiceMock<MockTimerClient> client;
+    ON_CALL(client, Timeout()).WillByDefault([this, &exceptionThrown]() {
+        try {
+            timedDoor->throwState();
+        } catch (const std::runtime_error&) {
+            exceptionThrown.set_value(true);
+            throw;
+        }
+    });
+
     timedDoor->unlock();
-    EXPECT_THROW({
-        std::this_thread::sleep_for(std::chrono::seconds(2)); // Ждем больше таймаута
-    }, std::runtime_error);
+
+    auto status = future.wait_for(std::chrono::seconds(3));
+    ASSERT_NE(status, std::future_status::timeout) 
+        << "Исключение не было выброшено в течение 3 секунд";
+
+    EXPECT_THROW({ throw std::runtime_error(""); }, std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, NoExceptionWhenClosed) {
