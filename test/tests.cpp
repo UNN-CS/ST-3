@@ -1,7 +1,7 @@
 // Copyright 2025 Konkov Ivan
 
-#include "gtest/gtest.h"
 #include "gmock/gmock.h"
+#include "gtest/gtest.h"
 #include "TimedDoor.h"
 #include <thread>
 
