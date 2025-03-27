@@ -3,6 +3,7 @@
 #include "gtest/gtest.h"
 #include "gmock/gmock.h"
 #include "TimedDoor.h"
+#include <thread>
 
 using ::testing::AtLeast;
 using ::testing::Return;
