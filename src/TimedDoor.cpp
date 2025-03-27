@@ -27,7 +27,7 @@ TimedDoor::~TimedDoor() {
 bool TimedDoor::isDoorOpened() {
     return isOpened;
 }
-  
+
 void TimedDoor::unlock() {
     isOpened = true;
     th = std::thread([&](){
@@ -35,7 +35,7 @@ void TimedDoor::unlock() {
         timer.tregister(iTimeout, adapter);
     });
 }
-  
+
 void TimedDoor::lock() {
     isOpened = false;
     if (th.joinable()) {
@@ -43,7 +43,7 @@ void TimedDoor::lock() {
     }
 }
 
-int  TimedDoor::getTimeOut() const{
+int TimedDoor::getTimeOut() const{
     return iTimeout;
 }
 

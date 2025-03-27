@@ -46,19 +46,19 @@ using ::testing::AtLeast;
 using ::testing::NiceMock;
 
 class MockTimerClient : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
-    
+ 
 class MockDoor : public Door {
-public:
+ public:
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
     void SetUp() override {
         mockClient = new NiceMock<MockTimerClient>();
         mockDoor = new NiceMock<MockDoor>();
@@ -74,10 +74,9 @@ protected:
 };
 
 TEST_F(TimedDoorTest, LockShouldCloseDoor) {
-    
     EXPECT_CALL(*mockDoor, lock()).Times(1);
     EXPECT_CALL(*mockDoor, isDoorOpened()).WillOnce(Return(false));
-    
+
     mockDoor->lock();
     ASSERT_FALSE(mockDoor->isDoorOpened());
 }
@@ -85,23 +84,23 @@ TEST_F(TimedDoorTest, LockShouldCloseDoor) {
 TEST_F(TimedDoorTest, UnlockShouldOpenDoor) {
     EXPECT_CALL(*mockDoor, unlock()).Times(1);
     EXPECT_CALL(*mockDoor, isDoorOpened()).WillOnce(Return(true));
-    
+
     mockDoor->unlock();
     ASSERT_TRUE(mockDoor->isDoorOpened());
 }
 
 TEST_F(TimedDoorTest, ShouldCallTimeoutWhenDoorLeftOpen) {
     ON_CALL(*mockDoor, isDoorOpened()).WillByDefault(Return(true));
-    
+
     EXPECT_CALL(*mockClient, Timeout()).Times(1);
-    
+
     mockClient->Timeout();
 }
 
 TEST_F(TimedDoorTest, MultipleLockUnlockOperations) {
     EXPECT_CALL(*mockDoor, lock()).Times(3);
     EXPECT_CALL(*mockDoor, unlock()).Times(2);
-    
+
     mockDoor->unlock();
     mockDoor->lock();
     mockDoor->unlock();
@@ -113,11 +112,11 @@ TEST_F(TimedDoorTest, ShouldAllowReopenAfterTimeout) {
     {
         EXPECT_CALL(*mockDoor, unlock()).Times(1);
         EXPECT_CALL(*mockClient, Timeout()).Times(1);
-        
+
         mockDoor->unlock();
         mockClient->Timeout();
     }
-    
+
     {
         EXPECT_CALL(*mockDoor, unlock()).Times(1);
         mockDoor->unlock();

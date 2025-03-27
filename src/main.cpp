@@ -1,7 +1,6 @@
 // Copyright 2021 GHA Test Team
 #include "TimedDoor.h"
 #include <iostream>
-using namespace std;
 
 int main() {
   int time = 5;
