@@ -5,6 +5,7 @@
 #include <gmock/gmock.h>
 #include <thread>
 #include <chrono>
+#include <future> 
 
 using ::testing::_;
 using ::testing::AtLeast;
@@ -51,26 +52,29 @@ TEST_F(TimedDoorTest, LockClosesDoor) {
 }
 
 TEST_F(TimedDoorTest, TimeoutThrowsAfterDelay) {
-    std::promise<bool> exceptionThrown;
-    auto future = exceptionThrown.get_future();
-
     testing::NiceMock<MockTimerClient> client;
-    ON_CALL(client, Timeout()).WillByDefault([this, &exceptionThrown]() {
+    std::promise<void> exceptionPromise;
+    auto exceptionFuture = exceptionPromise.get_future();
+
+    ON_CALL(client, Timeout()).WillByDefault([this, &exceptionPromise]() {
         try {
             timedDoor->throwState();
         } catch (const std::runtime_error&) {
-            exceptionThrown.set_value(true);
+            exceptionPromise.set_value();
             throw;
         }
     });
 
     timedDoor->unlock();
 
-    auto status = future.wait_for(std::chrono::seconds(3));
-    ASSERT_NE(status, std::future_status::timeout) 
-        << "Исключение не было выброшено в течение 3 секунд";
+    if (exceptionFuture.wait_for(std::chrono::seconds(3)) == std::future_status::timeout) {
+        FAIL() << "Исключение не было выброшено в течение 3 секунд";
+    }
 
-    EXPECT_THROW({ throw std::runtime_error(""); }, std::runtime_error);
+    EXPECT_THROW(
+        { throw std::runtime_error("Door opened too long!"); }, 
+        std::runtime_error
+    );
 }
 
 TEST_F(TimedDoorTest, NoExceptionWhenClosed) {
