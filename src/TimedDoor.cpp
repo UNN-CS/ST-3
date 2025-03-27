@@ -48,8 +48,12 @@ void DoorTimerAdapter::Timeout() {
 // Реализация Timer
 void Timer::tregister(int timeout, TimerClient* client) {
     this->client = client;
-    sleep(timeout);
+    std::thread([this, timeout]() {
+        std::this_thread::sleep_for(std::chrono::seconds(timeout));
+        client->Timeout();
+    }).detach();
 }
+
 
 void Timer::sleep(int timeout) {
     std::this_thread::sleep_for(std::chrono::seconds(timeout));
