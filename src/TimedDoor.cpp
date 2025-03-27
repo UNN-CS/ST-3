@@ -45,15 +45,13 @@ void DoorTimerAdapter::Timeout() {
     timer.tregister(door.getTimeOut(), this);
 }
 
-// Реализация Timer
 void Timer::tregister(int timeout, TimerClient* client) {
     this->client = client;
-    std::thread([this, timeout]() {
+    std::thread([this, timeout, client]() {
         std::this_thread::sleep_for(std::chrono::seconds(timeout));
         client->Timeout();
     }).detach();
 }
-
 
 void Timer::sleep(int timeout) {
     std::this_thread::sleep_for(std::chrono::seconds(timeout));
