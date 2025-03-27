@@ -1,7 +1,7 @@
 // Copyright 2025 Konkov Ivan
 
-#ifndef TIMEDDOOR_H
-#define TIMEDDOOR_H
+#ifndef INCLUDE_TIMEDDOOR_H_
+#define INCLUDE_TIMEDDOOR_H_
 
 class TimerClient {
  public:
@@ -48,4 +48,4 @@ class Timer {
     void tregister(int, TimerClient*);
 };
 
-#endif // TIMEDDOOR_H
+#endif  // INCLUDE_TIMEDDOOR_H_
