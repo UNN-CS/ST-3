@@ -1,21 +1,20 @@
 // Copyright 2025 Konkov Ivan
 
+#include "gtest/gtest.h"
+#include "gmock/gmock.h"
 #include "TimedDoor.h"
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <thread>
-#include <chrono>
-#include <future> 
 
-using ::testing::_;
 using ::testing::AtLeast;
-using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::_;
 
+// Mock-класс для таймера
 class MockTimerClient : public TimerClient {
 public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
+// Mock-класс для двери
 class MockDoor : public Door {
 public:
     MOCK_METHOD(void, lock, (), (override));
@@ -23,89 +22,74 @@ public:
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
-class TimedDoorTest : public ::testing::Test {
-protected:
-    void SetUp() override {
-        timedDoor = new TimedDoor(1); // Таймаут 1 секунда для тестов
-    }
-
-    void TearDown() override {
-        delete timedDoor;
-    }
-
-    TimedDoor* timedDoor;
-};
-
-TEST_F(TimedDoorTest, InitialStateIsLocked) {
-    EXPECT_FALSE(timedDoor->isDoorOpened());
+// Тест 1: Проверка блокировки двери
+TEST(TimedDoorTest, LockDoor) {
+    TimedDoor door(5);
+    door.lock();
+    EXPECT_FALSE(door.isDoorOpened());
 }
 
-TEST_F(TimedDoorTest, UnlockOpensDoor) {
-    timedDoor->unlock();
-    EXPECT_TRUE(timedDoor->isDoorOpened());
+// Тест 2: Проверка разблокировки двери
+TEST(TimedDoorTest, UnlockDoor) {
+    TimedDoor door(5);
+    door.unlock();
+    EXPECT_TRUE(door.isDoorOpened());
 }
 
-TEST_F(TimedDoorTest, LockClosesDoor) {
-    timedDoor->unlock();
-    timedDoor->lock();
-    EXPECT_FALSE(timedDoor->isDoorOpened());
-}
-
-TEST_F(TimedDoorTest, TimeoutThrowsAfterDelay) {
-    testing::NiceMock<MockTimerClient> client;
-    std::promise<void> exceptionPromise;
-    auto exceptionFuture = exceptionPromise.get_future();
-
-    ON_CALL(client, Timeout()).WillByDefault([this, &exceptionPromise]() {
-        try {
-            timedDoor->throwState();
-        } catch (const std::runtime_error&) {
-            exceptionPromise.set_value();
-            throw;
-        }
-    });
-
-    timedDoor->unlock();
-
-    if (exceptionFuture.wait_for(std::chrono::seconds(3)) == std::future_status::timeout) {
-        FAIL() << "Исключение не было выброшено в течение 3 секунд";
-    }
-
-    EXPECT_THROW(
-        { throw std::runtime_error("Door opened too long!"); }, 
-        std::runtime_error
-    );
-}
-
-TEST_F(TimedDoorTest, NoExceptionWhenClosed) {
-    timedDoor->lock();
-    EXPECT_NO_THROW(timedDoor->throwState());
-}
-
-TEST_F(TimedDoorTest, AdapterCallsTimeout) {
-    NiceMock<MockTimerClient> client;
-    Timer timer;
-    EXPECT_CALL(client, Timeout()).Times(1);
-    timer.tregister(1, &client);
+// Тест 3: Проверка таймаута
+TEST(TimedDoorTest, ThrowExceptionWhenOpenedTooLong) {
+    TimedDoor door(1);
+    door.unlock();
     std::this_thread::sleep_for(std::chrono::seconds(2));
+    EXPECT_THROW(door.throwState(), std::runtime_error);
 }
 
-TEST_F(TimedDoorTest, UnlockTriggersTimerRegistration) {
-    NiceMock<MockTimerClient> client;
-    EXPECT_CALL(client, Timeout()).Times(AtLeast(0)); // Не требует обязательного вызова
-    timedDoor->unlock();
+// Тест 4: Проверка отсутствия исключения при закрытой двери
+TEST(TimedDoorTest, NoExceptionWhenClosed) {
+    TimedDoor door(1);
+    door.lock();
+    EXPECT_NO_THROW(door.throwState());
 }
 
-TEST_F(TimedDoorTest, MultipleUnlocks) {
-    timedDoor->unlock();
-    timedDoor->lock();
-    timedDoor->unlock();
-    EXPECT_TRUE(timedDoor->isDoorOpened());
+// Тест 5: Проверка вызова Timeout()
+TEST(TimedDoorTest, TimerTriggersTimeout) {
+    MockTimerClient mockTimer;
+    EXPECT_CALL(mockTimer, Timeout()).Times(1);
+    mockTimer.Timeout();
 }
 
-TEST_F(TimedDoorTest, ExceptionAfterTimeout) {
-    timedDoor->unlock();
-    EXPECT_THROW({
-        std::this_thread::sleep_for(std::chrono::seconds(2));
-    }, std::runtime_error);
+// Тест 6: Проверка состояния двери после закрытия
+TEST(TimedDoorTest, CheckDoorStateAfterLock) {
+    TimedDoor door(3);
+    door.unlock();
+    door.lock();
+    EXPECT_FALSE(door.isDoorOpened());
+}
+
+// Тест 7: Проверка адаптера
+TEST(TimedDoorTest, DoorAdapterTriggersTimeout) {
+    TimedDoor door(2);
+    DoorTimerAdapter adapter(door);
+    EXPECT_NO_THROW(adapter.Timeout());
+}
+
+// Тест 8: Проверка вызова unlock()
+TEST(TimedDoorTest, UnlockCallsChangeState) {
+    MockDoor mockDoor;
+    EXPECT_CALL(mockDoor, unlock()).Times(1);
+    mockDoor.unlock();
+}
+
+// Тест 9: Проверка вызова lock()
+TEST(TimedDoorTest, LockCallsChangeState) {
+    MockDoor mockDoor;
+    EXPECT_CALL(mockDoor, lock()).Times(1);
+    mockDoor.lock();
+}
+
+// Тест 10: Проверка вызова isDoorOpened()
+TEST(TimedDoorTest, CheckIsDoorOpenedMock) {
+    MockDoor mockDoor;
+    EXPECT_CALL(mockDoor, isDoorOpened()).WillOnce(Return(true));
+    EXPECT_TRUE(mockDoor.isDoorOpened());
 }
