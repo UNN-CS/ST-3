@@ -5,7 +5,6 @@
 #include <cstdint>
 #include "TimedDoor.h"
 
-
 struct TestFuncDoor: public testing::Test {
     TimedDoor *door;
     void SetUp() {
