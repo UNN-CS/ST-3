@@ -3,9 +3,11 @@
 #include <iostream>
 
 int main() {
-  TimedDoor tDoor(5);
-  tDoor.lock();
+  int time = 5;
+  TimedDoor tDoor(time);
   tDoor.unlock();
+  std::this_thread::sleep_for(std::chrono::seconds(time + 2));
+  tDoor.lock();
 
   return 0;
 }
