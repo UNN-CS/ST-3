@@ -1,13 +1,11 @@
 // Copyright 2025 Konkov Ivan
 
-#pragma once
-#include <exception>
-#include <memory>
+#ifndef TIMEDDOOR_H
+#define TIMEDDOOR_H
 
 class TimerClient {
 public:
     virtual void Timeout() = 0;
-    virtual ~TimerClient() = default;
 };
 
 class Door {
@@ -15,7 +13,6 @@ public:
     virtual void lock() = 0;
     virtual void unlock() = 0;
     virtual bool isDoorOpened() = 0;
-    virtual ~Door() = default;
 };
 
 class TimedDoor;
@@ -24,7 +21,7 @@ class DoorTimerAdapter : public TimerClient {
 private:
     TimedDoor& door;
 public:
-    explicit DoorTimerAdapter(TimedDoor& door);
+    explicit DoorTimerAdapter(TimedDoor&);
     void Timeout() override;
 };
 
@@ -36,17 +33,19 @@ private:
 public:
     explicit TimedDoor(int timeout);
     ~TimedDoor();
-    
     bool isDoorOpened() override;
     void unlock() override;
     void lock() override;
-    
     int getTimeOut();
     void throwState();
-    DoorTimerAdapter* getAdapter();
 };
 
 class Timer {
+private:
+    TimerClient* client;
+    void sleep(int);
 public:
-    void tregister(int timeout, TimerClient* client);
+    void tregister(int, TimerClient*);
 };
+
+#endif // TIMEDDOOR_H
