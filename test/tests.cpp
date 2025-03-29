@@ -23,25 +23,25 @@ class MockDoor : public Door {
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
-TEST(DoorTest, case1) {
+TEST(DoorTest, test1) {
     TimedDoor door(TIME);
     EXPECT_FALSE(door.isDoorOpened());
 }
 
-TEST(DoorTest, case2) {
+TEST(DoorTest, test2) {
     TimedDoor door(TIME);
     door.unlock();
     EXPECT_TRUE(door.isDoorOpened());
 }
 
-TEST(DoorTest, case3) {
+TEST(DoorTest, test3) {
     TimedDoor door(TIME);
     door.unlock();
     door.lock();
     EXPECT_FALSE(door.isDoorOpened());
 }
 
-TEST(DoorTest, case4) {
+TEST(DoorTest, test4) {
     MockTimerClient mockClient;
     EXPECT_CALL(mockClient, Timeout()).Times(1);
     Timer timer;
@@ -49,14 +49,14 @@ TEST(DoorTest, case4) {
     std::this_thread::sleep_for(std::chrono::seconds(TIME));
 }
 
-TEST(DoorTest, case5) {
+TEST(DoorTest, test5) {
     TimedDoor door(1);
     door.unlock();
     std::this_thread::sleep_for(std::chrono::seconds(TIME));
     EXPECT_THROW(door.throwState(), std::runtime_error);
 }
 
-TEST(DoorTest, case6) {
+TEST(DoorTest, test6) {
     TimedDoor door(1);
     door.unlock();
     door.lock();
@@ -64,7 +64,7 @@ TEST(DoorTest, case6) {
     EXPECT_NO_THROW(door.throwState());
 }
 
-TEST(DoorTest, case7) {
+TEST(DoorTest, test7) {
     TimedDoor door(1);
     DoorTimerAdapter adapter(door);
     door.unlock();
@@ -72,55 +72,55 @@ TEST(DoorTest, case7) {
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
 
-TEST(DoorTest, case8) {
+TEST(DoorTest, test8) {
     MockTimerClient mockClient;
     Timer timer;
     EXPECT_CALL(mockClient, Timeout()).Times(1);
     timer.tregister(1, &mockClient);
 }
 
-TEST(DoorTest, case9) {
+TEST(DoorTest, test9) {
     TimedDoor door(TIME);
     EXPECT_FALSE(door.isDoorOpened());
     EXPECT_NO_THROW(door.throwState());
 }
 
-TEST(DoorTest, case10) {
+TEST(DoorTest, test10) {
     MockDoor mockDoor;
     DoorTimerAdapter adapter((TimedDoor&)mockDoor);
     EXPECT_CALL(mockDoor, isDoorOpened()).WillOnce(Return(false));
     EXPECT_NO_THROW(adapter.Timeout());
 }
 
-TEST(DoorTest, case11) {
+TEST(DoorTest, test11) {
     TimedDoor door(TIME);
     door.unlock();
     std::this_thread::sleep_for(std::chrono::seconds(TIME / 2));
     EXPECT_TRUE(door.isDoorOpened());
 }
 
-TEST(DoorTest, case12) {
+TEST(DoorTest, test12) {
     TimedDoor door(TIME);
     door.unlock();
     std::this_thread::sleep_for(std::chrono::seconds(TIME * 2));
     EXPECT_FALSE(door.isDoorOpened());
 }
 
-TEST(DoorTest, case13) {
+TEST(DoorTest, test13) {
     MockDoor mockDoor;
     EXPECT_CALL(mockDoor, isDoorOpened()).WillOnce(Return(true));
     DoorTimerAdapter adapter((TimedDoor&)mockDoor);
     adapter.Timeout();
 }
 
-TEST(DoorTest, case14) {
+TEST(DoorTest, test14) {
     MockDoor mockDoor;
     EXPECT_CALL(mockDoor, isDoorOpened()).WillOnce(Return(false));
     DoorTimerAdapter adapter((TimedDoor&)mockDoor);
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
 
-TEST(DoorTest, case15) {
+TEST(DoorTest, test15) {
     MockDoor mockDoor;
     DoorTimerAdapter adapter((TimedDoor&)mockDoor);
     adapter.Timeout();
