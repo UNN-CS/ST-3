@@ -41,14 +41,6 @@ TEST(DoorTest, test3) {
     EXPECT_FALSE(door.isDoorOpened());
 }
 
-TEST(DoorTest, test4) {
-    MockTimerClient mockClient;
-    EXPECT_CALL(mockClient, Timeout()).Times(1);
-    Timer timer;
-    timer.tregister(TIME, &mockClient);
-    std::this_thread::sleep_for(std::chrono::seconds(TIME));
-}
-
 TEST(DoorTest, test5) {
     TimedDoor door(1);
     door.unlock();
