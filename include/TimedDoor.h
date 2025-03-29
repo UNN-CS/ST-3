@@ -1,4 +1,4 @@
-// Copyright 2021 GHA Test Team
+// Copyright 2025 Alexey Gromov
 
 #ifndef INCLUDE_TIMEDDOOR_H_
 #define INCLUDE_TIMEDDOOR_H_
@@ -38,7 +38,8 @@ class TimedDoor : public Door {
   bool isDoorOpened();
   void unlock();
   void lock();
-  int  getTimeOut() const;
+  int getTimeOut() const;
+  void getTimeout();
   void throwState();
 };
 
@@ -46,7 +47,7 @@ class Timer {
   TimerClient *client;
   void sleep(int);
  public:
-  void tregister(int, TimerClient*);
+  void registerTimer(int, TimerClient*);
 };
 
 #endif  // INCLUDE_TIMEDDOOR_H_
