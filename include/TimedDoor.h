@@ -1,52 +1,56 @@
-// Copyright 2021 GHA Test Team
+// Copyright 2024 SecureDoor Team
 
 #ifndef INCLUDE_TIMEDDOOR_H_
 #define INCLUDE_TIMEDDOOR_H_
 
-class DoorTimerAdapter;
-class Timer;
-class Door;
-class TimedDoor;
+#include <exception>
 
 class TimerClient {
  public:
-  virtual void Timeout() = 0;
+    virtual ~TimerClient() = default;
+    virtual void Timeout() = 0;
 };
 
 class Door {
  public:
-  virtual void lock() = 0;
-  virtual void unlock() = 0;
-  virtual bool isDoorOpened() = 0;
+    virtual ~Door() = default;
+    virtual void lock() = 0;
+    virtual void unlock() = 0;
+    virtual bool isDoorOpened() const = 0;
 };
+
+class TimedDoor;
 
 class DoorTimerAdapter : public TimerClient {
  private:
-  TimedDoor& door;
+    const TimedDoor& doorRef;
+
  public:
-  explicit DoorTimerAdapter(TimedDoor&);
-  void Timeout();
+    explicit DoorTimerAdapter(const TimedDoor& door);
+    void Timeout() override;
 };
 
 class TimedDoor : public Door {
- private:
-  DoorTimerAdapter * adapter;
-  int iTimeout;
-  bool isOpened;
  public:
-  explicit TimedDoor(int);
-  bool isDoorOpened();
-  void unlock();
-  void lock();
-  int  getTimeOut() const;
-  void throwState();
+    explicit TimedDoor(int timeoutSec);
+    ~TimedDoor() override;
+    void lock() override;
+    void unlock() override;
+    bool isDoorOpened() const override;
+    void throwState() const;
+    int getTimeout() const { return timeout; }
+ private:
+    int timeout;
+    bool isOpened;
+    DoorTimerAdapter* adapter;
+    friend class DoorTimerAdapter;
 };
 
 class Timer {
-  TimerClient *client;
-  void sleep(int);
  public:
-  void tregister(int, TimerClient*);
+    void tregister(int duration, TimerClient* client);
+ private:
+    void sleep(int sec) const;
 };
 
 #endif  // INCLUDE_TIMEDDOOR_H_
