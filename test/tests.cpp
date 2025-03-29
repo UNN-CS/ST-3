@@ -16,7 +16,7 @@ class MockThis : public TimerClient {
 class TimedDoorTest : public ::testing::Test {
  protected:
     TimedDoor door{20};
-    Timer timer{};
+    Timer timer;
     std::unique_ptr<MockThis> mockClient;
 
     void SetUp() override {
