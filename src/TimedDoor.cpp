@@ -24,7 +24,7 @@ bool TimedDoor::isDoorOpened() {
 
 void TimedDoor::unlock() {
     isOpened = true;
-    auto timeoutFuture = std::async([this, timeout]() { 
+    auto timeoutFuture = std::async([this, timeout]() {
         std::this_thread::sleep_for(std::chrono::seconds(iTimeout));
         adapter->Timeout();
     });
