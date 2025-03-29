@@ -11,7 +11,6 @@ class TimedDoor;
 class TimerClient {
  public:
     virtual void Timeout() = 0;
-
 };
 
 class Door {
