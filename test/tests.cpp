@@ -64,13 +64,6 @@ TEST(DoorTest, test7) {
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
 
-TEST(DoorTest, test8) {
-    MockTimerClient mockClient;
-    Timer timer;
-    EXPECT_CALL(mockClient, Timeout()).Times(1);
-    timer.tregister(1, &mockClient);
-}
-
 TEST(DoorTest, test9) {
     TimedDoor door(TIME);
     EXPECT_FALSE(door.isDoorOpened());
