@@ -9,12 +9,12 @@
 #include "TimedDoor.h"
 
 class MockThis : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
     TimedDoor door{20};
     Timer timer{};
     std::unique_ptr<MockThis> mockClient;
