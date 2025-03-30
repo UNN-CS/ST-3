@@ -22,17 +22,17 @@ class MockTimerClient : public TimerClient {
 class TimedDoorTest : public ::testing::Test {
  protected:
   TimedDoor* door;
-	void SetUp() override {
-      door = new TimedDoor(1);
-	}
-	void TearDown() override {
-	  delete door;
-	}
+  void SetUp() override {
+    door = new TimedDoor(1);
+  }
+  void TearDown() override {
+	delete door;
+  }
 };
 
 class TimerTest : public ::testing::Test {
 protected:
-	Timer timer;
+  Timer timer;
 };
 
 TEST_F(TimedDoorTest, DoorStartsClosed) {
@@ -42,6 +42,13 @@ TEST_F(TimedDoorTest, DoorStartsClosed) {
 TEST_F(TimedDoorTest, DoorOpens) {
   door->unlock();
   EXPECT_TRUE(door->isDoorOpened());
+  try {
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    door->throwState(); 
+  }
+  catch (const std::runtime_error& e) {
+    FAIL() << "Exception was thrown: " << e.what();
+  }
 }
 
 TEST_F(TimedDoorTest, DoorCloses) {
