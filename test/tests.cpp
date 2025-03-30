@@ -11,7 +11,7 @@ class MockTimedDoor : public TimedDoor {
  public:
   explicit MockTimedDoor(int timeout) : TimedDoor(timeout) {}
   MOCK_METHOD(bool, isDoorOpened, (), (override));
-  void throwState() override {
+  void throwState() {
     throw std::runtime_error("Mock throwState");
   }
 };
