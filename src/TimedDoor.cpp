@@ -30,7 +30,7 @@ void TimedDoor::lock() {
     isOpened = false;
 }
 
-int TimedDoor::getTimeOut() {
+int TimedDoor::getTimeOut() const {
     return iTimeout;
 }
 
