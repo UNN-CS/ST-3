@@ -23,7 +23,7 @@ bool TimedDoor::isDoorOpened() {
 
 void TimedDoor::unlock() {
     isOpened = true;
-    Timer timer;
+    static Timer timer;
     timer.tregister(iTimeout, adapter);
 }
 
