@@ -5,6 +5,7 @@
 #include <thread>
 #include <cstdint>
 #include "TimedDoor.h"
+#include <iostream>
 
 
 class MockDoor : public Door {
