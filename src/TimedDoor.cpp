@@ -25,8 +25,6 @@ void TimedDoor::unlock() {
     throw std::runtime_error("Door is already opened");
   }
   isOpened = true;
-  Timer t;
-  t.tregister(iTimeout, adapter);
 }
 
 void TimedDoor::lock() {

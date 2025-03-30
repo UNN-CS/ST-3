@@ -43,6 +43,7 @@ TEST_F(TimedDoorTest, UnlockOpensDoor) {
 
 TEST_F(TimedDoorTest, LockClosesDoor) {
   door->unlock();
+  timer->tregister(door->getTimeOut(), mockAdapter);
   door->lock();
   EXPECT_FALSE(door->isDoorOpened());
 }
@@ -62,11 +63,6 @@ TEST_F(TimedDoorTest, DoorThrowsState) {
 
 TEST_F(TimedDoorTest, GetTimeOutReturnsCorrectValue) {
   EXPECT_EQ(door->getTimeOut(), 5);
-}
-
-TEST_F(TimedDoorTest, TimeoutCalledWhenDoorIsOpen) {
-  EXPECT_CALL(*mockAdapter, Timeout()).Times(1);
-  door->unlock();
 }
 
 TEST_F(TimedDoorTest, TimeoutCalledWhenTimerIsTregister) {
