@@ -50,7 +50,7 @@ void Timer::sleep(int seconds) {
 void Timer::tregister(int time, TimerClient* c) {
     client = c;
 
- std::thread this_thread([time, c]() {
+  std::thread this_thread([time, c]() {
         if (time > 0) {
             std::this_thread::sleep_for(std::chrono::seconds(time));
         }
@@ -58,5 +58,5 @@ void Timer::tregister(int time, TimerClient* c) {
             c->Timeout();
         }
         });
- this_thread.detach();
+  this_thread.detach();
 }
