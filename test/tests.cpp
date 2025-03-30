@@ -9,12 +9,12 @@
 #include "TimedDoor.h"
 
 class MockDoorTimerAdapter : public TimerClient {
-public:
+ public:
   MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
   TimedDoor* door;
   Timer* timer;
   MockDoorTimerAdapter* mockAdapter;
