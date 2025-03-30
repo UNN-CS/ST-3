@@ -2,26 +2,21 @@
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include <cstdint>
 #include "TimedDoor.h"
-
-#include "TimedDoor.h"
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
 
 using ::testing::_;
 using ::testing::Return;
 
 class MockTimedDoor : public TimedDoor {
-public:
-    MockTimedDoor(int timeout) : TimedDoor(timeout) {}
-    MOCK_METHOD(bool, isDoorOpened, (), (override));
-    MOCK_METHOD(void, throwState, (), (override));
+ public:
+  explicit MockTimedDoor(int timeout) : TimedDoor(timeout) {}
+  MOCK_METHOD(bool, isDoorOpened, (), (override));
+  MOCK_METHOD(void, throwState, (), (override));
 };
 
 class MockTimerClient : public TimerClient {
-public:
-    MOCK_METHOD(void, Timeout, (), (override));
+ public:
+  MOCK_METHOD(void, Timeout, (), (override));
 };
 
 TEST(DoorTimerAdapterTest, TimeoutCallsThrowStateWhenDoorIsOpen) {
