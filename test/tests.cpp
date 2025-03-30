@@ -26,7 +26,7 @@ class TimedDoorTest : public ::testing::Test {
     door = new TimedDoor(1);
   }
   void TearDown() override {
-  delete door;
+	delete door;
   }
 };
 
@@ -47,7 +47,7 @@ TEST_F(TimedDoorTest, DoorOpens) {
     door->throwState();
   }
   catch (const std::runtime_error& e) {
-      std::cout << "Exception was thrown: " << e.what() << std::endl;
+    FAIL() << "Exception was thrown: " << e.what();
   }
 }
 
