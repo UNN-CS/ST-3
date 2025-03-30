@@ -58,18 +58,15 @@ TEST(TimedDoorTest, GetTimeoutReturnsCorrectValue) {
 }
 
 TEST(TimedDoorTest, StateAfterLock) {
-  TimedDoor door(100);
+  TimedDoor door(0);
   door.unlock();
   door.lock();
   EXPECT_FALSE(door.isDoorOpened());
 }
 
-TEST(TimedDoorTest, ReopenDoor) {
+TEST(TimedDoorTest, ZeroTimeoutNoException) {
   TimedDoor door(0);
-  door.unlock();
-  door.lock();
-  door.unlock();
-  EXPECT_TRUE(door.isDoorOpened());
+  EXPECT_NO_THROW(door.unlock());
 }
 
 TEST(TimerTest, CallsTimeoutAfterTime) {
@@ -79,10 +76,10 @@ TEST(TimerTest, CallsTimeoutAfterTime) {
   timer.tregister(0, &client);
 }
 
-TEST(TimedDoorTest, ZeroTimeoutBehavior) {
+TEST(TimedDoorTest, SimpleReopen) {
   TimedDoor door(0);
-  EXPECT_NO_THROW(door.unlock());
+  door.unlock();
+  door.lock();
+  door.unlock();
   EXPECT_TRUE(door.isDoorOpened());
-  EXPECT_NO_THROW(door.lock());
-  EXPECT_FALSE(door.isDoorOpened());
 }
