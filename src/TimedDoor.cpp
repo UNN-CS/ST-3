@@ -22,8 +22,10 @@ bool TimedDoor::isDoorOpened() {
 
 void TimedDoor::unlock() {
     isOpened = true;
-    Timer timer;
-    timer.tregister(iTimeout, adapter);
+    if (iTimeout > 0) {
+        Timer timer;
+        timer.tregister(iTimeout, adapter);
+    }
 }
 
 void TimedDoor::lock() {
@@ -39,6 +41,8 @@ void TimedDoor::throwState() {
 }
 
 void Timer::tregister(int timeout, TimerClient* client) {
-    std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
+    if (timeout > 0) {
+        std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
+    }
     client->Timeout();
 }
