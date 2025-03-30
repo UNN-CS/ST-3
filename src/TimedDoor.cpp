@@ -42,6 +42,11 @@ void Timer::sleep(int timeout) {
 
 void Timer::tregister(int timeout, TimerClient* client) {
   this->client = client;
-  sleep(timeout);
-  client->Timeout();
+  if (client) {
+    sleep(timeout);
+    client->Timeout();
+  }
+  else {
+    std::cout << "No client provided, skipping timeout." << std::endl;
+  }
 }
