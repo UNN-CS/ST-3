@@ -11,7 +11,7 @@ class MockTimedDoor : public TimedDoor {
  public:
   explicit MockTimedDoor(int timeout) : TimedDoor(timeout) {}
   MOCK_METHOD(bool, isDoorOpened, (), (override));
-  MOCK_METHOD(void, throwState, (), (override));
+  MOCK_METHOD(void, throwState, (), ());
 };
 
 class MockTimerClient : public TimerClient {
