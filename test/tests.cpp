@@ -74,10 +74,9 @@ TEST_F(TimedDoorTest, time_out_no_throws_exception_when_door_closed) {
 
 
 TEST_F(TimedDoorTest, adapter_timeout) {
-    MockTimerClient mockClient;
-    Timer timer;
-    EXPECT_CALL(mockClient, Timeout()).Times(1);
-    timer.tregister(1, &mockClient);
+    door->unlock();
+    std::this_thread::sleep_for(std::chrono::seconds(6));
+    EXPECT_FALSE(door->isDoorOpened());
 }
 
 TEST_F(TimedDoorTest, get_timeout) {
