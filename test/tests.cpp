@@ -31,7 +31,7 @@ class TimedDoorTest : public ::testing::Test {
 };
 
 class TimerTest : public ::testing::Test {
-protected:
+ protected:
   Timer timer;
 };
 
@@ -44,7 +44,7 @@ TEST_F(TimedDoorTest, DoorOpens) {
   EXPECT_TRUE(door->isDoorOpened());
   try {
     std::this_thread::sleep_for(std::chrono::seconds(2));
-    door->throwState(); 
+    door->throwState();
   }
   catch (const std::runtime_error& e) {
     FAIL() << "Exception was thrown: " << e.what();
