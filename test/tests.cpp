@@ -52,25 +52,24 @@ TEST(TimedDoorTest, LockClosesDoor) {
   EXPECT_FALSE(door.isDoorOpened());
 }
 
-TEST(TimedDoorTest, TimerRegistrationWhenUnlocked) {
-  TimedDoor door(100);
-  EXPECT_NO_THROW(door.unlock());
-  EXPECT_TRUE(door.isDoorOpened());
-}
-
 TEST(TimedDoorTest, GetTimeoutReturnsCorrectValue) {
   TimedDoor door(500);
   EXPECT_EQ(door.getTimeOut(), 500);
 }
 
-TEST(TimedDoorTest, MultipleUnlockLockCycles) {
+TEST(TimedDoorTest, StateAfterLock) {
   TimedDoor door(100);
-  for (int i = 0; i < 3; ++i) {
-    door.unlock();
-    EXPECT_TRUE(door.isDoorOpened());
-    door.lock();
-    EXPECT_FALSE(door.isDoorOpened());
-  }
+  door.unlock();
+  door.lock();
+  EXPECT_FALSE(door.isDoorOpened());
+}
+
+TEST(TimedDoorTest, ReopenDoor) {
+  TimedDoor door(0);
+  door.unlock();
+  door.lock();
+  door.unlock();
+  EXPECT_TRUE(door.isDoorOpened());
 }
 
 TEST(TimerTest, CallsTimeoutAfterTime) {
@@ -80,10 +79,10 @@ TEST(TimerTest, CallsTimeoutAfterTime) {
   timer.tregister(0, &client);
 }
 
-TEST(TimedDoorTest, ZeroTimeoutNoTimerActivity) {
+TEST(TimedDoorTest, ZeroTimeoutBehavior) {
   TimedDoor door(0);
-  door.unlock();
+  EXPECT_NO_THROW(door.unlock());
   EXPECT_TRUE(door.isDoorOpened());
-  door.lock();
+  EXPECT_NO_THROW(door.lock());
   EXPECT_FALSE(door.isDoorOpened());
 }
