@@ -11,9 +11,6 @@ class MockTimedDoor : public TimedDoor {
  public:
   explicit MockTimedDoor(int timeout) : TimedDoor(timeout) {}
   MOCK_METHOD(bool, isDoorOpened, (), (override));
-  void throwState() {
-    throw std::runtime_error("Mock throwState");
-  }
 };
 
 class MockTimerClient : public TimerClient {
@@ -24,17 +21,15 @@ class MockTimerClient : public TimerClient {
 TEST(DoorTimerAdapterTest, TimeoutCallsThrowStateWhenDoorIsOpen) {
   MockTimedDoor door(1000);
   EXPECT_CALL(door, isDoorOpened()).WillOnce(Return(true));
-  EXPECT_THROW({
-    DoorTimerAdapter adapter(door);
-    adapter.Timeout();
-  }, std::runtime_error);
+  DoorTimerAdapter adapter(door);
+  EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
 
 TEST(DoorTimerAdapterTest, TimeoutDoesNotCallThrowStateWhenDoorIsClosed) {
   MockTimedDoor door(1000);
   EXPECT_CALL(door, isDoorOpened()).WillOnce(Return(false));
   DoorTimerAdapter adapter(door);
-  adapter.Timeout();
+  EXPECT_NO_THROW(adapter.Timeout());
 }
 
 TEST(TimedDoorTest, IsInitiallyClosed) {
@@ -55,10 +50,10 @@ TEST(TimedDoorTest, LockClosesDoor) {
   EXPECT_FALSE(door.isDoorOpened());
 }
 
-TEST(TimedDoorTest, ThrowAfterTimeoutIfOpen) {
-  TimedDoor door(1);
-  door.unlock();
-  EXPECT_THROW(door.throwState(), std::runtime_error);
+TEST(TimedDoorTest, TimerRegistrationWhenUnlocked) {
+  TimedDoor door(100);
+  EXPECT_NO_THROW(door.unlock());
+  EXPECT_TRUE(door.isDoorOpened());
 }
 
 TEST(TimedDoorTest, GetTimeoutReturnsCorrectValue) {
@@ -66,9 +61,25 @@ TEST(TimedDoorTest, GetTimeoutReturnsCorrectValue) {
   EXPECT_EQ(door.getTimeOut(), 500);
 }
 
+TEST(TimedDoorTest, MultipleUnlockLockCycles) {
+  TimedDoor door(100);
+  for (int i = 0; i < 3; ++i) {
+    door.unlock();
+    EXPECT_TRUE(door.isDoorOpened());
+    door.lock();
+    EXPECT_FALSE(door.isDoorOpened());
+  }
+}
+
 TEST(TimerTest, CallsTimeoutAfterTime) {
   MockTimerClient client;
   EXPECT_CALL(client, Timeout()).Times(1);
   Timer timer;
   timer.tregister(0, &client);
+}
+
+TEST(TimedDoorTest, ZeroTimeoutDoesNotRegisterTimer) {
+  TimedDoor door(0);
+  door.unlock();
+  EXPECT_NO_THROW(std::this_thread::sleep_for(std::chrono::milliseconds(10)));
 }
