@@ -3,6 +3,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "TimedDoor.h"
+#include <thread>
+#include <chrono>
 
 using ::testing::_;
 using ::testing::Return;
@@ -78,8 +80,10 @@ TEST(TimerTest, CallsTimeoutAfterTime) {
   timer.tregister(0, &client);
 }
 
-TEST(TimedDoorTest, ZeroTimeoutDoesNotRegisterTimer) {
+TEST(TimedDoorTest, ZeroTimeoutNoTimerActivity) {
   TimedDoor door(0);
   door.unlock();
-  EXPECT_NO_THROW(std::this_thread::sleep_for(std::chrono::milliseconds(10)));
+  EXPECT_TRUE(door.isDoorOpened());
+  door.lock();
+  EXPECT_FALSE(door.isDoorOpened());
 }
