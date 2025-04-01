@@ -103,7 +103,7 @@ TEST_F(TimedDoorTest, RealTimerWithShortTimeout) {
 	TimedDoor fastDoor(10);
 	fastDoor.unlock();
 	testing::MockFunction<void()> mockCallback;
-	EXPECT_CALL(mockCallback, Call()).Times(0); // Гарантируем, что таймер не сработал раньше времени
+	EXPECT_CALL(mockCallback, Call()).Times(0);
 	std::this_thread::sleep_for(std::chrono::milliseconds(5));
 	testing::Mock::VerifyAndClearExpectations(&mockCallback);
 
