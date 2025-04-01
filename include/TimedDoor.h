@@ -3,7 +3,13 @@
 #ifndef INCLUDE_TIMEDDOOR_H_
 #define INCLUDE_TIMEDDOOR_H_
 
-#include <stdexcept>
+#include <thread>
+#include <vector>
+
+class DoorTimerAdapter;
+class Timer;
+class Door;
+class TimedDoor;
 
 class TimerClient {
  public:
@@ -17,38 +23,39 @@ class Door {
   virtual bool isDoorOpened() = 0;
 };
 
-class TimedDoor;
-
 class DoorTimerAdapter : public TimerClient {
  private:
-  TimedDoor& door;
- public:
-  explicit DoorTimerAdapter(TimedDoor& door);
-  void Timeout() override;
-};
+  TimedDoor &door;
 
-class Timer {
  public:
-  virtual void tregister(int timeout, TimerClient* client) = 0;
-  virtual void trigger() = 0;
-  virtual ~Timer() = default;
+  explicit DoorTimerAdapter(TimedDoor &);
+  void Timeout();
 };
 
 class TimedDoor : public Door {
+  friend class DoorTimerAdapter;
+
  private:
-  DoorTimerAdapter* adapter;
-  Timer* timer;
+  DoorTimerAdapter *adapter;
   int iTimeout;
-  bool isOpened;
+  bool isOpened, isThrow = false;
+  std::vector<std::jthread> threads;
+
  public:
-  explicit TimedDoor(int timeout);
-  ~TimedDoor();
-  bool isDoorOpened() override;
-  void unlock() override;
-  void lock() override;
+  explicit TimedDoor(int);
+  bool isDoorOpened();
+  void unlock();
+  void lock();
   int getTimeOut() const;
   void throwState();
-  Timer* getTimer();
 };
 
-#endif
+class Timer {
+  TimerClient *client;
+  void sleep(int);
+
+ public:
+  void tregister(int, TimerClient *);
+};
+
+#endif // INCLUDE_TIMEDDOOR_H_
