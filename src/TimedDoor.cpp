@@ -1,8 +1,8 @@
 // Copyright 2021 GHA Test Team
 
 #include "TimedDoor.h"
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
+#include <stdexcept>
+#include <unistd.h>
 
 
 using ::testing::_;
