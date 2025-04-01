@@ -1,6 +1,6 @@
 // Copyright 2025 Korneeva Ekaterina
 #include "TimedDoor.h"
-#include <iostream> 
+#include <iostream>
 #include <stdexcept>
 #include <thread>
 #include <chrono>
