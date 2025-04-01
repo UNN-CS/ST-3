@@ -10,7 +10,7 @@ using ::testing::AtLeast;
 using ::testing::Throw;
 
 class MockTimedDoor : public TimedDoor {
-public:
+ public:
   explicit MockTimedDoor(int timeout) : TimedDoor(timeout) {}
   MOCK_METHOD(void, throwState, (), (override));
 };
