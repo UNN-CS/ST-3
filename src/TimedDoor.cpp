@@ -1,5 +1,6 @@
 // Copyright 2025 Korneeva Ekaterina
 #include "TimedDoor.h"
+#include <iostream> 
 #include <stdexcept>
 #include <thread>
 #include <chrono>
@@ -16,15 +17,21 @@ TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
     adapter = new DoorTimerAdapter(*this);
 }
 
+TimedDoor::~TimedDoor() {
+    delete adapter;
+}
+
 bool TimedDoor::isDoorOpened() {
     return isOpened;
 }
 
 void TimedDoor::unlock() {
-    isOpened = true;
-    if (adapter) {
-        Timer timer;
-        timer.tregister(iTimeout, adapter);
+    if (!isOpened) {
+        isOpened = true;
+        if (adapter) {
+            Timer timer;
+            timer.tregister(iTimeout, adapter);
+        }
     }
 }
 
@@ -52,8 +59,15 @@ void Timer::tregister(int timeout, TimerClient* client) {
         throw std::invalid_argument("Invalid timer parameters");
     }
 
-    std::thread([this, client, timeout]() {
-        std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
-        client->Timeout();
+    std::thread([client, timeout]() {
+        try {
+            std::this_thread::sleep_for(std::chrono::milliseconds(timeout));
+            if (client) {
+                client->Timeout();
+            }
+        }
+        catch (const std::exception& e) {
+            std::cerr << "Timer thread error: " << e.what() << std::endl;
+        }
         }).detach();
 }

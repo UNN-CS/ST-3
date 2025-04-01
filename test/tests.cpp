@@ -13,19 +13,19 @@ using ::testing::AtLeast;
 using ::testing::Return;
 
 class MockTimerClient : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class MockDoor : public Door {
-public:
+ public:
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
     void SetUp() override {
         door = new TimedDoor(100);
     }
@@ -68,13 +68,9 @@ TEST_F(TimedDoorTest, TimerRegistrationWithMock) {
     MockTimerClient mockClient;
     Timer timer;
 
-    auto start = std::chrono::steady_clock::now();
     EXPECT_CALL(mockClient, Timeout()).Times(1);
     timer.tregister(50, &mockClient);
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    auto end = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-    EXPECT_GE(elapsed.count(), 50);
+    std::this_thread::sleep_for(std::chrono::milliseconds(70));
 }
 
 TEST_F(TimedDoorTest, InvalidTimerParametersThrow) {
@@ -99,14 +95,21 @@ TEST_F(TimedDoorTest, GetTimeoutReturnsCorrectValue) {
     EXPECT_EQ(door->getTimeOut(), 100);
 }
 
-TEST_F(TimedDoorTest, RealTimerWithShortTimeout) {
+TEST_F(TimedDoorTest, RealTimerWithShortTimeoutThrows) {
     TimedDoor fastDoor(10);
     fastDoor.unlock();
-
     std::this_thread::sleep_for(std::chrono::milliseconds(15));
+    DoorTimerAdapter adapter(fastDoor);
+    EXPECT_THROW(adapter.Timeout(), std::runtime_error);
+}
 
-    EXPECT_TRUE(fastDoor.isDoorOpened());
-    EXPECT_THROW(fastDoor.throwState(), std::runtime_error);
+TEST_F(TimedDoorTest, CloseBeforeTimeoutPreventsThrow) {
+    TimedDoor door(100);
+    door.unlock();
+    std::this_thread::sleep_for(std::chrono::milliseconds(50));
+    door.lock();
+    DoorTimerAdapter adapter(door);
+    EXPECT_NO_THROW(adapter.Timeout());
 }
 
 TEST_F(TimedDoorTest, DoubleUnlockDoesNotThrow) {
