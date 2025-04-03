@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "TimedDoor.h"
+#pragma comment(lib,"pthreadVC3.lib")
 
 using ::testing::AtLeast;
 
@@ -60,14 +61,14 @@ TEST_F(TimedDoorTest, TimerTriggersTimeout) {
 TEST_F(TimedDoorTest, TimeoutThrowsWhenDoorOpen) {
     door->unlock();
     EXPECT_THROW({
-        timer->tregister(door->getTimeOut(), door);
+        timer->tregister(door->getTimeOut(), mockClient);
         }, std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, TimeoutDoesNotThrowWhenDoorClosed) {
     door->lock();
     EXPECT_NO_THROW({
-        timer->tregister(door->getTimeOut(), door);
+        timer->tregister(door->getTimeOut(), mockClient);
         });
 }
 
@@ -86,25 +87,25 @@ TEST_F(TimedDoorTest, AdapterTimeoutCallsThrowState) {
 TEST_F(TimedDoorTest, DoorTimeoutIntegration) {
     door->unlock();
     EXPECT_THROW({
-        timer->tregister(door->getTimeOut(), door);
+        timer->tregister(door->getTimeOut(), mockClient);
         }, std::runtime_error);
     door->lock();
     EXPECT_NO_THROW({
-        timer->tregister(door->getTimeOut(), door);
+        timer->tregister(door->getTimeOut(), mockClient);
         });
 }
 
 TEST_F(TimedDoorTest, MultipleTimeouts) {
     door->unlock();
     EXPECT_THROW({
-        timer->tregister(door->getTimeOut(), door);
+        timer->tregister(door->getTimeOut(), mockClient);
         }, std::runtime_error);
     door->lock();
     EXPECT_NO_THROW({
-        timer->tregister(door->getTimeOut(), door);
+        timer->tregister(door->getTimeOut(), mockClient);
         });
     door->unlock();
     EXPECT_THROW({
-        timer->tregister(door->getTimeOut(), door);
+        timer->tregister(door->getTimeOut(), mockClient);
         }, std::runtime_error);
 }
