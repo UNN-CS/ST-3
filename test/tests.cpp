@@ -74,6 +74,6 @@ TEST(TimedDoorTest, TimerCallsTimeout) {
     MockTimerClient mockClient;
     Timer timer;
     EXPECT_CALL(mockClient, Timeout()).Times(1);
-    timer.tregister(10, &mockClient);
-    std::this_thread::sleep_for(std::chrono::milliseconds(20));
+    timer.tregister(0, &mockClient);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
