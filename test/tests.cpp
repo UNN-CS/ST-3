@@ -11,7 +11,7 @@ using ::testing::Mock;
 using ::testing::InSequence;
 
 class MockTimerClient : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
