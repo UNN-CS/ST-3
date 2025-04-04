@@ -15,54 +15,68 @@ class MockTimerClient : public TimerClient {
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
-TEST(TimedDoorTest, InitialStateIsClosed) {
+class TimedDoorTest : public ::testing::Test {
+protected:
+    TimedDoor* door;
+    MockTimerClient* mockClient;
+    void SetUp() override {
+        door = new TimedDoor(5);
+        mockClient = new MockTimerClient();
+    }
+    void TearDown() override {
+        delete door;
+        delete mockClient;
+    }
+};
+
+TEST_F(TimedDoorTest, InitialStateIsClosed) {
     TimedDoor door(5);
     EXPECT_FALSE(door.isDoorOpened());
 }
 
-TEST(TimedDoorTest, UnlockOpensDoor) {
+TEST_F(TimedDoorTest, UnlockOpensDoor) {
     TimedDoor door(5);
     door.unlock();
     EXPECT_TRUE(door.isDoorOpened());
 }
 
-TEST(TimedDoorTest, LockClosesDoor) {
+TEST_F(TimedDoorTest, LockClosesDoor) {
     TimedDoor door(5);
     door.unlock();
     door.lock();
     EXPECT_FALSE(door.isDoorOpened());
 }
 
-TEST(TimedDoorTest, TimeoutWhenOpenThrowsException) {
+TEST_F(TimedDoorTest, TimeoutWhenOpenThrowsException) {
     TimedDoor door(5);
     door.unlock();
     DoorTimerAdapter adapter(door);
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
 
-TEST(TimedDoorTest, TimeoutWhenClosedDoesNotThrow) {
+TEST_F(TimedDoorTest, TimeoutWhenClosedDoesNotThrow) {
     TimedDoor door(5);
     DoorTimerAdapter adapter(door);
     EXPECT_NO_THROW(adapter.Timeout());
 }
 
-TEST(TimedDoorTest, ThrowStateThrowsWhenOpen) {
+TEST_F(TimedDoorTest, ThrowStateThrowsWhenOpen) {
     TimedDoor door(5);
     door.unlock();
     EXPECT_THROW(door.throwState(), std::runtime_error);
 }
 
-TEST(TimedDoorTest, ThrowStateDoesNotThrowWhenClosed) {
+TEST_F(TimedDoorTest, ThrowStateDoesNotThrowWhenClosed) {
     TimedDoor door(5);
     EXPECT_NO_THROW(door.throwState());
 }
 
-TEST(TimedDoorTest, GetTimeoutReturnsCorrectValue) {
+TEST_F(TimedDoorTest, GetTimeoutReturnsCorrectValue) {
     TimedDoor door(10);
     EXPECT_EQ(door.getTimeOut(), 10);
 }
 
-TEST(TimedDoorTest, TimeoutAfterLockDoesNotThrow) {
+TEST_F(TimedDoorTest, TimeoutAfterLockDoesNotThrow) {
     TimedDoor door(5);
     door.unlock();
     door.lock();
@@ -70,7 +84,7 @@ TEST(TimedDoorTest, TimeoutAfterLockDoesNotThrow) {
     EXPECT_NO_THROW(adapter.Timeout());
 }
 
-TEST(TimedDoorTest, TimerCallsTimeout) {
+TEST_F(TimedDoorTest, TimerCallsTimeout) {
     MockTimerClient mockClient;
     Timer timer;
     EXPECT_CALL(mockClient, Timeout()).Times(1);
