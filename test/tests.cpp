@@ -16,7 +16,7 @@ class MockTimerClient : public TimerClient {
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
     TimedDoor* door;
     MockTimerClient* mockClient;
     void SetUp() override {
@@ -84,15 +84,10 @@ TEST_F(TimedDoorTest, TimeoutAfterLockDoesNotThrow) {
     EXPECT_NO_THROW(adapter.Timeout());
 }
 
-TEST_F(TimedDoorTest, TimerCallsTimeout) {
-    MockTimerClient mockClient;
+TEST_F(TimedDoorTest, TestTimeoutAfterOpening) {
+    door->unlock();
+    EXPECT_CALL(*mockClient, Timeout())
+        .Times(1);
     Timer timer;
-    EXPECT_CALL(mockClient, Timeout()).Times(1);
-    try {
-        timer.tregister(0, &mockClient);
-        std::this_thread::sleep_for(std::chrono::milliseconds(100));
-    }
-    catch (const std::exception& e) {
-        FAIL() << "Exception: " << e.what();
-    }
+    timer.tregister(5, mockClient);
 }
