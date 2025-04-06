@@ -38,8 +38,9 @@ class TimedDoor : public Door {
   bool isDoorOpened();
   void unlock();
   void lock();
-  int  getTimeOut() const;
+  int getTimeOut() const;
   void throwState();
+  virtual ~TimedDoor();
 };
 
 class Timer {
