@@ -61,16 +61,17 @@ TEST_F(DoorTest, GetTimeoutReturnsCorrectValue) {
 }
 
 TEST_F(DoorTest, TimeoutThrowsIfDoorOpen) {
-    EXPECT_CALL(*door, throwState()).Times(1);
     door->unlock();
-    std::this_thread::sleep_for(std::chrono::milliseconds(200));
+    EXPECT_THROW(std::this_thread::sleep_for
+        (std::chrono::milliseconds(200)), std::runtime_error);
 }
 
 TEST_F(DoorTest, TimeoutNoThrowIfDoorClosed) {
     door->lock();
-    EXPECT_CALL(*door, throwState()).Times(0);
-    DoorTimerAdapter adapter(*door);
-    adapter.Timeout();
+    EXPECT_NO_THROW({
+        DoorTimerAdapter adapter(*door);
+        adapter.Timeout();
+    });
 }
 
 TEST(TimerTest, TimerCallsTimeout) {
@@ -81,11 +82,10 @@ TEST(TimerTest, TimerCallsTimeout) {
 }
 
 TEST(AdapterTest, AdapterCallsThrowIfOpen) {
-    TestTimedDoor door(100);
-    DoorTimerAdapter adapter(door);
-    EXPECT_CALL(door, throwState()).Times(1);
+    TimedDoor door(100);
     door.unlock();
-    std::this_thread::sleep_for(std::chrono::milliseconds(150));
+    EXPECT_THROW(std::this_thread::sleep_for
+        (std::chrono::milliseconds(150)), std::runtime_error);
 }
 
 TEST(AdapterTest, DoorClosedNoException) {
@@ -111,6 +111,9 @@ TEST(AdapterTest, MultipleOpenClose) {
     std::this_thread::sleep_for(std::chrono::milliseconds(50));
     door.lock();
     door.unlock();
-    EXPECT_THROW(std::this_thread::sleep_for(std::chrono::milliseconds(200)),
+    EXPECT_THROW(std::this_thread::sleep_for
+        (std::chrono::milliseconds(200)),
      std::runtime_error);
 }
+
+
