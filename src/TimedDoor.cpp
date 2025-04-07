@@ -5,7 +5,6 @@
 #include <thread>
 
 Timer::TimerClient *client = nullptr;
-
 void Timer::tregister(int timeout, TimerClient *c)
 {
     client = c;
