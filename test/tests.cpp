@@ -21,8 +21,7 @@ class MockTimerClient : public TimerClient {
 
 class TestTimer : public Timer {
  public:
-    void tregister(int timeout, TimerClient *client)
-    {
+    void tregister(int timeout, TimerClient *client) {
         client->Timeout();
     }
 };
@@ -38,13 +37,11 @@ class DoorTest : public ::testing::Test {
  protected:
     TestTimedDoor *door;
 
-    void SetUp() override
-    {
+    void SetUp() override {
         door = new TestTimedDoor(100);
     }
 
-    void TearDown() override
-    {
+    void TearDown() override {
         delete door;
     }
 };

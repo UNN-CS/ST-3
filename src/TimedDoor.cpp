@@ -41,8 +41,7 @@ void TimedDoor::throwState() {
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor &d) : door(d) {}
 
 void DoorTimerAdapter::Timeout() {
-    if (door.isDoorOpened())
-    {
+    if (door.isDoorOpened()) {
         door.throwState();
     }
 }
