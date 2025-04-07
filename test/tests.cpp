@@ -30,7 +30,7 @@ class TestTimedDoor : public TimedDoor {
  public:
     using TimedDoor::TimedDoor;
 
-    MOCK_METHOD(void, throwState, (), (override));
+    MOCK_METHOD(void, throwState, (), ());
 };
 
 class DoorTest : public ::testing::Test {
