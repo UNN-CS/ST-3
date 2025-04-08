@@ -6,13 +6,15 @@
 #include <thread>
 
 
-class MockTimerClient : public TimerClient {
-public:
-  MOCK_METHOD(void, Timeout, (), (override));
-};
+class MockTimer : public Timer {
+  public:
+    MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
+  };
+  
+  
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
   TimedDoor *door;
   MockTimerClient *mockClient;
   void SetUp() override {
@@ -24,6 +26,15 @@ protected:
     delete mockClient;
   }
 };
+
+TEST_F(TimedDoorTest, UnlockOpensDoorWithoutTimeout) {
+  MockTimer mockTimer;
+  TimedDoor door(5, mockTimer);
+  EXPECT_CALL(mockTimer, tregister(5, _));
+  door.unlock();
+  EXPECT_TRUE(door.isDoorOpened());
+  // Тест не ждет срабатывания таймера, исключение не возникает
+}
 
 TEST_F(TimedDoorTest, InitialStateIsClosed) {
   TimedDoor door(5);
