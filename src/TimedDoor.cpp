@@ -10,12 +10,11 @@ void DoorTimerAdapter::Timeout() { door.throwState(); }
 
 // TimedDoor implementation
 TimedDoor::TimedDoor(int timeout, Timer &timer)
-      : iTimeout(timeout), timer(timer), isOpened(false) {
-    adapter = new DoorTimerAdapter(*this);
-  }
+    : iTimeout(timeout), timer(timer), isOpened(false) {
+  adapter = new DoorTimerAdapter(*this);
+}
 
-TimedDoor::TimedDoor(int timeout) : iTimeout(timeout),
-isOpened(false) {
+TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
   adapter = new DoorTimerAdapter(*this);
 }
 
