@@ -9,22 +9,6 @@ DoorTimerAdapter::DoorTimerAdapter(TimedDoor &d) : door(d) {}
 void DoorTimerAdapter::Timeout() { door.throwState(); }
 
 // TimedDoor implementation
-class TimedDoor {
- public:
-  TimedDoor(int timeout, Timer &timer)
-      : iTimeout(timeout), timer(timer), isOpened(false) {
-    adapter = new DoorTimerAdapter(*this);
-  }
-  // ...
- private:
-  Timer &timer;
-};
-
-TimedDoor::TimedDoor(int timeout, Timer& timer) 
-    : iTimeout(timeout), timer(timer), isOpened(false) {
-    adapter = new DoorTimerAdapter(*this);
-  }
-
 bool TimedDoor::isDoorOpened() { return isOpened; }
 
 void TimedDoor::unlock() {
