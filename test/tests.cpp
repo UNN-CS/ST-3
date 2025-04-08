@@ -7,14 +7,12 @@
 
 
 class MockTimer : public Timer {
-  public:
-    MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
-  };
-  
-  
+public:
+  MOCK_METHOD(void, tregister, (int, TimerClient *), (override));
+};
 
 class TimedDoorTest : public ::testing::Test {
- protected:
+protected:
   TimedDoor *door;
   MockTimerClient *mockClient;
   void SetUp() override {
