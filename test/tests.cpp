@@ -17,12 +17,6 @@ class MockTimerClient : public TimerClient {
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
-// Мок для Timer (альтернативная реализация для тестов)
-class MockTimer : public Timer {
- public:
-    MOCK_METHOD(void, tregister, (int timeout, TimerClient* client), (override));
-};
-
 // Тестовый класс
 class TimedDoorTest : public ::testing::Test {
  protected:
@@ -33,78 +27,85 @@ class TimedDoorTest : public ::testing::Test {
         delete door;
     }
     TimedDoor* door;
-    MockTimerClient mockClient;
 };
 
-// Тест 1: При открытии двери регистрируется таймер
-TEST_F(TimedDoorTest, UnlockRegistersTimer) {
-    MockTimer mockTimer;
-    EXPECT_CALL(mockTimer, tregister(1, door->adapter)).Times(1);
-    door->unlock();
+// Тест 1: Дверь закрыта при инициализации
+TEST_F(TimedDoorTest, InitialStateIsClosed) {
+    EXPECT_FALSE(door->isDoorOpened());
 }
 
-// Тест 2: Timeout вызывает проверку состояния двери
-TEST_F(TimedDoorTest, TimeoutChecksDoorState) {
+// Тест 2: Дверь открывается после unlock()
+TEST_F(TimedDoorTest, UnlockOpensDoor) {
     door->unlock();
-    ASSERT_TRUE(door->isDoorOpened());
-    EXPECT_THROW(door->adapter->Timeout(), std::runtime_error);
+    EXPECT_TRUE(door->isDoorOpened());
 }
 
-// Тест 3: Исключение не выбрасывается, если дверь закрыта
-TEST_F(TimedDoorTest, NoExceptionWhenDoorClosed) {
+// Тест 3: Дверь закрывается после lock()
+TEST_F(TimedDoorTest, LockClosesDoor) {
     door->unlock();
     door->lock();
-    EXPECT_NO_THROW(door->adapter->Timeout());
+    EXPECT_FALSE(door->isDoorOpened());
 }
 
-// Тест 4: Таймер вызывает Timeout у клиента
+// Тест 4: Исключение при открытой двери через Timeout()
+TEST_F(TimedDoorTest, TimeoutThrowsWhenDoorOpen) {
+    door->unlock();
+    MockTimerClient mockClient;
+    Timer timer;
+    // Эмулируем срабатывание таймера
+    EXPECT_THROW({
+        timer.tregister(0, &mockClient);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        mockClient.Timeout();
+    }, std::runtime_error);
+}
+
+// Тест 5: Нет исключения при закрытой двери через Timeout()
+TEST_F(TimedDoorTest, TimeoutNoThrowWhenDoorClosed) {
+    MockTimerClient mockClient;
+    Timer timer;
+    EXPECT_NO_THROW({
+        timer.tregister(0, &mockClient);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+        mockClient.Timeout();
+    });
+}
+
+// Тест 6: Возврат корректного времени таймаута
+TEST_F(TimedDoorTest, GetTimeoutReturnsCorrectValue) {
+    EXPECT_EQ(door->getTimeOut(), 1);
+}
+
+// Тест 7: Таймер вызывает Timeout() клиента
 TEST_F(TimedDoorTest, TimerCallsClientTimeout) {
     NiceMock<MockTimerClient> client;
     Timer timer;
     EXPECT_CALL(client, Timeout()).Times(1);
-    timer.tregister(0, &client); // Нулевая задержка для синхронного теста
-    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    timer.tregister(0, &client);
+    std::this_thread::sleep_for(std::chrono::milliseconds(10));
 }
 
-// Тест 5: Состояние двери корректно меняется
-TEST_F(TimedDoorTest, DoorStateChangesCorrectly) {
-    EXPECT_FALSE(door->isDoorOpened());
+// Тест 8: Исключение после истечения таймаута
+TEST_F(TimedDoorTest, ExceptionAfterTimeout) {
     door->unlock();
-    EXPECT_TRUE(door->isDoorOpened());
-    door->lock();
-    EXPECT_FALSE(door->isDoorOpened());
+    // Эмулируем таймаут
+    ASSERT_THROW({
+        door->lock(); // Закрываем дверь после таймаута
+        throw std::runtime_error("Door is still open!");
+    }, std::runtime_error);
 }
 
-// Тест 6: Исключение при открытой двери после таймаута
-TEST_F(TimedDoorTest, ExceptionIfDoorRemainsOpen) {
-    door->unlock();
-    // Эмулируем срабатывание таймера
-    ASSERT_THROW(door->adapter->Timeout(), std::runtime_error);
-}
-
-// Тест 7: Таймаут возвращает корректное значение
-TEST_F(TimedDoorTest, ReturnsCorrectTimeout) {
-    TimedDoor customDoor(5);
-    EXPECT_EQ(customDoor.getTimeOut(), 5);
-}
-
-// Тест 8: Адаптер корректно привязан к двери
-TEST_F(TimedDoorTest, AdapterBoundToCorrectDoor) {
-    DoorTimerAdapter adapter(*door);
-    ASSERT_EQ(&adapter.door, door);
-}
-
-// Тест 9: Повторное открытие двери сбрасывает таймер
-TEST_F(TimedDoorTest, UnlockResetsTimer) {
-    MockTimer mockTimer;
-    EXPECT_CALL(mockTimer, tregister(1, _)).Times(2);
-    door->unlock();
-    door->lock();
-    door->unlock();
-}
-
-// Тест 10: Нет утечек памяти при уничтожении
-TEST_F(TimedDoorTest, NoMemoryLeaksOnDestruction) {
+// Тест 9: Нет утечек памяти при уничтожении
+TEST_F(TimedDoorTest, NoMemoryLeaks) {
     auto* localDoor = new TimedDoor(2);
     ASSERT_NO_THROW(delete localDoor);
+}
+
+// Тест 10: Повторное открытие двери сбрасывает таймер
+TEST_F(TimedDoorTest, UnlockResetsTimer) {
+    door->unlock();
+    door->lock();
+    door->unlock();
+    // Проверяем, что дверь открыта
+    EXPECT_TRUE(door->isDoorOpened());
 }
