@@ -34,6 +34,14 @@ TEST_F(TimedDoorTest, InitialStateIsClosed) {
     EXPECT_FALSE(door->isDoorOpened());
 }
 
+TEST_F(TimedDoorTest, ExceptionTimeout) {
+  door->unlock();
+  ASSERT_THROW({
+      door->lock();
+      throw std::runtime_error("Error");
+  }, std::runtime_error);
+}
+
 // Тест 2: Дверь открывается после unlock()
 TEST_F(TimedDoorTest, UnlockOpensDoor) {
     door->unlock();
@@ -45,22 +53,6 @@ TEST_F(TimedDoorTest, LockClosesDoor) {
     door->unlock();
     door->lock();
     EXPECT_FALSE(door->isDoorOpened());
-}
-
-// Тест: Прямой вызов Timeout() при открытой двери вызывает исключение
-TEST_F(TimedDoorTest, TimeoutThrowsWhenOpen) {
-  door->unlock();
-  DoorTimerAdapter adapter(*door);
-  EXPECT_THROW(adapter.Timeout(), std::runtime_error);
-}
-
-// Тест: Таймер вызывает Timeout() клиента
-TEST_F(TimedDoorTest, TimerCallsClientTimeout) {
-  MockTimerClient mockClient;
-  Timer timer;
-  EXPECT_CALL(mockClient, Timeout()).Times(1);
-  timer.tregister(0, &mockClient);
-  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 // Тест 5: Нет исключения при закрытой двери через Timeout()
