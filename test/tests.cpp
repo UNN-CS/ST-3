@@ -89,3 +89,9 @@ TEST_F(TimedDoorTest, unlocking_twice_door_unlock) {
     door->unlock();
     EXPECT_TRUE(door->isDoorOpened());
 }
+
+TEST_F(TimedDoorTest, no_timeout_when_door_locked) {
+    door->unlock();
+    door->lock();
+    EXPECT_NO_THROW(adapter->Timeout());
+}
