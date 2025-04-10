@@ -67,7 +67,6 @@ TEST_F(TimedDoorTest, time_out_no_throws_exception_when_door_closed) {
     EXPECT_NO_THROW(door->throwState());
 }
 
-
 TEST_F(TimedDoorTest, adapter_timeout) {
     door->unlock();
     std::this_thread::sleep_for(std::chrono::seconds(6));
