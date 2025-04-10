@@ -26,7 +26,6 @@ class MockDoor : public Door {
 class TimedDoorTest : public ::testing::Test {
  protected:
     TimedDoor* door;
-    DoorTimerAdapter* adapter;
     Timer* timer;
 
     void SetUp() override {
