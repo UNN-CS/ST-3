@@ -72,7 +72,7 @@ TEST_F(TimedDoorTest, time_out_throws_exception_when_door_open) {
 
 TEST_F(TimedDoorTest, time_out_no_throws_exception_when_door_closed) {
     door->lock();
-    EXPECT_NO_THROW(door->throwState()));
+    EXPECT_NO_THROW(door->throwState());
 }
 
 
