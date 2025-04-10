@@ -52,15 +52,13 @@ void Timer::sleep(int seconds) {
 }
 
 void Timer::tregister(int time, TimerClient* c) {
-    client = c;
+    this->client = client;
+    std::thread([timeout, client]() {
+        std::this_thread::sleep_for(std::chrono::seconds(timeout));
+        client->Timeout();
+        }).detach();
+}
 
-  std::thread this_thread([time, c]() {
-        if (time > 0) {
-            std::this_thread::sleep_for(std::chrono::seconds(time));
-        }
-        if (c) {
-            c->Timeout();
-        }
-        });
-  this_thread.detach();
+TimedDoor::~TimedDoor() {
+    delete adapter;
 }
