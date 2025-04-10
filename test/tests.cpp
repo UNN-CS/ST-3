@@ -57,9 +57,12 @@ TEST_F(TimedDoorTest, door_close) {
     EXPECT_FALSE(door->isDoorOpened());
 }
 
-TEST_F(TimedDoorTest, throw_state_throws_exception) {
+TEST_F(TimedDoorTest, door_closes_before_timeout_no_exception) {
     door->unlock();
-    EXPECT_THROW(door->throwState(), std::runtime_error);
+    std::this_thread::sleep_for(std::chrono::seconds(2));
+    door->lock();
+    std::this_thread::sleep_for(std::chrono::seconds(4));
+    EXPECT_FALSE(door->isDoorOpened());
 }
 
 TEST_F(TimedDoorTest, time_out_throws_exception_when_door_open) {
