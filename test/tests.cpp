@@ -27,18 +27,15 @@ class TimedDoorTest : public ::testing::Test {
  protected:
     TimedDoor* door;
     DoorTimerAdapter* adapter;
-    Timer* timer;
 
     void SetUp() override {
         door = new TimedDoor(5);
         adapter = new DoorTimerAdapter(*door);
-        timer = new Timer();
     }
 
     void TearDown() override {
         delete door;
         delete adapter;
-        delete timer;
     }
 };
 
