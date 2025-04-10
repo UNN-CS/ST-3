@@ -1,25 +1,22 @@
 // Copyright 2021 GHA Test Team
 #include "TimedDoor.h"
-#include <stdexcept>
 #include <chrono>
+#include <stdexcept>
 #include <thread>
-#include <memory>
 
-DoorTimerAdapter::DoorTimerAdapter(TimedDoor& door) : door(door) {}
+DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
 
 void DoorTimerAdapter::Timeout() {
     if (door.isDoorOpened()) {
-        door.lock();
-        if (door.isDoorOpened()) {
-            door.throwState();
-        }
+        door.isThrow = true;
     }
 }
 
-TimedDoor::TimedDoor(int timeout)
-    : iTimeout(timeout),
-      isOpened(false),
-      adapter(new DoorTimerAdapter(*this)) {}
+TimedDoor::TimedDoor(int timeoutValue) :
+    iTimeout(timeoutValue),
+    isOpened(false),
+    adapter(new DoorTimerAdapter(*this)) {
+}
 
 bool TimedDoor::isDoorOpened() {
     return isOpened;
@@ -27,12 +24,22 @@ bool TimedDoor::isDoorOpened() {
 
 void TimedDoor::unlock() {
     isOpened = true;
-    static Timer timer;
-    timer.tregister(iTimeout, adapter);
+
+    th = new std::thread([&]() {
+        Timer timer;
+        timer.tregister(iTimeout, adapter);
+        });
 }
 
 void TimedDoor::lock() {
+    throwState();
     isOpened = false;
+
+    if (th) {
+        th->join();
+        delete th;
+    }
+    th = nullptr;
 }
 
 int TimedDoor::getTimeOut() const {
@@ -40,25 +47,25 @@ int TimedDoor::getTimeOut() const {
 }
 
 void TimedDoor::throwState() {
-    if (isOpened) {
-        throw std::runtime_error("Door is open after timeout!");
+    if (isThrow) {
+        throw std::runtime_error("Door has been opened too long!");
     }
 }
 
-void Timer::sleep(int seconds) {
-    if (seconds > 0) {
-        std::this_thread::sleep_for(std::chrono::seconds(seconds));
+void Timer::tregister(int timeoutValue, TimerClient* c) {
+    if (timeoutValue <= 0) {
+        throw std::invalid_argument("Timeout value must be positive!");
     }
+
+    this->client = c;
+    sleep(timeoutValue);
+    this->client->Timeout();
 }
 
-void Timer::tregister(int time, TimerClient* c) {
-    this->client = client;
-    std::thread([timeout, client]() {
-        std::this_thread::sleep_for(std::chrono::seconds(timeout));
-        client->Timeout();
-        }).detach();
-}
+void Timer::sleep(int timeoutValue) {
+    if (timeoutValue <= 0) {
+        throw std::invalid_argument("Timeout value must be positive!");
+    }
 
-TimedDoor::~TimedDoor() {
-    delete adapter;
+    std::this_thread::sleep_for(std::chrono::seconds(timeoutValue));
 }
