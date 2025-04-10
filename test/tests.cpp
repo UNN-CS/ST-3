@@ -64,12 +64,12 @@ TEST_F(TimedDoorTest, throw_state_throws_exception) {
 
 TEST_F(TimedDoorTest, time_out_throws_exception_when_door_open) {
     door->unlock();
-    EXPECT_THROW(adapter->Timeout(), std::runtime_error);
+    EXPECT_THROW(door->throwState(), std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, time_out_no_throws_exception_when_door_closed) {
     door->lock();
-    EXPECT_NO_THROW(adapter->Timeout());
+    EXPECT_NO_THROW(door->throwState()));
 }
 
 
