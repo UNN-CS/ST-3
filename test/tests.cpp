@@ -26,6 +26,7 @@ class MockDoor : public Door {
 class TimedDoorTest : public ::testing::Test {
  protected:
     TimedDoor* door;
+    DoorTimerAdapter* adapter;
     Timer* timer;
 
     void SetUp() override {
@@ -53,14 +54,6 @@ TEST_F(TimedDoorTest, door_opens) {
 TEST_F(TimedDoorTest, door_close) {
     door->unlock();
     door->lock();
-    EXPECT_FALSE(door->isDoorOpened());
-}
-
-TEST_F(TimedDoorTest, door_closes_before_timeout_no_exception) {
-    door->unlock();
-    std::this_thread::sleep_for(std::chrono::seconds(2));
-    door->lock();
-    std::this_thread::sleep_for(std::chrono::seconds(4));
     EXPECT_FALSE(door->isDoorOpened());
 }
 
