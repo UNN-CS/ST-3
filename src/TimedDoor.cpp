@@ -1,8 +1,9 @@
 // Copyright 2021 GHA Test Team
 #include "TimedDoor.h"
-#include <stdexcept>
 #include <chrono>
+#include <stdexcept>
 #include <thread>
+
 
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor &d) : door(d) {}
 
@@ -42,4 +43,3 @@ void TimedDoor::throwState() {
 void Timer::sleep(int milliseconds) {
   std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
-
