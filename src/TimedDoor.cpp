@@ -4,6 +4,7 @@
 #include <stdexcept>
 #include <thread>
 #include <chrono>
+#include <string>
 
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& timedDoor) : door(timedDoor) {}
 
@@ -13,7 +14,7 @@ void DoorTimerAdapter::Timeout() {
     }
 }
 
-TimedDoor::TimedDoor(int timeout) : 
+TimedDoor::TimedDoor(int timeout) :
     iTimeout(timeout > 0 ? timeout : 10),
     isOpened(false) {
     adapter = new DoorTimerAdapter(*this);
@@ -62,9 +63,7 @@ void Timer::tregister(int seconds, TimerClient* timerClient) {
     if (!timerClient) {
         throw std::invalid_argument("Invalid timer client");
     }
-    
     client = timerClient;
-    
     try {
         sleep(seconds);
         client->Timeout();
