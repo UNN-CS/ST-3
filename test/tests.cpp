@@ -78,16 +78,6 @@ TEST(AdapterTest, DoorOpenThrowsException) {
         (std::chrono::milliseconds(200)); }, std::runtime_error);
 }
 
-TEST(DoorTest, DoorInitiallyClosed) {
-    TimedDoor door(100);
-    EXPECT_FALSE(door.isDoorOpened());
-}
-
-TEST(DoorTest, GetTimeoutDifferentValue) {
-    TimedDoor door(250);
-    EXPECT_EQ(door.getTimeOut(), 250);
-}
-
 TEST(AdapterTest, AdapterDoesNotThrowWhenClosed) {
     TimedDoor door(100);
     door.lock();
@@ -95,16 +85,24 @@ TEST(AdapterTest, AdapterDoesNotThrowWhenClosed) {
     EXPECT_NO_THROW(adapter.Timeout());
 }
 
+TEST_F(DoorTest, DoorInitiallyClosed) {
+    EXPECT_FALSE(door->isDoorOpened());
+}
+
+TEST_F(DoorTest, GetTimeoutDifferentValue) {
+    TestTimedDoor anotherDoor(250);
+    EXPECT_EQ(anotherDoor.getTimeOut(), 250);
+}
+
+TEST_F(DoorTest, MultipleLocksKeepDoorClosed) {
+    door->lock();
+    door->lock();
+    EXPECT_FALSE(door->isDoorOpened());
+}
+
 TEST(AdapterTest, AdapterThrowsWhenOpen) {
     TimedDoor door(100);
     door.unlock();
     DoorTimerAdapter adapter(door);
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
-}
-
-TEST(DoorTest, MultipleLocksKeepDoorClosed) {
-    TimedDoor door(100);
-    door.lock();
-    door.lock();
-    EXPECT_FALSE(door.isDoorOpened());
 }
