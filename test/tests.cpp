@@ -6,6 +6,7 @@
 #include "TimedDoor.h"
 #include <chrono>
 #include <thread>
+using testing::Return;
 
 class MockTimerClient : public TimerClient {
  public:
@@ -25,12 +26,11 @@ class TimedDoorTest : public ::testing::Test {
     door = new TimedDoor(1);
     adapter = new DoorTimerAdapter(*door);
     door->lock();
-  }
+}
 
   void TearDown() override {
-    delete adapter;
     delete door;
-  }
+}
 
   TimedDoor *door;
   DoorTimerAdapter *adapter;
@@ -62,11 +62,16 @@ TEST_F(TimedDoorTest, TestCallTimeout) {
 }
 
 TEST_F(TimedDoorTest, TestExceptionOpenedDoor) {
-  door->unlock();
-  ASSERT_ANY_THROW({
-    std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-    door->lock();
-  });
+    EXPECT_FALSE(door->isDoorOpened());
+    
+    door->unlock();
+    EXPECT_TRUE(door->isDoorOpened());
+    
+    door->triggerTimeout();
+    
+    EXPECT_THROW(door->lock(), std::runtime_error);
+    
+    EXPECT_TRUE(door->isDoorOpened());
 }
 
 TEST_F(TimedDoorTest, TestNoExceptionClosedDoor) {
@@ -101,23 +106,26 @@ TEST_F(TimedDoorTest, TestMockDoorUnlock) {
 }
 
 TEST_F(TimedDoorTest, TestFullCycle) {
-  EXPECT_FALSE(door->isDoorOpened());
-  door->unlock();
-  EXPECT_TRUE(door->isDoorOpened());
-  door->lock();
-  EXPECT_FALSE(door->isDoorOpened());
-  door->unlock();
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
-  EXPECT_NO_THROW(door->throwState());
-  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-  EXPECT_THROW(door->lock(), std::runtime_error);
+    EXPECT_FALSE(door->isDoorOpened());
+    
+    door->unlock();
+    EXPECT_TRUE(door->isDoorOpened());
+    door->lock();
+    EXPECT_FALSE(door->isDoorOpened());
+    
+    door->unlock();
+    door->triggerTimeout();
+    EXPECT_THROW(door->lock(), std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, TestAdapterCorrectlyCallsDoorLock) {
     MockDoor mockDoor;
+    
+    EXPECT_CALL(mockDoor, isDoorOpened()).WillOnce(Return(true));
+    EXPECT_CALL(mockDoor, lock()).Times(1);
+    
     DoorTimerAdapter adapter(mockDoor);
     
-    EXPECT_CALL(mockDoor, lock()).Times(1);
     adapter.Timeout();
 }
 

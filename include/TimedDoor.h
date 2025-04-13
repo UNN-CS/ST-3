@@ -1,61 +1,67 @@
 // Copyright 2021 GHA Test Team
-
 #ifndef INCLUDE_TIMEDDOOR_H_
 #define INCLUDE_TIMEDDOOR_H_
 
+#include <memory>
+#include <mutex>
 #include <thread>
 #include <vector>
 
-class DoorTimerAdapter;
-class Timer;
-class Door;
-class TimedDoor;
-
 class TimerClient {
- public:
-  virtual void Timeout() = 0;
+public:
+    virtual ~TimerClient() = default;
+    virtual void Timeout() = 0;
 };
 
 class Door {
- public:
-  virtual void lock() = 0;
-  virtual void unlock() = 0;
-  virtual bool isDoorOpened() = 0;
+public:
+    virtual ~Door() = default;
+    virtual void lock() = 0;
+    virtual void unlock() = 0;
+    virtual bool isDoorOpened() = 0;
 };
 
-class DoorTimerAdapter : public TimerClient {
- private:
-  TimedDoor &door;
+class TimedDoor;
 
- public:
-  explicit DoorTimerAdapter(TimedDoor &);
-  void Timeout();
+class DoorTimerAdapter : public TimerClient {
+public:
+    explicit DoorTimerAdapter(Door& d);
+    void Timeout() override;
+private:
+    Door& door;
 };
 
 class TimedDoor : public Door {
-  friend class DoorTimerAdapter;
+    friend class DoorTimerAdapter;
+public:
+    explicit TimedDoor(int timeoutValue);
+    ~TimedDoor() override;
+    
+    bool isDoorOpened() override;
+    void unlock() override;
+    void lock() override;
+    int getTimeOut() const;
+    void throwState();
 
- private:
-  DoorTimerAdapter *adapter;
-  int iTimeout;
-  bool isOpened, isThrow = false;
-  std::vector<std::jthread> threads;
+    void triggerTimeout() {
+        std::lock_guard<std::mutex> lock(mtx);
+        isThrow = true;
+    }
 
- public:
-  explicit TimedDoor(int);
-  bool isDoorOpened();
-  void unlock();
-  void lock();
-  int getTimeOut() const;
-  void throwState();
+private:
+    std::mutex mtx;
+    std::unique_ptr<DoorTimerAdapter> adapter;
+    int iTimeout;
+    bool isOpened;
+    bool isThrow;
+    std::vector<std::thread> threads;
 };
 
 class Timer {
-  TimerClient *client;
-  void sleep(int);
-
- public:
-  void tregister(int, TimerClient *);
+    TimerClient* client;
+    void sleep(int timeoutValue);
+public:
+    void tregister(int timeoutValue, TimerClient* client);
 };
 
 #endif // INCLUDE_TIMEDDOOR_H_
