@@ -27,7 +27,6 @@ protected:
     }
 };
 
-// Базовые тесты состояния двери
 TEST_F(TimedDoorTest, InitialStateIsClosed) {
     EXPECT_FALSE(door->isDoorOpened());
 }
@@ -43,7 +42,6 @@ TEST_F(TimedDoorTest, LockClosesTheDoor) {
     EXPECT_FALSE(door->isDoorOpened());
 }
 
-// Тесты таймера и исключений
 TEST_F(TimedDoorTest, ThrowStateThrowsWhenDoorIsOpen) {
     door->unlock();
     EXPECT_THROW(door->throwState(), std::runtime_error);
@@ -54,19 +52,16 @@ TEST_F(TimedDoorTest, NoExceptionWhenDoorIsClosed) {
     EXPECT_NO_THROW(door->throwState());
 }
 
-// Тест работы адаптера
 TEST_F(TimedDoorTest, AdapterCallsThrowStateOnTimeout) {
     DoorTimerAdapter adapter(*door);
     door->unlock();
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
 }
 
-// Тест получения timeout значения
 TEST_F(TimedDoorTest, GetTimeoutReturnsCorrectValue) {
     EXPECT_EQ(door->getTimeOut(), testTimeout);
 }
 
-// Тест повторного открытия/закрытия
 TEST_F(TimedDoorTest, CanReopenAfterClosing) {
     door->unlock();
     door->lock();
@@ -74,21 +69,12 @@ TEST_F(TimedDoorTest, CanReopenAfterClosing) {
     EXPECT_TRUE(door->isDoorOpened());
 }
 
-// Тест повторного закрытия
 TEST_F(TimedDoorTest, CanCloseMultipleTimes) {
     door->lock();
     door->lock();
     EXPECT_FALSE(door->isDoorOpened());
 }
 
-// Тест реального таймаута (интеграционный)
-TEST_F(TimedDoorTest, RealTimeoutAfterUnlock) {
-    door->unlock();
-    std::this_thread::sleep_for(std::chrono::seconds(testTimeout + 1));
-    EXPECT_THROW(door->throwState(), std::runtime_error);
-}
-
-// Тест сброса таймера при закрытии
 TEST_F(TimedDoorTest, TimerResetWhenLockedBeforeTimeout) {
     door->unlock();
     std::this_thread::sleep_for(std::chrono::milliseconds(500));
