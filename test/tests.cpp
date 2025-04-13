@@ -87,7 +87,6 @@ TEST(AdapterTest, TimeoutWhenDoorClosed) {
 TEST(TimerTest, RegisterClient) {
     MockTimerClient client;
     Timer timer;
-    
     EXPECT_CALL(client, Timeout()).Times(1);
     timer.sleep = [](int) {};
     timer.tregister(1, &client);
