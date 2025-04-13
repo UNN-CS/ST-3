@@ -8,34 +8,31 @@
 #include <thread>
 
 class MockTimerClient : public TimerClient {
-public:
+ public:
     MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class MockDoor : public Door {
-public:
+ public:
     MOCK_METHOD(void, lock, (), (override));
     MOCK_METHOD(void, unlock, (), (override));
     MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
 class MockTimer : public Timer {
-public:
+ public:
     void sleep(int seconds) override {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
-    
     MOCK_METHOD(void, tregister, (int, TimerClient*), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
     TimedDoor* door;
-    
     void SetUp() override {
         door = new TimedDoor(1);
     }
-    
     void TearDown() override {
         delete door;
     }
@@ -91,11 +88,8 @@ TEST(TimerTest, RegisterClient) {
     MockTimerClient client;
     Timer timer;
     
-    EXPECT_CALL(client, Timeout())
-        .Times(1);
-    
+    EXPECT_CALL(client, Timeout()).Times(1);
     timer.sleep = [](int) {};
-    
     timer.tregister(1, &client);
 }
 
@@ -105,7 +99,7 @@ TEST(TimerTest, InvalidParameters) {
 }
 
 class TimerForTest : public Timer {
-public:
+ public:
     void sleep(int) override {
         std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
@@ -115,15 +109,10 @@ TEST(IntegrationTest, DoorTimerIntegration) {
     TimedDoor door(2);
     DoorTimerAdapter adapter(door);
     TimerForTest timer;
-    
     EXPECT_FALSE(door.isDoorOpened());
-    
     door.unlock();
     EXPECT_TRUE(door.isDoorOpened());
-    
     EXPECT_THROW(timer.tregister(2, &adapter), std::runtime_error);
-    
     door.lock();
-    
     EXPECT_NO_THROW(timer.tregister(2, &adapter));
 }
