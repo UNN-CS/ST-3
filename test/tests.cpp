@@ -1,3 +1,5 @@
+// Copyright 2025 Vasilev Sergey
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "TimedDoor.h"
