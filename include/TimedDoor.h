@@ -34,6 +34,7 @@ class TimedDoor : public Door {
   int iTimeout;
   bool isOpened;
  public:
+  ~TimedDoor();
   explicit TimedDoor(int);
   bool isDoorOpened();
   void unlock();
