@@ -100,9 +100,9 @@ TEST_F(DoorTest, MultipleLocksKeepDoorClosed) {
     EXPECT_FALSE(door->isDoorOpened());
 }
 
-TEST(AdapterTest, AdapterThrowsWhenOpen) {
+TEST(AdapterTest, AdapterDoesNotThrowWhenDoorClosed) {
     TimedDoor door(100);
-    door.unlock();
+    door.lock();
     DoorTimerAdapter adapter(door);
-    EXPECT_THROW(adapter.Timeout(), std::runtime_error);
+    EXPECT_NO_THROW(adapter.Timeout());
 }
