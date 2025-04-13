@@ -2,18 +2,18 @@
 
 #include "TimedDoor.h"
 #include <chrono>
+#include <thread>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-#include <thread>
 
 
 class MockTimerClient : public TimerClient {
-public:
+ public:
   MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class ST3 : public ::testing::Test {
-protected:
+ protected:
   TimedDoor *door;
   MockTimerClient *mockClient;
 
