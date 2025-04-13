@@ -1,8 +1,8 @@
 // Copyright 2021 GHA Test Team
 
-#include "../include/TimedDoor.h"
 #include <gmock/gmock.h>
 #include <thread>
+#include "TimedDoor.h"
 
 
 class MockTimerClient : public TimerClient {
@@ -31,7 +31,7 @@ TEST_F(Test, InitialState) { EXPECT_FALSE(door->isDoorOpened()); }
 TEST_F(Test, OpenDoor) {
   door->unlock();
   EXPECT_TRUE(door->isDoorOpened());
-} 
+}
 
 TEST_F(Test, CloseDoor) {
   door->unlock();
@@ -62,7 +62,6 @@ TEST_F(Test, TimerResetOnReopen) {
 
     door->lock();
 
-    // Проверяем что состояние корректно
     EXPECT_FALSE(door->isDoorOpened());
     EXPECT_NO_THROW(door->throwState());
 }
