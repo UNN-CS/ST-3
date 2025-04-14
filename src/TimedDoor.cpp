@@ -42,7 +42,7 @@ void TimedDoor::unlock() {
     std::lock_guard<std::mutex> lock(mtx);
     isOpened = true;
     isThrow = false;
-    
+
     threads.push_back(std::thread([this]() {
         Timer timer;
         timer.tregister(iTimeout, adapter.get());

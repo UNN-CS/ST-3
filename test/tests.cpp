@@ -66,11 +66,11 @@ TEST_F(TimedDoorTest, TestExceptionOpenedDoor) {
     
     door->unlock();
     EXPECT_TRUE(door->isDoorOpened());
-    
+
     door->triggerTimeout();
-    
+
     EXPECT_THROW(door->lock(), std::runtime_error);
-    
+
     EXPECT_TRUE(door->isDoorOpened());
 }
 
@@ -107,12 +107,12 @@ TEST_F(TimedDoorTest, TestMockDoorUnlock) {
 
 TEST_F(TimedDoorTest, TestFullCycle) {
     EXPECT_FALSE(door->isDoorOpened());
-    
+
     door->unlock();
     EXPECT_TRUE(door->isDoorOpened());
     door->lock();
     EXPECT_FALSE(door->isDoorOpened());
-    
+
     door->unlock();
     door->triggerTimeout();
     EXPECT_THROW(door->lock(), std::runtime_error);
@@ -120,12 +120,12 @@ TEST_F(TimedDoorTest, TestFullCycle) {
 
 TEST_F(TimedDoorTest, TestAdapterCorrectlyCallsDoorLock) {
     MockDoor mockDoor;
-    
+
     EXPECT_CALL(mockDoor, isDoorOpened()).WillOnce(Return(true));
     EXPECT_CALL(mockDoor, lock()).Times(1);
-    
+
     DoorTimerAdapter adapter(mockDoor);
-    
+
     adapter.Timeout();
 }
 
