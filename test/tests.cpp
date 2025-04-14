@@ -13,6 +13,7 @@ class MockTimerClient : public TimerClient {
   MOCK_METHOD(void, Timeout, (), (override));
 };
 
+
 class MockDoor : public Door {
  public:
   MOCK_METHOD(void, lock, (), (override));
