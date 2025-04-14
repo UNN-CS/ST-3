@@ -36,7 +36,7 @@ class TimedDoor : public Door {
  public:
   explicit TimedDoor(int timeoutValue);
   ~TimedDoor() override;
-    
+
   bool isDoorOpened() override;
   void unlock() override;
   void lock() override;

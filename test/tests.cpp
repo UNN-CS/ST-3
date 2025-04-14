@@ -64,7 +64,7 @@ TEST_F(TimedDoorTest, TestCallTimeout) {
 
 TEST_F(TimedDoorTest, TestExceptionOpenedDoor) {
     EXPECT_FALSE(door->isDoorOpened());
-    
+
     door->unlock();
     EXPECT_TRUE(door->isDoorOpened());
 
