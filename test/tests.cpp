@@ -66,7 +66,7 @@ TEST_F(MockDoorTest, can_get_timeout) {
 
 TEST_F(MockDoorTest, can_throw_exception) {
   timedDoor->unlock();
-  EXPECT_NO_THROW(adapter->Timeout());
+  EXPECT_ANY_THROW(adapter->Timeout());
 }
 
 TEST_F(MockDoorTest, no_exception_if_door_is_closed) {
@@ -80,8 +80,10 @@ TEST_F(MockDoorTest, no_exception_if_door_is_opend_and_closed) {
 }
 
 TEST(MockTimerClient, call_timeout_after_delay) {
-  MockTimerClient c;
+  MockTimerClient c1, c2;
   Timer t;
-  EXPECT_CALL(c, Timeout()).Times(1);
-  t.tregister(1, &c);
+  EXPECT_CALL(c1, Timeout()).Times(1);
+  EXPECT_CALL(c2, Timeout()).Times(1);
+  t.tregister(1, &c1);
+  t.tregister(1, &c2);
 }

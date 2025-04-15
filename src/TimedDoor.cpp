@@ -23,7 +23,9 @@ int TimedDoor::getTimeOut() const {
     return iTimeout;
 }
 void TimedDoor::throwState() {
-    if (isOpened) throw std::runtime_error("Door is open for too long");
+    if (isOpened) {
+        throw std::runtime_error("Door is open for too long");
+    }
 }
 
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
@@ -37,7 +39,6 @@ void Timer::sleep(int sec) {
     }
 }
 
-void Timer::tregister(int timeout, TimerClient* client)
-{
+void Timer::tregister(int timeout, TimerClient* client) {
     std::this_thread::sleep_for(std::chrono::seconds(timeout));
 }
