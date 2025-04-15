@@ -92,5 +92,5 @@ TEST(TimedDoorAdapterTest, adapter_calls_throw) {
   TimedDoor door(5);
   DoorTimerAdapter a(door);
   door.unlock();
-  EXPECT_ANY_THROW(a.Timeout(), std::runtime_error);
+  EXPECT_THROW(a.Timeout(), std::runtime_error);
 }
