@@ -41,4 +41,5 @@ void Timer::sleep(int sec) {
 
 void Timer::tregister(int timeout, TimerClient* client) {
     std::this_thread::sleep_for(std::chrono::seconds(timeout));
+    client->Timeout();
 }

@@ -85,7 +85,12 @@ TEST_F(MockDoorTest, no_exception_if_door_is_opend_and_closed) {
 TEST(MockTimerClient, call_timeout_after_delay) {
   MockTimerClient c;
   Timer t;
-
   EXPECT_CALL(c, Timeout()).Times(1);
   t.tregister(1, &c);
+}
+TEST(TimedDoorAdapterTest, adapter_calls_throw) {
+  TimedDoor door(5);
+  DoorTimerAdapter a(door);
+  door.unlock();
+  EXPECT_ANY_THROW(a.Timeout(), std::runtime_error);
 }
