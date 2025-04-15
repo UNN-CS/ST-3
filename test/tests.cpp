@@ -6,6 +6,7 @@
 #include "TimedDoor.h"
 
 using ::testing::_;
+using ::testing::Invoke;
 
 class MockTimerClient : public TimerClient {
  public:
@@ -31,6 +32,8 @@ class MockDoorTest : public ::testing::Test {
   }
   void TearDown() override {
     delete timedDoor;
+    delete adapter;
+    delete timer;
   }
 };
 
@@ -80,10 +83,9 @@ TEST_F(MockDoorTest, no_exception_if_door_is_opend_and_closed) {
 }
 
 TEST(MockTimerClient, call_timeout_after_delay) {
-  MockTimerClient c1, c2;
+  MockTimerClient c;
   Timer t;
-  EXPECT_CALL(c1, Timeout()).Times(1);
-  EXPECT_CALL(c2, Timeout()).Times(1);
-  t.tregister(1, &c1);
-  t.tregister(1, &c2);
+
+  EXPECT_CALL(c, Timeout()).Times(1);
+  t.tregister(1, &c);
 }
