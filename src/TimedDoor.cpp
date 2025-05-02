@@ -4,21 +4,21 @@
 #include <thread>
 #include <chrono>
 
-class DoorTimerAdapter : public TimerClient {
-private:
-    TimedDoor& doorRef;
-public:
-    explicit DoorTimerAdapter(TimedDoor& door)
-        : doorRef(door) {}
+// –еализаци€ адаптера Ч только методы, без повторного class-объ€влени€
+DoorTimerAdapter::DoorTimerAdapter(TimedDoor& door)
+    : door(door) {}
 
-    void Timeout() override {
-        doorRef.throwState();
-    }
-};
+void DoorTimerAdapter::Timeout() {
+    door.throwState();
+}
+
+// –еализаци€ TimedDoor
 
 TimedDoor::TimedDoor(int timeout)
-    : iTimeout(timeout), isOpened(false) {
-    adapter = new DoorTimerAdapter(*this);
+    : adapter(new DoorTimerAdapter(*this))
+    , iTimeout(timeout)
+    , isOpened(false)
+{
 }
 
 bool TimedDoor::isDoorOpened() {
@@ -44,6 +44,8 @@ void TimedDoor::throwState() {
         throw std::runtime_error("Door left open");
     }
 }
+
+// –еализаци€ Timer
 
 void Timer::sleep(int seconds) {
     std::this_thread::sleep_for(std::chrono::seconds(seconds));
