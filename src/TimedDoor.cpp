@@ -4,15 +4,12 @@
 #include <thread>
 #include <chrono>
 
-// –еализаци€ адаптера Ч только методы, без повторного class-объ€влени€
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& door)
     : door(door) {}
 
 void DoorTimerAdapter::Timeout() {
     door.throwState();
 }
-
-// –еализаци€ TimedDoor
 
 TimedDoor::TimedDoor(int timeout)
     : adapter(new DoorTimerAdapter(*this))
@@ -44,8 +41,6 @@ void TimedDoor::throwState() {
         throw std::runtime_error("Door left open");
     }
 }
-
-// –еализаци€ Timer
 
 void Timer::sleep(int seconds) {
     std::this_thread::sleep_for(std::chrono::seconds(seconds));
