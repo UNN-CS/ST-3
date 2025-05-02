@@ -14,8 +14,7 @@ void DoorTimerAdapter::Timeout() {
 TimedDoor::TimedDoor(int timeout)
     : adapter(new DoorTimerAdapter(*this))
     , iTimeout(timeout)
-    , isOpened(false)
-{
+    , isOpened(false) {
 }
 
 bool TimedDoor::isDoorOpened() {

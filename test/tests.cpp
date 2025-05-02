@@ -9,7 +9,7 @@
 #include "TimedDoor.h"
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
     TimedDoor* door;
 
     void SetUp() override {
