@@ -9,64 +9,63 @@ class Door;
 class TimedDoor;
 
 class TimerClient {
-public:
-    virtual ~TimerClient() = default;
+ public:
+  virtual ~TimerClient() = default;
 
-    virtual void Timeout() = 0;
+  virtual void Timeout() = 0;
 };
 
 class DoorTimerAdapter final : public TimerClient {
-public:
-    explicit DoorTimerAdapter(TimedDoor &);
+ public:
+  explicit DoorTimerAdapter(TimedDoor &);
 
-    void Timeout() override;
+  void Timeout() override;
 
-private:
-    TimedDoor &door;
+ private:
+  TimedDoor &door;
 };
 
 class Door {
-public:
-    virtual ~Door() = default;
+ public:
+  virtual ~Door() = default;
 
-    virtual void lock() = 0;
+  virtual void lock() = 0;
 
-    virtual void unlock() = 0;
+  virtual void unlock() = 0;
 
-    virtual bool isDoorOpened() = 0;
+  virtual bool isDoorOpened() = 0;
 };
 
-
 class TimedDoor final : public Door {
-public:
-    explicit TimedDoor(int timeout);
+ public:
+  explicit TimedDoor(int timeout);
 
-    ~TimedDoor() override;
+  ~TimedDoor() override;
 
-    void unlock() override;
+  void unlock() override;
 
-    void lock() override;
+  void lock() override;
 
-    bool isDoorOpened() override;
+  bool isDoorOpened() override;
 
-    void throwState();
+  void throwState();
 
-    int getTimeout();
+  int getTimeout();
 
-private:
-    int iTimeout;
-    bool isOpened;
-    DoorTimerAdapter *adapter;
+ private:
+  int iTimeout;
+  bool isOpened;
+  DoorTimerAdapter *adapter;
 };
 
 class Timer {
-public:
-    void tregister(int, TimerClient *);
+ public:
+  void tregister(int, TimerClient *);
 
-private:
-    TimerClient *client = nullptr;
+ private:
+  TimerClient *client = nullptr;
 
-    static void sleep(int);
+  static void sleep(int);
 };
 
 #endif  // INCLUDE_TIMEDDOOR_H_
