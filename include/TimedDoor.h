@@ -10,43 +10,62 @@ class TimedDoor;
 
 class TimerClient {
  public:
+  virtual ~TimerClient() = default;
+
   virtual void Timeout() = 0;
+};
+
+class DoorTimerAdapter final : public TimerClient {
+ public:
+  explicit DoorTimerAdapter(TimedDoor &);
+
+  void Timeout() override;
+
+ private:
+  TimedDoor &door;
 };
 
 class Door {
  public:
+  virtual ~Door() = default;
+
   virtual void lock() = 0;
+
   virtual void unlock() = 0;
+
   virtual bool isDoorOpened() = 0;
 };
 
-class DoorTimerAdapter : public TimerClient {
- private:
-  TimedDoor& door;
+class TimedDoor final : public Door {
  public:
-  explicit DoorTimerAdapter(TimedDoor&);
-  void Timeout();
-};
+  explicit TimedDoor(int timeout);
 
-class TimedDoor : public Door {
+  ~TimedDoor() override;
+
+  void unlock() override;
+
+  void lock() override;
+
+  bool isDoorOpened() override;
+
+  void throwState();
+
+  int getTimeout();
+
  private:
-  DoorTimerAdapter * adapter;
   int iTimeout;
   bool isOpened;
- public:
-  explicit TimedDoor(int);
-  bool isDoorOpened();
-  void unlock();
-  void lock();
-  int  getTimeOut() const;
-  void throwState();
+  DoorTimerAdapter *adapter;
 };
 
 class Timer {
-  TimerClient *client;
-  void sleep(int);
  public:
-  void tregister(int, TimerClient*);
+  void tregister(int, TimerClient *);
+
+ private:
+  TimerClient *client = nullptr;
+
+  static void sleep(int);
 };
 
 #endif  // INCLUDE_TIMEDDOOR_H_
