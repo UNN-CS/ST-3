@@ -1,4 +1,5 @@
 // Copyright 2021 GHA Test Team
+// Copyright 2026 Your Name
 #include "TimedDoor.h"
 #include <iostream>
 #include <stdexcept>
@@ -12,7 +13,8 @@ void DoorTimerAdapter::Timeout() {
 }
 
 TimedDoor::TimedDoor(int timeout)
-    : adapter(new DoorTimerAdapter(*this)), iTimeout(timeout), isOpened(false) {}
+    : adapter(new DoorTimerAdapter(*this)),
+      iTimeout(timeout), isOpened(false) {}
 
 bool TimedDoor::isDoorOpened() {
   return isOpened;
