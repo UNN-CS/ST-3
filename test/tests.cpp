@@ -37,7 +37,8 @@ class SilentTimedDoor : public TimedDoor {
 
 class CountingTimedDoor : public TimedDoor {
  public:
-  explicit CountingTimedDoor(int timeout) : TimedDoor(timeout), timeoutCalls(0) {}
+  explicit CountingTimedDoor(int timeout)
+      : TimedDoor(timeout), timeoutCalls(0) {}
 
   void throwState() override {
     ++timeoutCalls;
