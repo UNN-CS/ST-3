@@ -1,3 +1,6 @@
+// Copyright 2021 GHA Test Team
+#include "TimedDoor.h"
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include <cstdint>
@@ -6,8 +9,6 @@
 #include <memory>
 #include <stdexcept>
 #include <thread>
-
-#include "TimedDoor.h"
 
 class MockTimerClient : public TimerClient {
  public:
