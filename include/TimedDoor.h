@@ -3,6 +3,8 @@
 #ifndef INCLUDE_TIMEDDOOR_H_
 #define INCLUDE_TIMEDDOOR_H_
 
+#include <mutex>
+
 class DoorTimerAdapter;
 class Timer;
 class Door;
@@ -30,11 +32,15 @@ class DoorTimerAdapter : public TimerClient {
 
 class TimedDoor : public Door {
  private:
-  DoorTimerAdapter * adapter;
+  DoorTimerAdapter* adapter;
   int iTimeout;
   bool isOpened;
+  mutable std::mutex stateMutex;
  public:
   explicit TimedDoor(int);
+  ~TimedDoor();
+  TimedDoor(const TimedDoor&) = delete;
+  TimedDoor& operator=(const TimedDoor&) = delete;
   bool isDoorOpened();
   void unlock();
   void lock();
