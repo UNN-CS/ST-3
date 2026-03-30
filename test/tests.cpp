@@ -69,7 +69,7 @@ TEST_F(TimedDoorTest, ExceptionMessageIsCorrect) {
 }
 
 TEST_F(TimedDoorTest, SequentialOpenCloseOperations) {
-  for (int i = 0; i = 3; ++i) {
+  for (int i = 0; i < 3; ++i) {
     door->unlock();
     EXPECT_TRUE(door->isDoorOpened());
     door->lock();
