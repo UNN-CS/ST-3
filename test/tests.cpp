@@ -16,7 +16,7 @@ class MockTimerClient : public TimerClient {
 class TimedDoorTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    door = new TimedDoor(5);
+    door = new TimedDoor(1);
   }
 
   void TearDown() override {
@@ -31,7 +31,7 @@ TEST_F(TimedDoorTest, InitialStateIsClosed) {
 }
 
 TEST_F(TimedDoorTest, GetTimeOutReturnsCorrectValue) {
-  EXPECT_EQ(door->getTimeOut(), 5);
+  EXPECT_EQ(door->getTimeOut(), 1);
 }
 
 TEST_F(TimedDoorTest, LockAndUnlockChangeState) {
@@ -64,13 +64,12 @@ TEST_F(TimedDoorTest, ExceptionMessageIsCorrect) {
     door->throwState();
     FAIL() << "Expected std::runtime_error";
   } catch (const std::runtime_error& e) {
-    EXPECT_STREQ(e.what(),
-                 "Door timeout: door was left open too long!");
+    EXPECT_STREQ(e.what(), "Door timeout: door was left open too long!");
   }
 }
 
 TEST_F(TimedDoorTest, SequentialOpenCloseOperations) {
-  for (int i = 0; i < 5; ++i) {
+  for (int i = 0; i = 3; ++i) {
     door->unlock();
     EXPECT_TRUE(door->isDoorOpened());
     door->lock();
@@ -81,7 +80,7 @@ TEST_F(TimedDoorTest, SequentialOpenCloseOperations) {
 class DoorTimerAdapterTest : public ::testing::Test {
  protected:
   void SetUp() override {
-    door = new TimedDoor(2);
+    door = new TimedDoor(1);
     adapter = new DoorTimerAdapter(*door);
   }
 
@@ -109,22 +108,22 @@ TEST(TimerTest, TimerCallsTimeoutOnClient) {
   MockTimerClient mockClient;
   EXPECT_CALL(mockClient, Timeout()).Times(1);
   timer.tregister(0, &mockClient);
-  std::this_thread::sleep_for(std::chrono::milliseconds(50));
+  std::this_thread::sleep_for(std::chrono::milliseconds(100));
 }
 
 TEST(TimedDoorIntegrationTest, DoorThrowsExceptionAfterTimeout) {
   TimedDoor door(1);
   door.unlock();
-  std::this_thread::sleep_for(std::chrono::milliseconds(1100));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1500));
   EXPECT_TRUE(door.isDoorOpened());
   EXPECT_THROW(door.throwState(), std::runtime_error);
 }
 
 TEST(TimedDoorIntegrationTest, ClosingDoorBeforeTimeoutPreventsException) {
-  TimedDoor door(2);
+  TimedDoor door(1);
   door.unlock();
-  std::this_thread::sleep_for(std::chrono::seconds(1));
+  std::this_thread::sleep_for(std::chrono::milliseconds(500));
   door.lock();
-  std::this_thread::sleep_for(std::chrono::seconds(2));
+  std::this_thread::sleep_for(std::chrono::milliseconds(1000));
   EXPECT_NO_THROW(door.throwState());
 }

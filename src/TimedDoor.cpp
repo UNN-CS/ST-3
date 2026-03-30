@@ -18,6 +18,11 @@ TimedDoor::TimedDoor(int timeout)
 }
 
 TimedDoor::~TimedDoor() {
+  // Останавливаем таймер перед удалением
+  timerActive = false;
+  if (timerThread.joinable()) {
+    timerThread.join();
+  }
   delete adapter;
 }
 
@@ -32,7 +37,10 @@ void TimedDoor::unlock() {
     timerThread = std::thread([this]() {
       std::this_thread::sleep_for(std::chrono::seconds(iTimeout));
       if (timerActive && isOpened) {
-        adapter->Timeout();
+        try {
+          adapter->Timeout();
+        } catch (...) {
+        }
       }
     });
   }
@@ -43,7 +51,7 @@ void TimedDoor::lock() {
     isOpened = false;
     timerActive = false;
     if (timerThread.joinable()) {
-      timerThread.detach();
+      timerThread.join();
     }
   }
 }
@@ -65,6 +73,11 @@ void Timer::sleep(int seconds) {
 void Timer::tregister(int timeout, TimerClient *client) {
   std::thread([timeout, client]() {
     std::this_thread::sleep_for(std::chrono::seconds(timeout));
-    client->Timeout();
+    if (client) {
+      try {
+        client->Timeout();
+      } catch (...) {
+      }
+    }
   }).detach();
 }

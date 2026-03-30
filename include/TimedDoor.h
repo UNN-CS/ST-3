@@ -3,8 +3,8 @@
 #ifndef INCLUDE_TIMEDDOOR_H_
 #define INCLUDE_TIMEDDOOR_H_
 
-#include <thread>
 #include <atomic>
+#include <thread>
 
 class DoorTimerAdapter;
 class Timer;
@@ -38,7 +38,7 @@ class TimedDoor : public Door {
  private:
   DoorTimerAdapter *adapter;
   int iTimeout;
-  bool isOpened;
+  std::atomic<bool> isOpened;
   std::atomic<bool> timerActive;
   std::thread timerThread;
 
