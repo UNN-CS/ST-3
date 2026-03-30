@@ -1,4 +1,7 @@
+// Copyright 2026 GHA Test Team
+
 #include "TimedDoor.h"
+
 #include <chrono>
 #include <stdexcept>
 #include <thread>
@@ -9,7 +12,8 @@ void DoorTimerAdapter::Timeout() {
   door.throwState();
 }
 
-TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
+TimedDoor::TimedDoor(int timeout)
+    : iTimeout(timeout), isOpened(false), timerActive(false) {
   adapter = new DoorTimerAdapter(*this);
 }
 
@@ -24,13 +28,24 @@ bool TimedDoor::isDoorOpened() {
 void TimedDoor::unlock() {
   if (!isOpened) {
     isOpened = true;
-    Timer t;
-    t.tregister(iTimeout, adapter);
+    timerActive = true;
+    timerThread = std::thread([this]() {
+      std::this_thread::sleep_for(std::chrono::seconds(iTimeout));
+      if (timerActive && isOpened) {
+        adapter->Timeout();
+      }
+    });
   }
 }
 
 void TimedDoor::lock() {
-  isOpened = false;
+  if (isOpened) {
+    isOpened = false;
+    timerActive = false;
+    if (timerThread.joinable()) {
+      timerThread.detach();
+    }
+  }
 }
 
 int TimedDoor::getTimeOut() const {
@@ -39,7 +54,7 @@ int TimedDoor::getTimeOut() const {
 
 void TimedDoor::throwState() {
   if (isOpened) {
-    throw std::runtime_error("Door timeout: still open");
+    throw std::runtime_error("Door timeout: door was left open too long!");
   }
 }
 
