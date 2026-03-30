@@ -1,0 +1,28 @@
+# Папки сборки
+build/
+cmake-build-*/
+out/
+
+# Временные файлы
+*.user
+*.userosscache
+*.sln.docstates
+
+# Результаты компиляции
+*.exe
+*.dll
+*.lib
+*.a
+*.so
+*.dylib
+
+# Файлы IDE
+.vs/
+.idea/
+*.swp
+*.swo
+*~
+
+# Папка с зависимостями
+_build/
+_deps/
