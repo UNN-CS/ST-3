@@ -77,9 +77,7 @@ TEST_F(TimedDoorTest, ThrowStateDoesNotThrowWhenDoorClosed) {
 }
 
 TEST_F(TimedDoorTest, ThrowStateThrowsWhenDoorIsOpen) {
-    // unlock открывает дверь (isOpened=true), таймер срабатывает — бросает исключение
     EXPECT_THROW(door->unlock(), std::runtime_error);
-    // дверь всё ещё открыта, throwState тоже должен бросить
     EXPECT_THROW(door->throwState(), std::runtime_error);
 }
 
