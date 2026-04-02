@@ -11,10 +11,9 @@
 #include "TimedDoor.h"
 
 using ::testing::StrictMock;
+using std::chrono_literals::operator""ms;
 
 namespace {
-
-using namespace std::chrono_literals;
 
 class MockTimerClient : public TimerClient {
  public:
