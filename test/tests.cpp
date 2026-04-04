@@ -156,6 +156,6 @@ TEST_F(TimerAdapterInteractionTest, TimerCallsTimeoutTest) {
 
   EXPECT_CALL(*mockTimerClient, Timeout()).Times(1);
 
-  TestTimer testTimer;
+  TestTimer testTimer;//-
   testTimer.tregister(0, mockTimerClient);
 }
