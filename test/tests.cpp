@@ -1,21 +1,20 @@
-#include <cstdint>
-#include <stdexcept>
-
+// Copyright 2026 Maxim Safronov
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-
+#include <cstdint>
+#include <stdexcept>
 #include "TimedDoor.h"
+
 class MockTimerClient : public TimerClient {
-public:
+ public:
   MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class DoorTest : public ::testing::Test {
-protected:
+ protected:
   TimedDoor *door;
 
   void SetUp() override { door = new TimedDoor(1); }
-
   void TearDown() override { delete door; }
 };
 
