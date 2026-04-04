@@ -3,6 +3,8 @@
 #ifndef INCLUDE_TIMEDDOOR_H_
 #define INCLUDE_TIMEDDOOR_H_
 
+#include <mutex>
+
 class DoorTimerAdapter;
 class Timer;
 class Door;
@@ -33,8 +35,10 @@ class TimedDoor : public Door {
   DoorTimerAdapter * adapter;
   int iTimeout;
   bool isOpened;
+  mutable std::mutex mutex_;
  public:
   explicit TimedDoor(int);
+  ~TimedDoor();
   bool isDoorOpened();
   void unlock();
   void lock();
