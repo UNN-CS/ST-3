@@ -1,11 +1,13 @@
 // Copyright 2021 GHA Test Team
 
-#include "../include/TimedDoor.h"
-#include <chrono>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
+
+#include <chrono>
 #include <stdexcept>
 #include <thread>
+
+#include "../include/TimedDoor.h"
 
 using ::testing::_;
 using ::testing::Mock;
