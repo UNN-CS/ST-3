@@ -2,15 +2,20 @@ set(header_path "${${PROJECT_NAME}_SOURCE_DIR}/include")
 set(header ${header_path}/TimedDoor.h)
 set(src TimedDoor.cpp)
 
+find_package(Threads REQUIRED)
+
 add_library(${PROJECT_NAME} SHARED
   ${header}
   ${src})
-  
+
+if (WIN32)
+  set_target_properties(${PROJECT_NAME} PROPERTIES WINDOWS_EXPORT_ALL_SYMBOLS ON)
+endif()
+
 target_include_directories(${PROJECT_NAME}
   PUBLIC ${CMAKE_CURRENT_BINARY_DIR}
          ${${PROJECT_NAME}_SOURCE_DIR}/include)
-target_link_libraries(${PROJECT_NAME}
-  pthread)
+target_link_libraries(${PROJECT_NAME} PRIVATE Threads::Threads)
 
 add_executable(${PROJECT_NAME}.info main.cpp)
 target_include_directories(${PROJECT_NAME}.info

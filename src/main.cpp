@@ -1,11 +1,17 @@
 // Copyright 2021 GHA Test Team
 #include "TimedDoor.h"
+#include <exception>
 #include <iostream>
 
 int main() {
+  // Таймаут в миллисекундах; при открытой двери по истечении времени — исключение.
   TimedDoor tDoor(5);
   tDoor.lock();
-  tDoor.unlock();
+  try {
+    tDoor.unlock();
+  } catch (const std::exception& e) {
+    std::cerr << e.what() << '\n';
+  }
 
   return 0;
 }

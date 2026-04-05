@@ -5,12 +5,15 @@ FetchContent_Declare(
   GIT_REPOSITORY https://github.com/google/googletest.git
   GIT_TAG        release-1.12.0
 )
+set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 FetchContent_MakeAvailable(googletest)
 
 include_directories(${gtest_SOURCE_DIR}/include)
 message(PROJECT_SOURCE_DIR="${gtest_SOURCE_DIR}/include")
 include_directories(${${PROJECT_NAME}_SOURCE_DIR}/include)
 set(header ${${PROJECT_NAME}_SOURCE_DIR}/include)
+
+find_package(Threads REQUIRED)
 
 add_executable(${PROJECT_NAME}.test
   AllTests.cpp
@@ -20,7 +23,15 @@ target_link_libraries(${PROJECT_NAME}.test
     ${PROJECT_NAME}
     gtest
     gmock
+    Threads::Threads
 )
+
+if (WIN32)
+  add_custom_command(TARGET ${PROJECT_NAME}.test POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different
+      $<TARGET_FILE:${PROJECT_NAME}>
+      $<TARGET_FILE_DIR:${PROJECT_NAME}.test>)
+endif()
 
 install(TARGETS ${PROJECT_NAME}.test
         DESTINATION "${tool_dest}")
