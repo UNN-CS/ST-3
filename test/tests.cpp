@@ -1,11 +1,12 @@
 // Copyright 2021 GHA Test Team
 #include "TimedDoor.h"
 
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
+
 #include <chrono>
 #include <stdexcept>
 #include <thread>
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
 
 using ::testing::AtLeast;
 using ::testing::Exactly;
