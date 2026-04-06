@@ -1,5 +1,6 @@
 // Copyright 2021 GHA Test Team
 #include "TimedDoor.h"
+
 #include <chrono>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
@@ -12,7 +13,7 @@ using ::testing::Exactly;
 // ==================== Набор тестов для класса TimedDoor ====================
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
   TimedDoor *door;
 
   void SetUp() override { door = new TimedDoor(2); }
@@ -50,7 +51,7 @@ TEST_F(TimedDoorTest, ThrowStateThrowsRuntimeError) {
 // ==================== Набор тестов для DoorTimerAdapter ====================
 
 class DoorTimerAdapterTest : public ::testing::Test {
-protected:
+ protected:
   TimedDoor *door;
   DoorTimerAdapter *adapter;
   void SetUp() override {
@@ -80,7 +81,7 @@ TEST_F(DoorTimerAdapterTest, TimeoutNoThrowIfDoorClosed) {
 // ==================== Мок-класс для тестирования таймера ====================
 
 class MockTimerClient : public TimerClient {
-public:
+ public:
   MOCK_METHOD(void, Timeout, (), (override));
 };
 
@@ -111,10 +112,10 @@ TEST(TimerTest, TimerDoesNotCallAfterStop) {
 // сохраняет его в exception_ptr
 
 class TestableDoorTimerAdapter : public DoorTimerAdapter {
-private:
+ private:
   std::exception_ptr *storedException;
 
-public:
+ public:
   TestableDoorTimerAdapter(TimedDoor &door, std::exception_ptr *ex)
       : DoorTimerAdapter(door), storedException(ex) {}
   void Timeout() override {
@@ -128,7 +129,7 @@ public:
 
 // Интеграционный тест: проверяет совместную работу двери, адаптера и таймера
 class IntegrationTest : public ::testing::Test {
-protected:
+ protected:
   TimedDoor *door;
   TestableDoorTimerAdapter *testAdapter;
   std::exception_ptr exception;
