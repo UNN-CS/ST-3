@@ -11,6 +11,7 @@ class TimedDoor;
 class TimerClient {
  public:
   virtual void Timeout() = 0;
+  virtual ~TimerClient() = default;
 };
 
 class Door {
@@ -18,33 +19,38 @@ class Door {
   virtual void lock() = 0;
   virtual void unlock() = 0;
   virtual bool isDoorOpened() = 0;
+  virtual ~Door() = default;
 };
 
 class DoorTimerAdapter : public TimerClient {
  private:
   TimedDoor& door;
+
  public:
   explicit DoorTimerAdapter(TimedDoor&);
-  void Timeout();
+  void Timeout() override;
 };
 
 class TimedDoor : public Door {
  private:
-  DoorTimerAdapter * adapter;
+  DoorTimerAdapter* adapter;
   int iTimeout;
   bool isOpened;
+
  public:
   explicit TimedDoor(int);
-  bool isDoorOpened();
-  void unlock();
-  void lock();
-  int  getTimeOut() const;
+  ~TimedDoor();
+  bool isDoorOpened() override;
+  void unlock() override;
+  void lock() override;
+  int getTimeOut() const;
   void throwState();
 };
 
 class Timer {
-  TimerClient *client;
+  TimerClient* client;
   void sleep(int);
+
  public:
   void tregister(int, TimerClient*);
 };
