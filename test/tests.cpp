@@ -1,10 +1,10 @@
 // Copyright 2021 GHA Test Team
 
-#include <memory>
-#include <stdexcept>
-
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
+
+#include <memory>
+#include <stdexcept>
 
 #include "TimedDoor.h"
 
