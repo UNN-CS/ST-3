@@ -9,5 +9,7 @@ set(tool_dest "bin")
 set(lib_dest "lib")
 set(include_dest "include/")
 
+enable_testing()
+
 add_subdirectory(src)
 add_subdirectory(test)
