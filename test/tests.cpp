@@ -1,23 +1,27 @@
+// Copyright 2024 <Student Name>
+
 #include "TimedDoor.h"
+
 #include <chrono>
-#include <gmock/gmock.h>
-#include <gtest/gtest.h>
 #include <thread>
 
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
+
 class MockTimerClient : public TimerClient {
-public:
+ public:
   MOCK_METHOD(void, Timeout, (), (override));
 };
 
 class MockDoor : public Door {
-public:
+ public:
   MOCK_METHOD(void, lock, (), (override));
   MOCK_METHOD(void, unlock, (), (override));
   MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
 class TimedDoorTest : public ::testing::Test {
-protected:
+ protected:
   void SetUp() override {
     testDoor = new TimedDoor(1);
     testAdapter = new DoorTimerAdapter(*testDoor);
@@ -28,8 +32,9 @@ protected:
     delete testAdapter;
     delete testDoor;
   }
-  TimedDoor *testDoor;
-  DoorTimerAdapter *testAdapter;
+
+  TimedDoor* testDoor;
+  DoorTimerAdapter* testAdapter;
 };
 
 TEST_F(TimedDoorTest, checkInitialStateIsClosed) {
