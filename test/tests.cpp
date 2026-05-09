@@ -1,12 +1,10 @@
 // Copyright 2024 <Student Name>
 
-#include "TimedDoor.h"
-
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 #include <chrono>
 #include <thread>
-
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
+#include "TimedDoor.h"
 
 class MockTimerClient : public TimerClient {
  public:
