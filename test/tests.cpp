@@ -59,7 +59,7 @@ TEST_F(TimedDoorTestSuite, UnlockChangesDoorStateToOpen) {
 TEST_F(TimedDoorTestSuite, LockChangesDoorStateToClosed) {
     testDoor->unlock();
     EXPECT_TRUE(testDoor->isDoorOpened());
-    
+
     testDoor->lock();
     EXPECT_FALSE(testDoor->isDoorOpened());
 }
@@ -100,10 +100,10 @@ TEST_F(DoorTimerAdapterTestSuite, TimeoutDoesNotThrowWhenDoorClosed) {
 TEST_F(DoorTimerAdapterTestSuite, TimeoutBehaviorAfterStateChange) {
     testTimedDoor->unlock();
     EXPECT_THROW(testAdapter->Timeout(), std::runtime_error);
-    
+
     testTimedDoor->lock();
     EXPECT_NO_THROW(testAdapter->Timeout());
-    
+
     testTimedDoor->unlock();
     EXPECT_THROW(testAdapter->Timeout(), std::runtime_error);
 }
@@ -138,10 +138,10 @@ TEST(NegativeTimeoutHandlingTest, NegativeTimeoutDoesNotBreakFunctionality) {
 
     negativeDoor.unlock();
     EXPECT_TRUE(negativeDoor.isDoorOpened());
-    
+
     negativeDoor.lock();
     EXPECT_FALSE(negativeDoor.isDoorOpened());
-    
+
     EXPECT_THROW(negativeDoor.throwState(), std::runtime_error);
 }
 
@@ -149,7 +149,6 @@ TEST(QuickIntegrationTest, DoorOpenedTriggersException) {
     TimedDoor smartDoor(1);
     DoorTimerAdapter doorAdapter(smartDoor);
     Timer timerSystem;
-
     smartDoor.unlock();
     ASSERT_TRUE(smartDoor.isDoorOpened());
 
@@ -158,23 +157,23 @@ TEST(QuickIntegrationTest, DoorOpenedTriggersException) {
 
 TEST(StatePersistenceTest, DoorStatePersistsAcrossOperations) {
     TimedDoor persistentDoor(7);
-    
+
     persistentDoor.unlock();
     EXPECT_TRUE(persistentDoor.isDoorOpened());
-    
+
     persistentDoor.lock();
     EXPECT_FALSE(persistentDoor.isDoorOpened());
-    
+
     persistentDoor.unlock();
     EXPECT_TRUE(persistentDoor.isDoorOpened());
-    
+
     persistentDoor.lock();
     EXPECT_FALSE(persistentDoor.isDoorOpened());
 }
 
 TEST(MockVerificationTest, VerifyMockDoorMethodCalls) {
     MockDoor mockDoor;
-    
+
     EXPECT_CALL(mockDoor, unlock())
         .Times(2);
     EXPECT_CALL(mockDoor, lock())
@@ -182,11 +181,11 @@ TEST(MockVerificationTest, VerifyMockDoorMethodCalls) {
     EXPECT_CALL(mockDoor, isDoorOpened())
         .WillOnce(testing::Return(true))
         .WillOnce(testing::Return(false));
-    
+
     mockDoor.unlock();
     mockDoor.unlock();
     mockDoor.lock();
-    
+
     EXPECT_TRUE(mockDoor.isDoorOpened());
     EXPECT_FALSE(mockDoor.isDoorOpened());
 }
@@ -194,16 +193,16 @@ TEST(MockVerificationTest, VerifyMockDoorMethodCalls) {
 TEST(AdapterTimeoutMultipleStatesTest, AdapterHandlesVariousDoorStates) {
     TimedDoor stateDoor(6);
     DoorTimerAdapter stateAdapter(stateDoor);
-    
+
     stateDoor.unlock();
     EXPECT_THROW(stateAdapter.Timeout(), std::runtime_error);
-    
+
     stateDoor.lock();
     EXPECT_NO_THROW(stateAdapter.Timeout());
-    
+
     stateDoor.unlock();
     EXPECT_THROW(stateAdapter.Timeout(), std::runtime_error);
-    
+
     stateDoor.lock();
     EXPECT_NO_THROW(stateAdapter.Timeout());
 }
@@ -211,7 +210,7 @@ TEST(AdapterTimeoutMultipleStatesTest, AdapterHandlesVariousDoorStates) {
 TEST(ZeroTimeoutDoorTest, DoorWithZeroTimeout) {
     TimedDoor zeroDoor(0);
     DoorTimerAdapter zeroAdapter(zeroDoor);
-    
+
     zeroDoor.unlock();
     EXPECT_TRUE(zeroDoor.isDoorOpened());
     EXPECT_THROW(zeroAdapter.Timeout(), std::runtime_error);
@@ -220,7 +219,7 @@ TEST(ZeroTimeoutDoorTest, DoorWithZeroTimeout) {
 TEST(LargeTimeoutDoorTest, DoorWithLargeTimeout) {
     TimedDoor largeDoor(1000);
     EXPECT_EQ(largeDoor.getTimeOut(), 1000);
-    
+
     largeDoor.unlock();
     EXPECT_TRUE(largeDoor.isDoorOpened());
     largeDoor.lock();
@@ -235,10 +234,10 @@ TEST(ConstCorrectnessTest, GetTimeOutIsConstMethod) {
 TEST(AdapterReferenceTest, AdapterReferencesCorrectDoor) {
     TimedDoor originalDoor(5);
     DoorTimerAdapter adapter(originalDoor);
-    
+
     originalDoor.unlock();
     EXPECT_THROW(adapter.Timeout(), std::runtime_error);
-    
+
     originalDoor.lock();
     EXPECT_NO_THROW(adapter.Timeout());
 }

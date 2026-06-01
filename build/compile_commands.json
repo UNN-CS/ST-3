@@ -1,0 +1,50 @@
+[
+{
+  "directory": "/home/artem/Documents/TestPO/ST-3/build",
+  "command": "/usr/bin/clang++-21 -DST_3_EXPORTS -I/home/artem/Documents/TestPO/ST-3/build/src -I/home/artem/Documents/TestPO/ST-3/include -g -std=gnu++17 -fPIC -o src/CMakeFiles/ST-3.dir/TimedDoor.cpp.o -c /home/artem/Documents/TestPO/ST-3/src/TimedDoor.cpp",
+  "file": "/home/artem/Documents/TestPO/ST-3/src/TimedDoor.cpp",
+  "output": "src/CMakeFiles/ST-3.dir/TimedDoor.cpp.o"
+},
+{
+  "directory": "/home/artem/Documents/TestPO/ST-3/build",
+  "command": "/usr/bin/clang++-21 -I/home/artem/Documents/TestPO/ST-3/build/src -I/home/artem/Documents/TestPO/ST-3/include -g -std=gnu++17 -o src/CMakeFiles/ST-3.info.dir/main.cpp.o -c /home/artem/Documents/TestPO/ST-3/src/main.cpp",
+  "file": "/home/artem/Documents/TestPO/ST-3/src/main.cpp",
+  "output": "src/CMakeFiles/ST-3.info.dir/main.cpp.o"
+},
+{
+  "directory": "/home/artem/Documents/TestPO/ST-3/build",
+  "command": "/usr/bin/clang++-21 -I/home/artem/Documents/TestPO/ST-3/include -I/home/artem/Documents/TestPO/ST-3/build/src -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest/include -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googlemock/include -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googlemock -g -std=gnu++17 -o test/CMakeFiles/ST-3.test.dir/AllTests.cpp.o -c /home/artem/Documents/TestPO/ST-3/test/AllTests.cpp",
+  "file": "/home/artem/Documents/TestPO/ST-3/test/AllTests.cpp",
+  "output": "test/CMakeFiles/ST-3.test.dir/AllTests.cpp.o"
+},
+{
+  "directory": "/home/artem/Documents/TestPO/ST-3/build",
+  "command": "/usr/bin/clang++-21 -I/home/artem/Documents/TestPO/ST-3/include -I/home/artem/Documents/TestPO/ST-3/build/src -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest/include -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googlemock/include -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googlemock -g -std=gnu++17 -o test/CMakeFiles/ST-3.test.dir/tests.cpp.o -c /home/artem/Documents/TestPO/ST-3/test/tests.cpp",
+  "file": "/home/artem/Documents/TestPO/ST-3/test/tests.cpp",
+  "output": "test/CMakeFiles/ST-3.test.dir/tests.cpp.o"
+},
+{
+  "directory": "/home/artem/Documents/TestPO/ST-3/build",
+  "command": "/usr/bin/clang++-21 -I/home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googlemock/include -I/home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googlemock -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest/include -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest -g -std=c++17 -Wall -Wshadow -Wconversion -DGTEST_HAS_PTHREAD=1 -fexceptions -W -Wpointer-arith -Wreturn-type -Wcast-qual -Wwrite-strings -Wswitch -Wunused-parameter -Wcast-align -Wchar-subscripts -Winline -Wredundant-decls -o _deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o -c /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googlemock/src/gmock-all.cc",
+  "file": "/home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googlemock/src/gmock-all.cc",
+  "output": "_deps/googletest-build/googlemock/CMakeFiles/gmock.dir/src/gmock-all.cc.o"
+},
+{
+  "directory": "/home/artem/Documents/TestPO/ST-3/build",
+  "command": "/usr/bin/clang++-21 -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googlemock/include -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googlemock -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest/include -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest -g -std=c++17 -Wall -Wshadow -Wconversion -DGTEST_HAS_PTHREAD=1 -fexceptions -W -Wpointer-arith -Wreturn-type -Wcast-qual -Wwrite-strings -Wswitch -Wunused-parameter -Wcast-align -Wchar-subscripts -Winline -Wredundant-decls -o _deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o -c /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googlemock/src/gmock_main.cc",
+  "file": "/home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googlemock/src/gmock_main.cc",
+  "output": "_deps/googletest-build/googlemock/CMakeFiles/gmock_main.dir/src/gmock_main.cc.o"
+},
+{
+  "directory": "/home/artem/Documents/TestPO/ST-3/build",
+  "command": "/usr/bin/clang++-21 -I/home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest/include -I/home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest -g -std=c++17 -Wall -Wshadow -Wconversion -DGTEST_HAS_PTHREAD=1 -fexceptions -W -Wpointer-arith -Wreturn-type -Wcast-qual -Wwrite-strings -Wswitch -Wunused-parameter -Wcast-align -Wchar-subscripts -Winline -Wredundant-decls -o _deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o -c /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest/src/gtest-all.cc",
+  "file": "/home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest/src/gtest-all.cc",
+  "output": "_deps/googletest-build/googletest/CMakeFiles/gtest.dir/src/gtest-all.cc.o"
+},
+{
+  "directory": "/home/artem/Documents/TestPO/ST-3/build",
+  "command": "/usr/bin/clang++-21 -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest/include -isystem /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest -g -std=c++17 -Wall -Wshadow -Wconversion -DGTEST_HAS_PTHREAD=1 -fexceptions -W -Wpointer-arith -Wreturn-type -Wcast-qual -Wwrite-strings -Wswitch -Wunused-parameter -Wcast-align -Wchar-subscripts -Winline -Wredundant-decls -o _deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o -c /home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest/src/gtest_main.cc",
+  "file": "/home/artem/Documents/TestPO/ST-3/build/_deps/googletest-src/googletest/src/gtest_main.cc",
+  "output": "_deps/googletest-build/googletest/CMakeFiles/gtest_main.dir/src/gtest_main.cc.o"
+}
+]
