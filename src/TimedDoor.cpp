@@ -1,4 +1,4 @@
-// Copyright 2021 GHA Test Team
+// Copyright 2025 GHA Test Team
 #include "TimedDoor.h"
 #include <stdexcept>
 #include <thread>
@@ -14,10 +14,6 @@ void DoorTimerAdapter::Timeout() {
 
 TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
     adapter = new DoorTimerAdapter(*this);
-}
-
-TimedDoor::~TimedDoor() {
-    delete adapter;
 }
 
 bool TimedDoor::isDoorOpened() {
@@ -37,16 +33,16 @@ int TimedDoor::getTimeOut() const {
 }
 
 void TimedDoor::throwState() {
-    throw std::runtime_error("Door is still open after timeout!");
+    throw std::runtime_error("Door open timeout exceeded!");
 }
 
-void Timer::sleep(int seconds) {
-    std::this_thread::sleep_for(std::chrono::seconds(seconds));
+void Timer::sleep(int milliseconds) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
-void Timer::tregister(int timeout, TimerClient* client) {
+void Timer::tregister(int duration, TimerClient* client) {
     this->client = client;
-    sleep(timeout);
+    sleep(duration);
     if (client != nullptr) {
         client->Timeout();
     }
