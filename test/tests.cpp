@@ -1,7 +1,10 @@
+// Copyright 2021 GHA Test Team
+
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
-#include "TimedDoor.h"
-#include <stdexcept>
+#include "../include/TimedDoor.h"
+#include <thread>
+#include <chrono>
 
 class MockTimerClient : public TimerClient {
  public:
