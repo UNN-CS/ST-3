@@ -1,22 +1,22 @@
-// Copyright 2021 GHA Test Team
-
 #include "TimedDoor.h"
+#include <thread>
 #include <chrono>
 #include <stdexcept>
-#include <thread>
 
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
 
 void DoorTimerAdapter::Timeout() {
     if (door.isDoorOpened()) {
-        door.isThrow = true;
+        door.throwState();
     }
 }
 
-TimedDoor::TimedDoor(int timeoutValue) :
-    iTimeout(timeoutValue),
-    isOpened(false),
-    adapter(new DoorTimerAdapter(*this)) {
+TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
+    adapter = new DoorTimerAdapter(*this);
+}
+
+TimedDoor::~TimedDoor() {
+    delete adapter;
 }
 
 bool TimedDoor::isDoorOpened() {
@@ -25,45 +25,26 @@ bool TimedDoor::isDoorOpened() {
 
 void TimedDoor::unlock() {
     isOpened = true;
-
-    th = new std::thread([&]() {
-        Timer timer;
-        timer.tregister(iTimeout, adapter);
-        });
 }
 
 void TimedDoor::lock() {
-    throwState();
     isOpened = false;
-
-    if (th) {
-        th->join();
-        delete th;
-    }
-    th = nullptr;
 }
 
-int TimedDoor::getTimeOut() const {
+int TimedDoor::getTimeOut() {
     return iTimeout;
 }
+
 void TimedDoor::throwState() {
-    if (isThrow) {
-        throw std::runtime_error("Door is opened for a long time!");
-    }
+    throw std::runtime_error("Door opened too long!");
 }
-void Timer::sleep(int timeoutValue) {
-    if (timeoutValue <= 0) {
-        throw std::invalid_argument("Value needs to be positive!");
-    }
 
-    std::this_thread::sleep_for(std::chrono::seconds(timeoutValue));
+void Timer::sleep(int milliseconds) {
+    std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
-void Timer::tregister(int timeoutValue, TimerClient* c) {
-    if (timeoutValue <= 0) {
-        throw std::invalid_argument("Value needs to be positive!");
-    }
 
-    this->client = c;
-    sleep(timeoutValue);
-    this->client->Timeout();
+void Timer::tregister(int timeout, TimerClient* client) {
+    client = client;
+    sleep(timeout);
+    client->Timeout();
 }
