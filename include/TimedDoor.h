@@ -1,3 +1,5 @@
+// Copyright 2021 GHA Test Team
+
 #ifndef TIMEDDOOR_H
 #define TIMEDDOOR_H
 
