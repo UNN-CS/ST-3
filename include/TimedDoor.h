@@ -50,4 +50,4 @@ class Timer {
     void tregister(int, TimerClient*);
 };
 
-#endif // TIMEDDOOR_H
+#endif // INCLUDE_TIMEDDOOR_H_
