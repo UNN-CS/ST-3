@@ -4,6 +4,7 @@
 #include <thread>
 #include <chrono>
 #include <stdexcept>
+#include <memory>
 
 // DoorTimerAdapter implementation
 DoorTimerAdapter::DoorTimerAdapter(TimedDoor& door) : door_(door) {}
@@ -55,8 +56,10 @@ void Timer::Sleep(int seconds) {
 
 void Timer::TRegister(int timeout, TimerClient* client) {
   client_ = client;
-  Sleep(timeout);
-  if (client_) {
-    client_->Timeout();
-  }
+  std::thread([this, timeout]() {
+    Sleep(timeout);
+    if (client_) {
+      client_->Timeout();
+    }
+  }).detach();
 }
