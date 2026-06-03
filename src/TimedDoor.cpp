@@ -1,59 +1,62 @@
-// Copyright 2021 GHA Test Team
-#include "TimedDoor.h"
+// Copyright 2024 Nazyrov A.A.
 
+#include "TimedDoor.h"
+#include <thread>
 #include <chrono>
 #include <stdexcept>
-#include <thread>
 
-DoorTimerAdapter::DoorTimerAdapter(TimedDoor& timedDoor) : door(timedDoor) {}
+// DoorTimerAdapter implementation
+DoorTimerAdapter::DoorTimerAdapter(TimedDoor& door) : door_(door) {}
 
 void DoorTimerAdapter::Timeout() {
-  if (door.isDoorOpened()) {
-    door.throwState();
+  if (door_.IsDoorOpened()) {
+    door_.ThrowState();
   }
 }
 
+// TimedDoor implementation
 TimedDoor::TimedDoor(int timeout)
-    : adapter(new DoorTimerAdapter(*this)),
-      iTimeout(timeout),
-      isOpened(false) {}
+    : timeout_seconds_(timeout), is_opened_(false) {
+  adapter_ = new DoorTimerAdapter(*this);
+}
 
 TimedDoor::~TimedDoor() {
-  delete adapter;
+  delete adapter_;
 }
 
-bool TimedDoor::isDoorOpened() {
-  return isOpened;
+bool TimedDoor::IsDoorOpened() {
+  return is_opened_;
 }
 
-void TimedDoor::unlock() {
-  isOpened = true;
+void TimedDoor::Unlock() {
+  is_opened_ = true;
   Timer timer;
-  timer.tregister(iTimeout, adapter);
+  timer.TRegister(timeout_seconds_, adapter_);
 }
 
-void TimedDoor::lock() {
-  isOpened = false;
+void TimedDoor::Lock() {
+  is_opened_ = false;
 }
 
-int TimedDoor::getTimeOut() const {
-  return iTimeout;
+int TimedDoor::GetTimeOut() const {
+  return timeout_seconds_;
 }
 
-void TimedDoor::throwState() {
-  throw std::runtime_error("Door timeout exceeded");
+void TimedDoor::ThrowState() {
+  throw std::runtime_error("Door was left open too long!");
 }
 
-void Timer::sleep(int timeout) {
-  if (timeout > 0) {
-    std::this_thread::sleep_for(std::chrono::seconds(timeout));
-  }
+// Timer implementation
+Timer::Timer() : client_(nullptr) {}
+
+void Timer::Sleep(int seconds) {
+  std::this_thread::sleep_for(std::chrono::seconds(seconds));
 }
 
-void Timer::tregister(int timeout, TimerClient* timerClient) {
-  client = timerClient;
-  sleep(timeout);
-  if (client != nullptr) {
-    client->Timeout();
+void Timer::TRegister(int timeout, TimerClient* client) {
+  client_ = client;
+  Sleep(timeout);
+  if (client_) {
+    client_->Timeout();
   }
 }
