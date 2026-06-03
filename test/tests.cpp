@@ -3,6 +3,8 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "TimedDoor.h"
+#include <chrono>
+#include <thread>
 
 using ::testing::_;
 using ::testing::Mock;
@@ -78,7 +80,6 @@ TEST(DoorTimerAdapterTest, AdapterDoesNothingWhenDoorClosed) {
 TEST(TimerTest, TimerCallsTimeoutOnClient) {
   MockTimerClient mockClient;
   EXPECT_CALL(mockClient, Timeout()).Times(1);
-
   Timer timer;
   timer.TRegister(0, &mockClient);
 }
@@ -88,7 +89,7 @@ TEST(TimerTest, TimerDoesNotCrashWithNullClient) {
   EXPECT_NO_THROW(timer.TRegister(0, nullptr));
 }
 
-// Integration tests with mocks
+// Integration tests
 TEST(IntegrationTest, FullWorkflowWithoutTimeout) {
   TimedDoor door(1);
   door.Unlock();
@@ -99,10 +100,7 @@ TEST(IntegrationTest, FullWorkflowWithoutTimeout) {
 TEST(IntegrationTest, FullWorkflowWithTimeout) {
   TimedDoor door(1);
   door.Unlock();
-
-  // Wait for timeout to trigger
   std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-
   EXPECT_THROW({
     Timer timer;
     timer.TRegister(1, new DoorTimerAdapter(door));
