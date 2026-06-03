@@ -108,3 +108,4 @@ TEST(IntegrationTest, FullWorkflowWithTimeout) {
     timer.TRegister(1, new DoorTimerAdapter(door));
   }, std::runtime_error);
 }
+
