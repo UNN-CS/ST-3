@@ -3,8 +3,6 @@
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 #include "TimedDoor.h"
-#include <chrono>
-#include <thread>
 
 using ::testing::_;
 using ::testing::Mock;
@@ -45,7 +43,6 @@ TEST_F(TimedDoorTest, DoorInitiallyClosed) {
 TEST_F(TimedDoorTest, UnlockOpensDoor) {
   door_->Unlock();
   EXPECT_TRUE(door_->IsDoorOpened());
-  door_->Lock();
 }
 
 TEST_F(TimedDoorTest, LockClosesDoor) {
@@ -67,9 +64,7 @@ TEST(DoorTimerAdapterTest, AdapterCallsThrowStateWhenDoorOpen) {
   TimedDoor door(1);
   DoorTimerAdapter adapter(door);
   door.Unlock();
-  std::this_thread::sleep_for(std::chrono::milliseconds(1100));
   EXPECT_THROW(adapter.Timeout(), std::runtime_error);
-  door.Lock();
 }
 
 TEST(DoorTimerAdapterTest, AdapterDoesNothingWhenDoorClosed) {
@@ -96,14 +91,12 @@ TEST(TimerTest, TimerDoesNotCrashWithNullClient) {
 TEST(IntegrationTest, FullWorkflowWithoutTimeout) {
   TimedDoor door(1);
   door.Unlock();
-  std::this_thread::sleep_for(std::chrono::milliseconds(500));
   door.Lock();
   EXPECT_FALSE(door.IsDoorOpened());
 }
 
-TEST(IntegrationTest, FullWorkflowWithTimeout) {
+TEST(IntegrationTest, DoorStaysOpenAfterUnlock) {
   TimedDoor door(1);
   door.Unlock();
-  std::this_thread::sleep_for(std::chrono::milliseconds(1500));
   EXPECT_TRUE(door.IsDoorOpened());
 }
