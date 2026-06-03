@@ -4,7 +4,6 @@
 #define INCLUDE_TIMEDDOOR_H_
 
 #include <stdexcept>
-#include <thread>
 
 class DoorTimerAdapter;
 class Timer;
@@ -18,11 +17,13 @@ class DoorTimeoutException : public std::runtime_error {
 
 class TimerClient {
  public:
+  virtual ~TimerClient() = default;
   virtual void Timeout() = 0;
 };
 
 class Door {
  public:
+  virtual ~Door() = default;
   virtual void lock() = 0;
   virtual void unlock() = 0;
   virtual bool isDoorOpened() = 0;
@@ -34,36 +35,36 @@ class DoorTimerAdapter : public TimerClient {
 
  public:
   explicit DoorTimerAdapter(TimedDoor &);
-  void Timeout();
+  void Timeout() override;
+};
+
+class Timer {
+ private:
+  TimerClient *client;
+  void sleep(int);
+
+ public:
+  Timer();
+  void tregister(int, TimerClient *);
 };
 
 class TimedDoor : public Door {
  private:
-  DoorTimerAdapter *adapter;
-  Timer *timer;
-  std::thread timerThread;
+  DoorTimerAdapter adapter;
+  Timer timer;
   int iTimeout;
   bool isOpened;
 
  public:
   explicit TimedDoor(int);
-  ~TimedDoor();
   bool isDoorOpened() override;
   void unlock() override;
   void lock() override;
   int getTimeOut() const;
   virtual void throwState();
-  Timer *getTimer() const { return timer; }
+  Timer *getTimer();
   void triggerTimeoutForTest();
   void registerTimerForTest(int timeout, TimerClient *client);
-};
-
-class Timer {
-  TimerClient *client;
-  void sleep(int);
-
- public:
-  void tregister(int, TimerClient *);
 };
 
 #endif // INCLUDE_TIMEDDOOR_H_

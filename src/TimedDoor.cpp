@@ -1,6 +1,7 @@
 // Copyright 2021 GHA Test Team
 
 #include "TimedDoor.h"
+
 #include <chrono>
 #include <thread>
 
@@ -12,33 +13,33 @@ void DoorTimerAdapter::Timeout() {
   }
 }
 
-TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
-  timer = new Timer();
-  adapter = new DoorTimerAdapter(*this);
+Timer::Timer() : client(nullptr) {}
+
+void Timer::sleep(int milliseconds) {
+  if (milliseconds < 0) {
+    throw std::invalid_argument("Timer timeout cannot be negative");
+  }
+
+  std::this_thread::sleep_for(std::chrono::milliseconds(milliseconds));
 }
 
-TimedDoor::~TimedDoor() {
-  if (timerThread.joinable()) {
-    timerThread.join();
+void Timer::tregister(int timeout, TimerClient *timerClient) {
+  client = timerClient;
+  sleep(timeout);
+
+  if (client != nullptr) {
+    client->Timeout();
   }
-  delete adapter;
-  delete timer;
 }
+
+TimedDoor::TimedDoor(int timeout)
+    : adapter(*this), timer(), iTimeout(timeout), isOpened(false) {}
 
 bool TimedDoor::isDoorOpened() { return isOpened; }
 
 void TimedDoor::unlock() {
   isOpened = true;
-  if (timerThread.joinable()) {
-    timerThread.join();
-  }
-  timerThread = std::thread([this]() {
-    try {
-      timer->tregister(iTimeout, adapter);
-    } catch (const DoorTimeoutException &) {
-      // Exception from timer callback - door was left open
-    }
-  });
+  timer.tregister(iTimeout, &adapter);
 }
 
 void TimedDoor::lock() { isOpened = false; }
@@ -49,20 +50,10 @@ void TimedDoor::throwState() {
   throw DoorTimeoutException("Door remained open past timeout");
 }
 
-void TimedDoor::triggerTimeoutForTest() { adapter->Timeout(); }
+Timer *TimedDoor::getTimer() { return &timer; }
+
+void TimedDoor::triggerTimeoutForTest() { adapter.Timeout(); }
 
 void TimedDoor::registerTimerForTest(int timeout, TimerClient *client) {
-  timer->tregister(timeout, client);
-}
-
-void Timer::sleep(int seconds) {
-  std::this_thread::sleep_for(std::chrono::seconds(seconds));
-}
-
-void Timer::tregister(int timeout, TimerClient *c) {
-  client = c;
-  sleep(timeout);
-  if (client) {
-    client->Timeout();
-  }
+  timer.tregister(timeout, client);
 }
