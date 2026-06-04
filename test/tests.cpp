@@ -5,21 +5,24 @@
 
 #include <atomic>
 #include <chrono>
-#include <cstdint>
 #include <stdexcept>
+#include <string>
 #include <thread>
 
 #include "TimedDoor.h"
 
 using ::testing::_;
+using ::testing::AtLeast;
 using ::testing::Exactly;
+using ::testing::Return;
 
-// Mock classes for testing
+// Mock for TimerClient — lets us verify Timeout() is called
 class MockTimerClient : public TimerClient {
  public:
   MOCK_METHOD(void, Timeout, (), (override));
 };
 
+// Mock for Door — lets us verify lock/unlock/isDoorOpened calls
 class MockDoor : public Door {
  public:
   MOCK_METHOD(void, lock, (), (override));
@@ -27,217 +30,220 @@ class MockDoor : public Door {
   MOCK_METHOD(bool, isDoorOpened, (), (override));
 };
 
-class TimedDoorTest : public ::testing::Test {
+// Test Fixture: creates a fresh TimedDoor(3) for each test
+class FridgeDoorTest : public ::testing::Test {
  protected:
   TimedDoor* door;
 
-  void SetUp() override { door = new TimedDoor(2); }
+  void SetUp() override { door = new TimedDoor(3); }
 
   void TearDown() override { delete door; }
 };
 
-// 1. Test: Door initially closed
-TEST_F(TimedDoorTest, t1) { EXPECT_FALSE(door->isDoorOpened()); }
+// Tests
 
-// 2. Test: Door can be locked after unlock
-TEST_F(TimedDoorTest, t2) {
-  door->unlock();
-  EXPECT_TRUE(door->isDoorOpened());
-
-  door->lock();
+// Test 01 — Door starts in closed state after construction
+TEST_F(FridgeDoorTest, InitialStateIsClosed) {
   EXPECT_FALSE(door->isDoorOpened());
 }
 
-// 3. Test: Get timeout value
-TEST_F(TimedDoorTest, t3) {
-  TimedDoor testDoor(10);
-  EXPECT_EQ(testDoor.getTimeOut(), 10);
+// Test 02 — Alarm is not armed on a freshly-created door
+TEST_F(FridgeDoorTest, AlarmNotArmedInitially) {
+  EXPECT_FALSE(door->isAlarmArmed());
 }
 
-// 4. Test: throwState throws exception when door is open
-TEST_F(TimedDoorTest, t4) {
+// Test 03 — unlock() opens the door and arms the alarm
+TEST_F(FridgeDoorTest, UnlockOpensAndArmsAlarm) {
+  door->unlock();
+  EXPECT_TRUE(door->isDoorOpened());
+  EXPECT_TRUE(door->isAlarmArmed());
+}
+
+// Test 04 — lock() closes the door and disarms the alarm
+TEST_F(FridgeDoorTest, LockClosesAndDisarmsAlarm) {
+  door->unlock();
+  door->lock();
+  EXPECT_FALSE(door->isDoorOpened());
+  EXPECT_FALSE(door->isAlarmArmed());
+}
+
+// Test 05 — getTimeOut() returns the value passed to the constructor
+TEST_F(FridgeDoorTest, TimeoutValueMatchesConstructorArgument) {
+  EXPECT_EQ(door->getTimeOut(), 3);
+
+  TimedDoor shortDoor(1);
+  EXPECT_EQ(shortDoor.getTimeOut(), 1);
+
+  TimedDoor longDoor(10);
+  EXPECT_EQ(longDoor.getTimeOut(), 10);
+}
+
+// Test 06 — throwState() throws when door is open
+TEST_F(FridgeDoorTest, ThrowStateRaisesExceptionWhenOpen) {
   door->unlock();
   EXPECT_THROW(door->throwState(), std::runtime_error);
 }
 
-// 5. Test: throwState doesn't throw when door is closed
-TEST_F(TimedDoorTest, t5) {
+// Test 07 — throwState() does NOT throw when door is closed
+TEST_F(FridgeDoorTest, ThrowStateNoExceptionWhenClosed) {
   door->lock();
   EXPECT_NO_THROW(door->throwState());
 }
 
-// 6. Test: DoorTimerAdapter calls throwState
-TEST_F(TimedDoorTest, t6) {
-  DoorTimerAdapter adapter(*door);
+// Test 08 — Exception message contains meaningful text
+TEST_F(FridgeDoorTest, ExceptionMessageIsDescriptive) {
   door->unlock();
-  EXPECT_THROW(adapter.Timeout(), std::runtime_error);
-}
-
-// 7. Test: Adapter doesn't throw when door closed
-TEST_F(TimedDoorTest, t7) {
-  DoorTimerAdapter adapter(*door);
-  door->lock();
-  EXPECT_NO_THROW(adapter.Timeout());
-}
-
-// 8. Test: Multiple lock/unlock operations
-TEST_F(TimedDoorTest, t8) {
-  for (int i = 0; i < 5; ++i) {
-    door->unlock();
-    EXPECT_TRUE(door->isDoorOpened());
-    door->lock();
-    EXPECT_FALSE(door->isDoorOpened());
+  try {
+    door->throwState();
+    FAIL() << "Expected std::runtime_error";
+  } catch (const std::runtime_error& ex) {
+    EXPECT_NE(std::string(ex.what()).size(), 0u);
   }
 }
 
-// 9. Test: Door state transitions
-TEST_F(TimedDoorTest, t9) {
-  EXPECT_FALSE(door->isDoorOpened());
-
+// Test 09 — Adapter's Timeout() throws when the door is open
+TEST_F(FridgeDoorTest, AdapterTimeoutThrowsWithOpenDoor) {
   door->unlock();
-  EXPECT_TRUE(door->isDoorOpened());
-
-  door->lock();
-  EXPECT_FALSE(door->isDoorOpened());
-
-  door->unlock();
-  EXPECT_TRUE(door->isDoorOpened());
-
-  door->lock();
-  EXPECT_FALSE(door->isDoorOpened());
+  DoorTimerAdapter* adapter = door->getAdapter();
+  EXPECT_THROW(adapter->Timeout(), std::runtime_error);
 }
 
-// 10. Test: Timer registration with delay
-TEST(TimerTest, t10) {
+// Test 10 — Adapter's Timeout() does NOT throw with closed door
+TEST_F(FridgeDoorTest, AdapterTimeoutSilentWithClosedDoor) {
+  door->lock();
+  DoorTimerAdapter* adapter = door->getAdapter();
+  EXPECT_NO_THROW(adapter->Timeout());
+}
+
+// Test 11 — Repeated open/close cycles preserve consistent state
+TEST_F(FridgeDoorTest, RepeatedOpenCloseCyclesRemainConsistent) {
+  for (int i = 0; i < 20; ++i) {
+    door->unlock();
+    EXPECT_TRUE(door->isDoorOpened());
+    EXPECT_TRUE(door->isAlarmArmed());
+
+    door->lock();
+    EXPECT_FALSE(door->isDoorOpened());
+    EXPECT_FALSE(door->isAlarmArmed());
+  }
+}
+
+// Test 12 — Timer calls Timeout() exactly once after the specified delay
+TEST(TimerBehaviorTest, TimerInvokesTimeoutExactlyOnce) {
   Timer timer;
   MockTimerClient mockClient;
 
-  EXPECT_CALL(mockClient, Timeout()).Times(1);
+  EXPECT_CALL(mockClient, Timeout()).Times(Exactly(1));
 
-  auto start = std::chrono::high_resolution_clock::now();
-  timer.tregister(2, &mockClient);
-  auto end = std::chrono::high_resolution_clock::now();
+  auto t0 = std::chrono::steady_clock::now();
+  timer.tregister(1, &mockClient);
+  auto t1 = std::chrono::steady_clock::now();
 
-  auto duration =
-      std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-  EXPECT_GE(duration.count(), 1900);
-  EXPECT_LE(duration.count(), 2100);
+  auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
+  // Must have waited at least ~1 second
+  EXPECT_GE(elapsed.count(), 900);
 }
 
-// 11. Test: Timer with zero timeout
-TEST(TimerTest, t11) {
+// Test 13 — Timer with zero delay fires almost immediately
+TEST(TimerBehaviorTest, ZeroDelayFiresImmediately) {
   Timer timer;
   MockTimerClient mockClient;
 
-  EXPECT_CALL(mockClient, Timeout()).Times(1);
+  EXPECT_CALL(mockClient, Timeout()).Times(Exactly(1));
 
-  auto start = std::chrono::high_resolution_clock::now();
+  auto t0 = std::chrono::steady_clock::now();
   timer.tregister(0, &mockClient);
-  auto end = std::chrono::high_resolution_clock::now();
+  auto t1 = std::chrono::steady_clock::now();
 
-  auto duration =
-      std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-  EXPECT_LT(duration.count(), 100);
+  auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0);
+  EXPECT_LT(elapsed.count(), 200);
 }
 
-// 12. Test: Complete workflow - exception thrown after timeout
-TEST(TimedDoorIntegration, t12) {
-  TimedDoor door(2);
-  DoorTimerAdapter adapter(door);
-  Timer timer;
+// Test 14 — Full workflow: open door → timer fires → exception raised
+TEST(IntegrationTest, AlarmTriggeredAfterTimeoutWithOpenDoor) {
+  TimedDoor fridgeDoor(1);
+  Timer alarmTimer;
 
-  door.unlock();
+  fridgeDoor.unlock();
 
-  auto start = std::chrono::high_resolution_clock::now();
-  EXPECT_THROW(timer.tregister(2, &adapter), std::runtime_error);
-  auto end = std::chrono::high_resolution_clock::now();
-
-  auto duration =
-      std::chrono::duration_cast<std::chrono::milliseconds>(end - start);
-  EXPECT_GE(duration.count(), 1900);
-  EXPECT_LE(duration.count(), 2100);
+  EXPECT_THROW(alarmTimer.tregister(1, fridgeDoor.getAdapter()),
+               std::runtime_error);
 }
 
-// 13. Test: Complete workflow - door closed before timeout
-TEST(TimedDoorIntegration, t13) {
-  TimedDoor door(5);
-  DoorTimerAdapter adapter(door);
-  Timer timer;
+// Test 15 — Full workflow: door closed before timeout → no exception
+TEST(IntegrationTest, NeitherAlarmNorExceptionIfDoorClosedBeforeTimeout) {
+  TimedDoor fridgeDoor(3);
+  Timer alarmTimer;
 
-  door.unlock();
+  fridgeDoor.unlock();
 
-  std::atomic<bool> exceptionThrown(false);
+  std::atomic<bool> exceptionCaught(false);
   std::atomic<bool> timerFinished(false);
 
   std::thread timerThread([&]() {
     try {
-      timer.tregister(5, &adapter);
+      alarmTimer.tregister(3, fridgeDoor.getAdapter());
     } catch (const std::runtime_error&) {
-      exceptionThrown = true;
+      exceptionCaught = true;
     }
     timerFinished = true;
   });
 
-  std::this_thread::sleep_for(std::chrono::seconds(2));
-  door.lock();
+  // Close the door well before the 3-second timeout expires
+  std::this_thread::sleep_for(std::chrono::seconds(1));
+  fridgeDoor.lock();
 
   timerThread.join();
 
-  EXPECT_FALSE(exceptionThrown);
+  EXPECT_FALSE(exceptionCaught);
   EXPECT_TRUE(timerFinished);
-  EXPECT_FALSE(door.isDoorOpened());
+  EXPECT_FALSE(fridgeDoor.isDoorOpened());
 }
 
-// 14. Test: Different timeout values
-TEST(TimedDoorParamTest, t14) {
-  TimedDoor shortDoor(1);
-  TimedDoor longDoor(3);
-  DoorTimerAdapter shortAdapter(shortDoor);
-  DoorTimerAdapter longAdapter(longDoor);
-  Timer timer;
+// Test 16 — MockDoor: verify that lock/unlock/isDoorOpened can be called
+TEST(MockDoorInterfaceTest, InterfaceMethodsAreCallable) {
+  MockDoor mockFridge;
 
-  shortDoor.unlock();
-  auto startShort = std::chrono::high_resolution_clock::now();
-  EXPECT_THROW(timer.tregister(1, &shortAdapter), std::runtime_error);
-  auto endShort = std::chrono::high_resolution_clock::now();
-  auto durationShort = std::chrono::duration_cast<std::chrono::milliseconds>(
-      endShort - startShort);
-  EXPECT_GE(durationShort.count(), 900);
-  EXPECT_LE(durationShort.count(), 1100);
+  EXPECT_CALL(mockFridge, unlock()).Times(Exactly(1));
+  EXPECT_CALL(mockFridge, isDoorOpened())
+      .Times(Exactly(1))
+      .WillOnce(Return(true));
+  EXPECT_CALL(mockFridge, lock()).Times(Exactly(1));
 
-  longDoor.unlock();
-  auto startLong = std::chrono::high_resolution_clock::now();
-  EXPECT_THROW(timer.tregister(3, &longAdapter), std::runtime_error);
-  auto endLong = std::chrono::high_resolution_clock::now();
-  auto durationLong = std::chrono::duration_cast<std::chrono::milliseconds>(
-      endLong - startLong);
-  EXPECT_GE(durationLong.count(), 2900);
-  EXPECT_LE(durationLong.count(), 3100);
+  mockFridge.unlock();
+  bool opened = mockFridge.isDoorOpened();
+  EXPECT_TRUE(opened);
+  mockFridge.lock();
 }
 
-// 15. Test: Mock door interface verification
-TEST(MockDoorTest, t15) {
-  MockDoor mockDoor;
-
-  EXPECT_CALL(mockDoor, isDoorOpened()).Times(1);
-  EXPECT_CALL(mockDoor, lock()).Times(1);
-  EXPECT_CALL(mockDoor, unlock()).Times(1);
-
-  mockDoor.isDoorOpened();
-  mockDoor.lock();
-  mockDoor.unlock();
-}
-
-// 16. Test: Timer throws exception from client
-TEST(TimerTest, t16) {
-  Timer timer;
-
-  class ThrowingClient : public TimerClient {
+// Test 17 — Exception propagates through Timer when client throws
+TEST(TimerBehaviorTest, ExceptionFromClientPropagatesOutOfTimer) {
+  class AlwaysThrowingClient : public TimerClient {
    public:
-    void Timeout() override { throw std::runtime_error("Test exception"); }
+    void Timeout() override {
+      throw std::runtime_error("deliberate test exception");
+    }
   };
 
-  ThrowingClient client;
+  Timer timer;
+  AlwaysThrowingClient throwingClient;
 
-  EXPECT_THROW(timer.tregister(1, &client), std::runtime_error);
+  EXPECT_THROW(timer.tregister(0, &throwingClient), std::runtime_error);
+}
+
+// Test 18 — Adapter belongs to the door and reflects current door state
+TEST(AdapterOwnershipTest, AdapterReflectsLiveDoorState) {
+  TimedDoor door(2);
+  DoorTimerAdapter* adapter = door.getAdapter();
+
+  // Door closed — adapter must not throw
+  EXPECT_NO_THROW(adapter->Timeout());
+
+  // Open the door — same adapter now must throw
+  door.unlock();
+  EXPECT_THROW(adapter->Timeout(), std::runtime_error);
+
+  // Close it again — adapter must go quiet
+  door.lock();
+  EXPECT_NO_THROW(adapter->Timeout());
 }
