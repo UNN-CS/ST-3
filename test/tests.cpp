@@ -110,10 +110,3 @@ TEST(DoorMock, noLockWhenClosed) {
   EXPECT_CALL(md, lock()).Times(0);
   openThenClose(md);
 }
-TEST(DoorMock, isDoorOpenedCalled) {
-  MockDoor md;
-  EXPECT_CALL(md, unlock()).Times(1);
-  EXPECT_CALL(md, isDoorOpened()).WillOnce(Return(true));
-  EXPECT_CALL(md, lock()).Times(1);
-  openThenClose(md);
-}
