@@ -22,11 +22,11 @@ class MockDoor : public Door {
 class TimedDoorTest : public ::testing::Test {
  protected:
     TimedDoor* door;
-
+ 
     void SetUp() override {
         door = new TimedDoor(1);
     }
-
+ 
     void TearDown() override {
         delete door;
     }
@@ -36,12 +36,9 @@ TEST_F(TimedDoorTest, DoorInitiallyClosed) {
     EXPECT_FALSE(door->isDoorOpened());
 }
 
-TEST_F(TimedDoorTest, DoorOpensAfterUnlock) {
-    door->unlock();
-    // unlock запускает таймер в том же потоке — дверь открыта до этого
-    // Проверяем начальное состояние перед unlock
-    TimedDoor localDoor(10);
-    EXPECT_FALSE(localDoor.isDoorOpened());
+TEST_F(TimedDoorTest, UnlockThrowsWhenDoorLeftOpen) {
+    // unlock() запускает таймер синхронно: если дверь не закрыли — бросает
+    EXPECT_THROW(door->unlock(), std::runtime_error);
 }
 
 TEST_F(TimedDoorTest, GetTimeoutReturnsCorrectValue) {
@@ -81,16 +78,23 @@ TEST_F(TimedDoorTest, NoExceptionWhenDoorClosed) {
 }
 
 TEST_F(TimedDoorTest, ExceptionWhenDoorOpenOnTimeout) {
+    // Имитируем открытое состояние через прямой вызов throwState
+    // (открытую дверь + Timeout)
     TimedDoor localDoor(10);
     DoorTimerAdapter adapter(localDoor);
+    // Для теста обходим таймер — вручную выставляем состояние
+    // через отдельный класс-тестовый stub
+    // Здесь проверяем: если дверь открыта — Timeout бросает
+    // Создаём дверь и напрямую вызываем throwState через открытое состояние
+ 
+    // Проверяем через прямой вызов throwState (публичный метод):
     EXPECT_THROW(localDoor.throwState(), std::runtime_error);
 }
-
 
 TEST(TimerTest, TimerCallsTimeoutOnce) {
     MockTimerClient mockClient;
     EXPECT_CALL(mockClient, Timeout()).Times(1);
-
+ 
     Timer timer;
     timer.tregister(1, &mockClient);
 }
@@ -98,7 +102,6 @@ TEST(TimerTest, TimerCallsTimeoutOnce) {
 TEST(TimerTest, TimerCallsTimeoutAtLeastOnce) {
     MockTimerClient mockClient;
     EXPECT_CALL(mockClient, Timeout()).Times(AtLeast(1));
-
     Timer timer;
     timer.tregister(1, &mockClient);
 }
@@ -134,6 +137,7 @@ class OpenTimedDoor : public TimedDoor {
         // используем unlock без таймера через трюк
     }
 };
+
 TEST_F(TimedDoorTest, AdapterLinkedToDoor) {
     DoorTimerAdapter adapter(*door);
     EXPECT_NO_THROW(adapter.Timeout());
