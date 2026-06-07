@@ -30,7 +30,7 @@ void TimedDoor::unlock() {
     t.tregister(iTimeout, adapter);
 }
 
-int TimedDoor::getTimeOut() {
+int TimedDoor::getTimeOut() const {
     return iTimeout;
 }
 

@@ -1,49 +1,52 @@
-// Copyright 2025 UNN-CS
-#include "TimedDoor.h"
-#include <stdexcept>
-#include <thread>
-#include <chrono>
+// Copyright 2021 GHA Test Team
 
-DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
+#ifndef INCLUDE_TIMEDDOOR_H_
+#define INCLUDE_TIMEDDOOR_H_
 
-void DoorTimerAdapter::Timeout() {
-    if (door.isDoorOpened()) {
-        door.throwState();
-    }
-}
+class DoorTimerAdapter;
+class Timer;
+class Door;
+class TimedDoor;
 
-TimedDoor::TimedDoor(int timeout) : iTimeout(timeout), isOpened(false) {
-    adapter = new DoorTimerAdapter(*this);
-}
+class TimerClient {
+ public:
+  virtual void Timeout() = 0;
+};
 
-bool TimedDoor::isDoorOpened() {
-    return isOpened;
-}
+class Door {
+ public:
+  virtual void lock() = 0;
+  virtual void unlock() = 0;
+  virtual bool isDoorOpened() = 0;
+};
 
-void TimedDoor::lock() {
-    isOpened = false;
-}
+class DoorTimerAdapter : public TimerClient {
+ private:
+  TimedDoor& door;
+ public:
+  explicit DoorTimerAdapter(TimedDoor&);
+  void Timeout();
+};
 
-void TimedDoor::unlock() {
-    isOpened = true;
-    Timer t;
-    t.tregister(iTimeout, adapter);
-}
+class TimedDoor : public Door {
+ private:
+  DoorTimerAdapter * adapter;
+  int iTimeout;
+  bool isOpened;
+ public:
+  explicit TimedDoor(int);
+  bool isDoorOpened();
+  void unlock();
+  void lock();
+  int  getTimeOut() const;
+  void throwState();
+};
 
-int TimedDoor::getTimeOut() const {
-    return iTimeout;
-}
+class Timer {
+  TimerClient *client;
+  void sleep(int);
+ public:
+  void tregister(int, TimerClient*);
+};
 
-void TimedDoor::throwState() {
-    throw std::runtime_error("Door has been open too long!");
-}
-
-void Timer::sleep(int seconds) {
-    std::this_thread::sleep_for(std::chrono::seconds(seconds));
-}
-
-void Timer::tregister(int timeout, TimerClient* c) {
-    client = c;
-    sleep(timeout);
-    client->Timeout();
-}
+#endif  // INCLUDE_TIMEDDOOR_H_
