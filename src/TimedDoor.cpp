@@ -3,17 +3,14 @@
 
 #include <stdexcept>
 
-// DoorTimerAdapter
-
-DoorTimerAdapter::DoorTimerAdapter(TimedDoor& d) : door(d) {}
+DoorTimerAdapter::DoorTimerAdapter(TimedDoor& timedDoor)
+    : door(timedDoor) {}
 
 void DoorTimerAdapter::Timeout() {
     if (door.isDoorOpened()) {
         door.throwState();
     }
 }
-
-// TimedDoor
 
 TimedDoor::TimedDoor(int timeout)
     : iTimeout(timeout), isOpened(false) {
@@ -37,16 +34,15 @@ int TimedDoor::getTimeOut() const {
 }
 
 void TimedDoor::throwState() {
-    throw std::runtime_error("Door is open too long!");
+    throw std::runtime_error("Door has been left open beyond allowed timeout!");
 }
 
-// Timer
-void Timer::sleep(int) {
-}
+void Timer::sleep(int) {}
 
 void Timer::tregister(int timeout, TimerClient* client) {
     this->client = client;
-    if (this->client) {
+    sleep(timeout);
+    if (this->client != nullptr) {
         this->client->Timeout();
     }
 }
